@@ -1,2 +1,3 @@
-# spotify-themes-analyser-backend
-The backend repo for my Spotify Themes Analyser web app - holds all code and infrastructure.
+# spotify-themes-analyser
+The repo for my Spotify Themes Analyser web app - holds all frontend, backend and infrastructure as well as CI/CD 
+workflows.
