@@ -1,4 +1,12 @@
 terraform {
+  cloud {
+    organization = "ryans-personal-development"
+
+    workspaces {
+      name = "spotify-themes-analyser"
+    }
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"

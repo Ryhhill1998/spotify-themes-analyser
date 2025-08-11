@@ -51,10 +51,13 @@ jobs:
 
     - name: Terraform Init
       working-directory: backend/infrastructure
+      env:
+        TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
       run: terraform init
 
-    - name: Terraform Apply (deploy/update infra & Lambda)
+    - name: Terraform Apply
       working-directory: backend/infrastructure
       env:
+        TFE_TOKEN: ${{ secrets.TFE_TOKEN }}
         TF_VAR_lambda_image_uri: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
       run: terraform apply -auto-approve
