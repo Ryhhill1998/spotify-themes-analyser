@@ -8,6 +8,7 @@ on:
       - 'backend/lambdas/user_spotify_data_retrieval/**'
       - '.github/workflows/deploy-user-spotify-data-retrieval-lambda.yml'
       - 'terraform/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
