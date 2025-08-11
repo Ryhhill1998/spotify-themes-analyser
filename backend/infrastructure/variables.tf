@@ -3,6 +3,6 @@ variable "aws_region" {
   default = "eu-west-2"
 }
 
-variable "image_uri" {
+variable "lambda_image_uri" {
   type = string
 }
