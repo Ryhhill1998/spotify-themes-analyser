@@ -1,52 +1,60 @@
-name: Deploy my_test_lambda to AWS Lambda
+name: Deploy user_spotify_data_retrieval_lambda
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'lambdas/user_spotify_data_retrieval_lambda/**'
-      - '.github/workflows/deploy-user-spotify-data-retrieval-lambda.yml'
-  workflow_dispatch:
+      - 'backend/lambdas/user_spotify_data_retrieval/**'
+      - '.github/workflows/deploy-lambda.yml'
+      - 'terraform/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_REGION: eu-west-2
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
 
-      - name: Build, tag, and push image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: hello-world
-          IMAGE_TAG: latest
-        run: |
-          cd lambdas/my_test_lambda
-          docker buildx build --platform linux/arm64 --load -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Update Lambda function to use new image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: hello-world
-          IMAGE_TAG: latest
-        run: |
-          aws lambda update-function-code \
-            --function-name user-spotify-data-retrieval \
-            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    - name: Set IMAGE_TAG to git SHA
+      id: image_tag
+      run: echo "::set-output name=tag::$(echo $GITHUB_SHA | cut -c1-7)"
+
+    - name: Build, tag, and push Docker image to ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ steps.image_tag.outputs.tag }}
+      run: |
+        cd backend/lambdas/user_spotify_data_retrieval
+        docker buildx build \
+          --platform linux/arm64 \
+          -t $ECR_REGISTRY/user-spotify-data-retrieval:$IMAGE_TAG \
+          --push .
+
+    - name: Terraform Apply (deploy/update infra & Lambda)
+      working-directory: ./terraform
+      env:
+        TF_VAR_lambda_image_uri: ${{ steps.login-ecr.outputs.registry }}/user-spotify-data-retrieval:${{ steps.image_tag.outputs.tag }}
+      run: terraform apply -auto-approve
