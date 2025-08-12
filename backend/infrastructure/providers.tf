@@ -1,10 +1,8 @@
 terraform {
-  cloud {
-    organization = "ryans-personal-development"
-
-    workspaces {
-      name = "spotify-themes-analyser"
-    }
+  backend "s3" {
+    bucket = "spotify-themes-analyser-state"
+    key    = "terraform.tfstate"
+    region = "eu-west-2"
   }
 
   required_providers {
@@ -16,5 +14,6 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region  = var.aws_region
+  profile = "default"
 }
