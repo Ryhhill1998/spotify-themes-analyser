@@ -42,10 +42,17 @@ jobs:
                   docker buildx build --platform linux/arm64 --load -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
                   docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v3.1.2
+              with:
+                  terraform_version: 1.12.2
+
             - name: Terraform Init
               run: |
-                  cd infra
+                  cd backend/infrastructure
                   terraform init
 
             - name: Terraform Apply
-              run: terraform apply -auto-approve -var="image_tag=${IMAGE_TAG}"
+              run: |
+                  cd backend/infrastructure
+                  terraform apply -auto-approve -var="image_tag=${IMAGE_TAG}"
