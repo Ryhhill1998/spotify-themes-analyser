@@ -1,4 +1,4 @@
-name: "Terraform Apply"
+name: "Deploy User Spotify Data Retrieval Lambda"
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 env:
   TF_CLOUD_ORGANIZATION: "ryans-personal-development"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "learn-terraform-github-actions"
+  TF_WORKSPACE: "spotify-themes-analyser"
   CONFIG_DIRECTORY: "./backend/infrastructure"
 
 jobs:
