@@ -4,6 +4,9 @@ on:
     push:
         branches:
             - main
+        paths:
+            - "backend/infrastructure/**"
+            - "backend/lambdas/user_spotify_data_retrieval/**"
     workflow_dispatch:
 
 jobs:

@@ -1,0 +1,30 @@
+name: "Check User Spotify Data Retrieval Lambda"
+
+on:
+    pull_request:
+        paths:
+            - "backend/lambdas/user_spotify_data_retrieval/**"
+            - "backend/infrastructure/**"
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: 3.13
+
+            - name: Install uv
+              run: pip install uv
+
+            - name: Install dependencies
+              working-directory: backend/lambdas/user_spotify_data_retrieval
+              run: uv sync --dev --frozen
+
+            - name: Run Ruff lint
+              working-directory: backend/lambdas/user_spotify_data_retrieval
+              run: uv run ruff check
