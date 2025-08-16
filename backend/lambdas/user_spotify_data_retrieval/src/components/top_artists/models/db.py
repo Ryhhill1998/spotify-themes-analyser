@@ -1,0 +1,40 @@
+from sqlalchemy import ForeignKey, String, Integer, JSON
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from src.core.db import Base
+
+
+class Artist(Base):
+    __tablename__ = "artist"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    images: Mapped[list[str]] = mapped_column(JSON, nullable=True)
+    spotify_url: Mapped[str] = mapped_column(String, nullable=False)
+    genres: Mapped[list[str]] = mapped_column(JSON, nullable=True)
+    followers: Mapped[int] = mapped_column(Integer, nullable=False)
+    popularity: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    # relationship to TopArtist
+    top_artists: Mapped[list["TopArtist"]] = relationship(
+        back_populates="artist", cascade="all, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"<Artist(name={self.name}, followers={self.followers})>"
+
+
+class TopArtist(Base):
+    __tablename__ = "top_artist"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    artist_id: Mapped[str] = mapped_column(String, ForeignKey("artists.id"), nullable=False)
+    position: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    position_change: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    # relationship to Artist
+    artist: Mapped[Artist] = relationship(back_populates="top_artists")
+
+    def __repr__(self) -> str:
+        return f"<TopArtist(user_id={self.user_id}, artist_id={self.artist_id}, position={self.position})>"
