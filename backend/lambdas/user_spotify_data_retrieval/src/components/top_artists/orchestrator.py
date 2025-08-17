@@ -9,7 +9,7 @@ from src.components.top_artists.data import TopArtistsFetcher
 from src.components.top_artists.repository import TopArtistsRepository
 
 
-class TopArtistsManager:
+class TopArtistsOrchestrator:
     def __init__(self, fetcher: TopArtistsFetcher, repository: TopArtistsRepository):
         self.fetcher = fetcher
         self.repository = repository
