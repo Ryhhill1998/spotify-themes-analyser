@@ -1,4 +1,4 @@
-from src.components.top_artists.data import TopArtistsFetcher
+from src.components.top_artists.data import SpotifyTopArtistsService
 from src.components.top_artists.repository import TopArtistsRepository
 from src.components.top_artists.orchestrator import TopArtistsOrchestrator
 from backend.shared.db import SessionLocal
@@ -6,7 +6,7 @@ from backend.shared.db import SessionLocal
 
 def get_top_artists_orchestrator() -> TopArtistsOrchestrator:
     db_session = SessionLocal()
-    fetcher = TopArtistsFetcher()
+    fetcher = SpotifyTopArtistsService()
     repository = TopArtistsRepository(db_session)
     top_artists_service = TopArtistsOrchestrator(fetcher=fetcher, repository=repository)
 

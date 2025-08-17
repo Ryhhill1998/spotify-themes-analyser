@@ -5,12 +5,12 @@
 # 5. If previous data, find position differences with data just fetched and store in DB.
 # 6. Return top artist objects.
 
-from src.components.top_artists.data import TopArtistsFetcher
+from src.components.top_artists.data import SpotifyTopArtistsService
 from src.components.top_artists.repository import TopArtistsRepository
 
 
 class TopArtistsOrchestrator:
-    def __init__(self, fetcher: TopArtistsFetcher, repository: TopArtistsRepository):
+    def __init__(self, fetcher: SpotifyTopArtistsService, repository: TopArtistsRepository):
         self.fetcher = fetcher
         self.repository = repository
         
