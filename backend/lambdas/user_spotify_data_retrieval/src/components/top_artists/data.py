@@ -2,7 +2,7 @@ from src.components.top_artists.models.domain import SpotifyArtist, TopArtist
 from httpx import AsyncClient
 
 
-class TopArtistsDataRetriever:
+class TopArtistsFetcher:
     def __init__(self, client: AsyncClient, client_id: str, client_secret: str, base_url: str):
         self.client = client
         self.client_id = client_id
