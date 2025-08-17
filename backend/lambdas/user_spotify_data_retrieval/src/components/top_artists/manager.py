@@ -8,6 +8,6 @@
 from src.components.top_artists.repository import TopArtistsRepository
 
 
-class TopArtistsService:
+class TopArtistsManager:
     def __init__(self, repository: TopArtistsRepository):
         self.repository = repository

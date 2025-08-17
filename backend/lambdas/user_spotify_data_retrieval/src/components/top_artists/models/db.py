@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, String, Integer, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.core.db import Base
+from backend.shared.db import Base
 
 
 class Artist(Base):
