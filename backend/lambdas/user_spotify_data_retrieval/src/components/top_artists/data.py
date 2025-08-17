@@ -13,7 +13,10 @@ class SpotifyTopArtistsService(SpotifyTopItemsService):
 
         # validate data format
         spotify_artists = [SpotifyArtist(**item) for item in items]
-        top_artists = [TopArtist.from_spotify_artist(artist) for artist in spotify_artists]
+        top_artists = [
+            TopArtist.from_spotify_artist(artist, position=index + 1) 
+            for index, artist in enumerate(spotify_artists)
+        ]
 
         return top_artists
         

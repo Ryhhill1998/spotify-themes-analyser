@@ -1,4 +1,5 @@
 from datetime import date
+from src.components.top_artists.models.domain import TopArtist
 from src.shared.spotify.enums import TimeRange
 from sqlalchemy import ForeignKey, String, Integer, JSON, Date, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -6,27 +7,39 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.shared.db import Base
 
 
-class Artist(Base):
+class ArtistDB(Base):
     __tablename__ = "artist"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    images: Mapped[list[str]] = mapped_column(JSON, nullable=True)
+    images: Mapped[list[dict[str, int | str]]] = mapped_column(JSON, nullable=True)
     spotify_url: Mapped[str] = mapped_column(String, nullable=False)
     genres: Mapped[list[str]] = mapped_column(JSON, nullable=True)
     followers: Mapped[int] = mapped_column(Integer, nullable=False)
     popularity: Mapped[int] = mapped_column(Integer, nullable=False)
 
     # relationship to TopArtist
-    top_artists: Mapped[list["TopArtist"]] = relationship(
+    top_artists: Mapped[list["TopArtistDB"]] = relationship(
         back_populates="artist", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:
         return f"<Artist(name={self.name}, followers={self.followers})>"
+    
+    @classmethod
+    def from_top_artist(cls, top_artist: TopArtist) -> "ArtistDB":
+        return cls(
+            id=top_artist.id,
+            name=top_artist.name,
+            images=[image.dict() for image in top_artist.images],
+            spotify_url=top_artist.spotify_url,
+            genres=top_artist.genres,
+            followers=top_artist.followers,
+            popularity=top_artist.popularity,
+        )
 
 
-class TopArtist(Base):
+class TopArtistDB(Base):
     __tablename__ = "top_artist"
 
     user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True, nullable=False)
@@ -37,7 +50,18 @@ class TopArtist(Base):
     position_change: Mapped[str | None] = mapped_column(String, nullable=True)
 
     # relationship to Artist
-    artist: Mapped[Artist] = relationship(back_populates="top_artists")
+    artist: Mapped[ArtistDB] = relationship(back_populates="top_artists")
 
     def __repr__(self) -> str:
         return f"<TopArtist(user_id={self.user_id}, artist_id={self.artist_id}, position={self.position})>"
+    
+    @classmethod
+    def from_top_artist(cls, user_id: str, top_artist: TopArtist, time_range: TimeRange, collection_date: date) -> "TopArtistDB":
+        return cls(
+            user_id=user_id,
+            artist_id=top_artist.id,
+            time_range=time_range,
+            collection_date=collection_date,
+            position=top_artist.position,
+            position_change=top_artist.position_change,
+        )
