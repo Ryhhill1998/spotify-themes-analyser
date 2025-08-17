@@ -5,6 +5,7 @@
 # 5. If previous data, find position differences with data just fetched and store in DB.
 # 6. Return top artist objects.
 
+from src.components.top_artists.models.domain import TopArtist
 from src.components.top_artists.data import SpotifyTopArtistsService
 from src.components.top_artists.repository import TopArtistsRepository
 
@@ -13,4 +14,10 @@ class TopArtistsOrchestrator:
     def __init__(self, data: SpotifyTopArtistsService, repository: TopArtistsRepository):
         self.data = data
         self.repository = repository
+
+    async def get_and_store_top_artists(self, user_id: str, access_token: str, time_range: str) -> list[TopArtist]:
+        top_artists = await self.data.get_top_artists(access_token=access_token, time_range=time_range)
+        await self.repository.store_top_artists(user_id=user_id, artists=top_artists, time_range=time_range)
+
+        return top_artists
         

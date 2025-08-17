@@ -1,4 +1,6 @@
-from sqlalchemy import ForeignKey, String, Integer, JSON
+from datetime import date
+from src.shared.spotify.enums import TimeRange
+from sqlalchemy import ForeignKey, String, Integer, JSON, Date, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.shared.db import Base
@@ -27,9 +29,10 @@ class Artist(Base):
 class TopArtist(Base):
     __tablename__ = "top_artist"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
-    artist_id: Mapped[str] = mapped_column(String, ForeignKey("artists.id"), nullable=False)
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True, nullable=False)
+    artist_id: Mapped[str] = mapped_column(String, ForeignKey("artists.id"), primary_key=True, nullable=False)
+    time_range: Mapped[TimeRange] = mapped_column(Enum, nullable=False)
+    collection_date: Mapped[date] = mapped_column(Date, nullable=False)
     position: Mapped[int | None] = mapped_column(Integer, nullable=True)
     position_change: Mapped[str | None] = mapped_column(String, nullable=True)
 
