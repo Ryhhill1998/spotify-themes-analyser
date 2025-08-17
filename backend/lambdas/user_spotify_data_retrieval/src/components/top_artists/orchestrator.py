@@ -10,7 +10,7 @@ from src.components.top_artists.repository import TopArtistsRepository
 
 
 class TopArtistsOrchestrator:
-    def __init__(self, fetcher: SpotifyTopArtistsService, repository: TopArtistsRepository):
-        self.fetcher = fetcher
+    def __init__(self, data: SpotifyTopArtistsService, repository: TopArtistsRepository):
+        self.data = data
         self.repository = repository
         

@@ -6,9 +6,9 @@ from backend.shared.db import SessionLocal
 
 def get_top_artists_orchestrator() -> TopArtistsOrchestrator:
     db_session = SessionLocal()
-    fetcher = SpotifyTopArtistsService()
+    data = SpotifyTopArtistsService()
     repository = TopArtistsRepository(db_session)
-    top_artists_service = TopArtistsOrchestrator(fetcher=fetcher, repository=repository)
+    top_artists_service = TopArtistsOrchestrator(data=data, repository=repository)
 
     return top_artists_service
     
