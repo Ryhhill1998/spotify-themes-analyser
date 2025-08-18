@@ -57,4 +57,4 @@ class PreviousTopArtist(BaseModel):
 
     @classmethod
     def from_top_artist_db(cls, top_artist_db: TopArtistDB) -> "PreviousTopArtist":
-        return cls(id=top_artist_db.id, position=top_artist_db.position)
+        return cls(id=top_artist_db.artist_id, position=top_artist_db.position)

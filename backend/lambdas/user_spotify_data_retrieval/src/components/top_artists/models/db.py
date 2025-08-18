@@ -1,7 +1,8 @@
 from datetime import date
+from src.shared.models.db import TopItemDBMixin
 from src.components.top_artists.models.domain import TopArtist
 from src.shared.spotify.enums import TimeRange
-from sqlalchemy import ForeignKey, String, Integer, JSON, Date, Enum
+from sqlalchemy import ForeignKey, String, Integer, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.shared.db import Base
@@ -17,11 +18,6 @@ class ArtistDB(Base):
     genres: Mapped[list[str]] = mapped_column(JSON, nullable=True)
     followers: Mapped[int] = mapped_column(Integer, nullable=False)
     popularity: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    # relationship to TopArtist
-    top_artists: Mapped[list["TopArtistDB"]] = relationship(
-        back_populates="artist", cascade="all, delete-orphan"
-    )
 
     def __repr__(self) -> str:
         return f"<Artist(name={self.name}, followers={self.followers})>"
@@ -39,18 +35,17 @@ class ArtistDB(Base):
         )
 
 
-class TopArtistDB(Base):
+class TopArtistDB(TopItemDBMixin, Base):
     __tablename__ = "top_artist"
 
-    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), primary_key=True, nullable=False)
-    artist_id: Mapped[str] = mapped_column(String, ForeignKey("artists.id"), primary_key=True, nullable=False)
-    time_range: Mapped[TimeRange] = mapped_column(Enum, nullable=False)
-    collection_date: Mapped[date] = mapped_column(Date, nullable=False)
-    position: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    position_change: Mapped[str | None] = mapped_column(String, nullable=True)
+    artist_id: Mapped[str] = mapped_column(String, ForeignKey("artists.id", ondelete="CASCADE"), primary_key=True)
 
     # relationship to Artist
     artist: Mapped[ArtistDB] = relationship(back_populates="top_artists")
+
+    @property
+    def item_id(self) -> str:
+        return self.artist_id
 
     def __repr__(self) -> str:
         return f"<TopArtist(user_id={self.user_id}, artist_id={self.artist_id}, position={self.position})>"
