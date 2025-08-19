@@ -1,5 +1,6 @@
 from datetime import date
-from src.shared.models.db import TopItemDBMixin
+from src.components.top_tracks.models.db import TrackDB
+from src.shared.models.db import TopItemDBMixin, track_artist_association_table
 from src.components.top_artists.models.domain import TopArtist
 from src.shared.spotify.enums import TimeRange
 from sqlalchemy import ForeignKey, String, Integer, JSON
@@ -18,6 +19,12 @@ class ArtistDB(Base):
     genres: Mapped[list[str]] = mapped_column(JSON, nullable=True)
     followers: Mapped[int] = mapped_column(Integer, nullable=False)
     popularity: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    tracks: Mapped[list["TrackDB"]] = relationship(
+        "TrackDB", 
+        secondary=track_artist_association_table, 
+        back_populates="artists"
+    )
     
     @classmethod
     def from_top_artist(cls, top_artist: TopArtist) -> "ArtistDB":

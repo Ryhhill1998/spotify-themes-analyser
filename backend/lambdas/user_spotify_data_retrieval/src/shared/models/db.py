@@ -14,9 +14,9 @@ class TopItemDBMixin:
     position_change: Mapped[str | None] = mapped_column(String, nullable=True)
 
 
-association_table = Table(
+track_artist_association_table = Table(
     "track_artist",
     Base.metadata,
+    Column("track_id", ForeignKey("tracks.id"), primary_key=True),
     Column("artist_id", ForeignKey("artists.id"), primary_key=True),
-    Column("track_id", ForeignKey("tracks.id"), primary_key=True)
 )

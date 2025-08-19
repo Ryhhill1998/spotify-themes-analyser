@@ -1,6 +1,6 @@
 from datetime import date
-from backend.lambdas.user_spotify_data_retrieval.src.components.top_artists.models.db import ArtistDB
-from src.shared.models.db import TopItemDBMixin
+from src.components.top_artists.models.db import ArtistDB
+from src.shared.models.db import TopItemDBMixin, track_artist_association_table
 from src.components.top_tracks.models.domain import TopTrack
 from src.shared.spotify.enums import TimeRange
 from sqlalchemy import ForeignKey, String, Integer, JSON
@@ -16,14 +16,17 @@ class TrackDB(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     images: Mapped[list[dict[str, int | str]]] = mapped_column(JSON, nullable=True)
     spotify_url: Mapped[str] = mapped_column(String, nullable=False)
-    artist_id: Mapped[str] = mapped_column(String, ForeignKey("artist.id", ondelete="CASCADE"), nullable=False)
     release_date: Mapped[str] = mapped_column(String, nullable=True)
     album_name: Mapped[str] = mapped_column(String, nullable=True)
     explicit: Mapped[bool] = mapped_column(Integer, nullable=False)
     duration_ms: Mapped[int] = mapped_column(Integer, nullable=False)
     popularity: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    artist: Mapped[ArtistDB] = relationship()
+    artists: Mapped[list["ArtistDB"]] = relationship(
+        "ArtistDB", 
+        secondary=track_artist_association_table, 
+        back_populates="tracks",
+    )
     
     @classmethod
     def from_top_track(cls, top_track: TopTrack) -> "TrackDB":
