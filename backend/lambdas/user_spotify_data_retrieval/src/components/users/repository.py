@@ -1,14 +1,14 @@
-from src.components.profile.models.db import ProfileDB
-from src.components.profile.models.domain import Profile
+from src.components.users.models.db import UserDB
+from src.components.users.models.domain import User
 from src.shared.base_respository import BaseRepository
 from sqlalchemy.orm import Session
 
 
-class ProfileRepository(BaseRepository):
+class UserRepository(BaseRepository):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
-    def store_user_profile(self, profile: Profile) -> None:
-        db_profile = ProfileDB.from_profile(profile)
-        self.db_session.add(db_profile)
+    def store_user_profile(self, user: User) -> None:
+        db_user = UserDB.from_user(user)
+        self.db_session.add(db_user)
         self.db_session.commit()
