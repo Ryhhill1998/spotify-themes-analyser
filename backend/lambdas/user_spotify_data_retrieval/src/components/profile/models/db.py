@@ -1,3 +1,4 @@
+from src.components.profile.models.domain import Profile
 from sqlalchemy import String, Integer, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -16,3 +17,14 @@ class ProfileDB(Base):
 
     def __repr__(self) -> str:
         return f"<User(display_name={self.display_name}, email={self.email})>"
+    
+    @classmethod
+    def from_profile(cls, profile: "Profile") -> "ProfileDB":
+        return cls(
+            id=profile.id,
+            display_name=profile.display_name,
+            email=profile.email,
+            href=profile.href,
+            images=[image.dict() for image in profile.images],
+            followers=profile.followers,
+        )

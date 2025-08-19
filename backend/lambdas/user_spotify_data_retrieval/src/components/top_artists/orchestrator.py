@@ -1,12 +1,5 @@
-# 1. Get top artists from Spotify API.
-# 2. Format artists in correct way for DB.
-# 3. Get latest data from DB.
-# 4. If no previous data, store artists directly in DB.
-# 5. If previous data, find position differences with data just fetched and store in DB.
-# 6. Return top artist objects.
-
 from datetime import date
-from src.components.top_artists.models.domain import PreviousTopArtist, TopArtist
+from src.components.top_artists.models.domain import TopArtist
 from src.components.top_artists.data import SpotifyTopArtistsService
 from src.components.top_artists.repository import TopArtistsRepository
 

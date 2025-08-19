@@ -10,7 +10,9 @@ class SpotifyTopItemsService(SpotifyDataService):
 
     async def _get_top_items_data(self, access_token: str, time_range: TimeRange, limit: int = 50) -> dict:
         data = await self._get_data_from_api(
-            endpoint=f"me/top/{self.item_type.value}", access_token=access_token, params={"time_range": time_range.value, "limit": limit}
+            endpoint=f"me/top/{self.item_type.value}", 
+            access_token=access_token, 
+            params={"time_range": time_range.value, "limit": limit},
         )
 
         if not data or "items" not in data:
