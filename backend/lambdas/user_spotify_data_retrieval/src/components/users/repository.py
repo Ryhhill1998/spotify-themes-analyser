@@ -8,7 +8,7 @@ class UserRepository(BaseRepository):
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
-    def store_user_profile(self, user: User) -> None:
+    def store_user(self, user: User) -> None:
         db_user = UserDB.from_user(user)
         self.db_session.add(db_user)
         self.db_session.commit()
