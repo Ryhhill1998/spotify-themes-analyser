@@ -1,7 +1,8 @@
 from datetime import date
+from backend.shared.db import Base
 from src.shared.spotify.enums import TimeRange
 from sqlalchemy import String, Integer, Date, Enum, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, Table, Column
 
 
 class TopItemDBMixin:
@@ -11,3 +12,11 @@ class TopItemDBMixin:
     collection_date: Mapped[date] = mapped_column(Date, nullable=False, primary_key=True)
     position: Mapped[int | None] = mapped_column(Integer, nullable=True)
     position_change: Mapped[str | None] = mapped_column(String, nullable=True)
+
+
+association_table = Table(
+    "track_artist",
+    Base.metadata,
+    Column("artist_id", ForeignKey("artists.id"), primary_key=True),
+    Column("track_id", ForeignKey("tracks.id"), primary_key=True)
+)

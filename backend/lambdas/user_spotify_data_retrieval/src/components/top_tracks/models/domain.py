@@ -35,16 +35,21 @@ class TopTrack(BaseModel):
     explicit: bool
     duration_ms: int
     popularity: int
+    position: int | None = None
+    position_change: str | None = None
 
     @classmethod
     def from_spotify_track(cls, track: SpotifyTrack, position: int | None = None) -> "TopTrack":
         return cls(
             id=track.id,
             name=track.name,
-            images=track.images,
+            images=track.album.images,
             spotify_url=track.external_urls.spotify,
-            genres=track.genres,
-            followers=track.followers.total,
+            artists=track.artists,
+            release_date=track.album.release_date,
+            album_name=track.album.name,
+            explicit=track.explicit,
+            duration_ms=track.duration_ms,
             popularity=track.popularity,
             position=position,
         )
