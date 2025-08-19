@@ -1,15 +1,5 @@
-from src.components.top_artists.models.db import TopArtistDB
+from src.shared.models.domain import SpotifyImage, SpotifyProfileFollowers
 from pydantic import BaseModel
-
-
-class SpotifyImage(BaseModel):
-    height: int
-    width: int
-    url: str
-
-
-class SpotifyProfileFollowers(BaseModel):
-    total: int
 
 
 class SpotifyItemExternalUrls(BaseModel):
@@ -50,11 +40,3 @@ class TopArtist(BaseModel):
             position=position,
         )
     
-
-class PreviousTopArtist(BaseModel):
-    id: str
-    position: int | None = None
-
-    @classmethod
-    def from_top_artist_db(cls, top_artist_db: TopArtistDB) -> "PreviousTopArtist":
-        return cls(id=top_artist_db.artist_id, position=top_artist_db.position)

@@ -2,6 +2,16 @@ from src.shared.models.db import TopItemDBMixin
 from pydantic import BaseModel
 
 
+class SpotifyImage(BaseModel):
+    height: int
+    width: int
+    url: str
+
+
+class SpotifyProfileFollowers(BaseModel):
+    total: int
+
+
 class TopItem(BaseModel):
     id: str
     position: int | None = None
