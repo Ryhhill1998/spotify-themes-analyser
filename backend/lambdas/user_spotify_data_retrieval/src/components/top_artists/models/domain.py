@@ -1,9 +1,5 @@
-from src.shared.models.domain import SpotifyImage, SpotifyProfileFollowers
+from src.shared.models.domain import SpotifyImage, SpotifyItemExternalUrls, SpotifyProfileFollowers
 from pydantic import BaseModel
-
-
-class SpotifyItemExternalUrls(BaseModel):
-    spotify: str
 
 
 class SpotifyArtist(BaseModel):

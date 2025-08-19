@@ -1,42 +1,51 @@
-from src.shared.models.domain import SpotifyImage, SpotifyProfileFollowers
+from src.shared.models.domain import SpotifyImage, SpotifyItemExternalUrls
 from pydantic import BaseModel
 
 
-class SpotifyItemExternalUrls(BaseModel):
-    spotify: str
-
-
-class SpotifyArtist(BaseModel):
-    id: str
+class SpotifyTrackAlbum(BaseModel):
     name: str
     images: list[SpotifyImage]
+    release_date: str
+
+
+class SpotifyTrackArtist(BaseModel):
+    id: str
+    name: str
+
+
+class SpotifyTrack(BaseModel):
+    id: str
+    name: str
+    album: SpotifyTrackAlbum
+    artists: list[SpotifyTrackArtist]
     external_urls: SpotifyItemExternalUrls
-    followers: SpotifyProfileFollowers
-    genres: list[str]
+    explicit: bool
+    duration_ms: int
     popularity: int
 
 
-class TopArtist(BaseModel):
+class TopTrack(BaseModel):
     id: str
     name: str
     images: list[SpotifyImage]
     spotify_url: str
-    genres: list[str]
-    followers: int
+    artists: list[SpotifyTrackArtist]
+    release_date: str
+    album_name: str
+    explicit: bool
+    duration_ms: int
     popularity: int
-    position: int | None = None
-    position_change: str | None = None
 
     @classmethod
-    def from_spotify_artist(cls, artist: SpotifyArtist, position: int | None = None) -> "TopArtist":
+    def from_spotify_track(cls, track: SpotifyTrack, position: int | None = None) -> "TopTrack":
         return cls(
-            id=artist.id,
-            name=artist.name,
-            images=artist.images,
-            spotify_url=artist.external_urls.spotify,
-            genres=artist.genres,
-            followers=artist.followers.total,
-            popularity=artist.popularity,
+            id=track.id,
+            name=track.name,
+            images=track.images,
+            spotify_url=track.external_urls.spotify,
+            genres=track.genres,
+            followers=track.followers.total,
+            popularity=track.popularity,
             position=position,
         )
     

@@ -2,6 +2,10 @@ from src.shared.models.db import TopItemDBMixin
 from pydantic import BaseModel
 
 
+class SpotifyItemExternalUrls(BaseModel):
+    spotify: str
+
+
 class SpotifyImage(BaseModel):
     height: int
     width: int
