@@ -5,8 +5,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from backend.shared.db import Base
 
 
-class ProfileDB(Base):
-    __tablename__ = "profile"
+class UserDB(Base):
+    __tablename__ = "user"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     display_name: Mapped[str] = mapped_column(String, nullable=False)
@@ -19,7 +19,7 @@ class ProfileDB(Base):
         return f"<User(display_name={self.display_name}, email={self.email})>"
     
     @classmethod
-    def from_profile(cls, profile: "Profile") -> "ProfileDB":
+    def from_user(cls, profile: "Profile") -> "UserDB":
         return cls(
             id=profile.id,
             display_name=profile.display_name,

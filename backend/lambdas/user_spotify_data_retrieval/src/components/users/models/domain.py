@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from src.shared.models.domain import SpotifyImage, SpotifyProfileFollowers
 
 
-class SpotifyProfile(BaseModel):
+class SpotifyUser(BaseModel):
     id: str
     display_name: str
     email: str | None = None
@@ -15,7 +15,7 @@ class SpotifyProfile(BaseModel):
         return f"<Profile(name={self.display_name}, email={self.email})>"
     
 
-class Profile(BaseModel):
+class User(BaseModel):
     id: str
     display_name: str
     email: str | None = None
@@ -24,7 +24,7 @@ class Profile(BaseModel):
     followers: int
 
     @classmethod
-    def from_spotify_profile(cls, profile: SpotifyProfile) -> "Profile":
+    def from_spotify_user(cls, profile: SpotifyUser) -> "User":
         return cls(
             id=profile.id,
             name=profile.display_name,
