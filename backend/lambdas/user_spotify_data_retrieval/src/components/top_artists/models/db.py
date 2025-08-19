@@ -18,9 +18,6 @@ class ArtistDB(Base):
     genres: Mapped[list[str]] = mapped_column(JSON, nullable=True)
     followers: Mapped[int] = mapped_column(Integer, nullable=False)
     popularity: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    def __repr__(self) -> str:
-        return f"<Artist(name={self.name}, followers={self.followers})>"
     
     @classmethod
     def from_top_artist(cls, top_artist: TopArtist) -> "ArtistDB":
@@ -41,14 +38,11 @@ class TopArtistDB(TopItemDBMixin, Base):
     artist_id: Mapped[str] = mapped_column(String, ForeignKey("artists.id", ondelete="CASCADE"), primary_key=True)
 
     # relationship to Artist
-    artist: Mapped[ArtistDB] = relationship(back_populates="top_artists")
+    artist: Mapped[ArtistDB] = relationship()
 
     @property
     def item_id(self) -> str:
         return self.artist_id
-
-    def __repr__(self) -> str:
-        return f"<TopArtist(user_id={self.user_id}, artist_id={self.artist_id}, position={self.position})>"
     
     @classmethod
     def from_top_artist(cls, user_id: str, top_artist: TopArtist, time_range: TimeRange, collection_date: date) -> "TopArtistDB":
