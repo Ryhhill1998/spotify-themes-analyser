@@ -11,9 +11,9 @@ def get_top_artists_orchestrator() -> TopArtistsOrchestrator:
     spotify_settings = SpotifySettings()
     data = SpotifyTopArtistsService(client=spotify_client, base_url=spotify_settings.base_url)
     repository = TopArtistsRepository(db_session)
-    top_artists_service = TopArtistsOrchestrator(data=data, repository=repository)
+    top_artists_orchestrator = TopArtistsOrchestrator(data=data, repository=repository)
 
-    return top_artists_service
+    return top_artists_orchestrator
     
 
 __all__ = ["get_top_artists_orchestrator"]
