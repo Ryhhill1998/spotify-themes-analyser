@@ -3,7 +3,7 @@ from src.shared.spotify.data_service import SpotifyDataService
 from httpx import AsyncClient
 
 
-class SpotifyTopItemsService(SpotifyDataService):
+class SpotifyTopItemsDataService(SpotifyDataService):
     def __init__(self, client: AsyncClient, base_url: str, item_type: ItemType):
         super().__init__(client=client, base_url=base_url)
         self.item_type = item_type

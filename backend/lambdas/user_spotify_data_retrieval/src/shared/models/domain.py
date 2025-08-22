@@ -18,7 +18,7 @@ class SpotifyProfileFollowers(BaseModel):
 
 class TopItem(BaseModel):
     id: str
-    position: int | None = None
+    position: int
     position_change: str | None = None
 
     @classmethod

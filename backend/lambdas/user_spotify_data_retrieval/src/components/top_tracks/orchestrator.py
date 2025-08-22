@@ -1,12 +1,12 @@
 from datetime import date
 from src.shared.utils.top_items import calculate_and_populate_position_changes
 from src.components.top_tracks.models.domain import TopTrack
-from src.components.top_tracks.data import SpotifyTopTracksService
+from src.components.top_tracks.data import TopTracksDataService
 from src.components.top_tracks.repository import TopTracksRepository
 
 
 class TopTracksOrchestrator:
-    def __init__(self, data: SpotifyTopTracksService, repository: TopTracksRepository):
+    def __init__(self, data: TopTracksDataService, repository: TopTracksRepository):
         self.data = data
         self.repository = repository
 

@@ -1,10 +1,10 @@
 from src.shared.spotify.enums import TimeRange
-from src.shared.spotify.top_items_service import ItemType, SpotifyTopItemsService
+from src.shared.spotify.top_items_service import ItemType, SpotifyTopItemsDataService
 from src.components.top_artists.models.domain import SpotifyArtist, TopArtist
 from httpx import AsyncClient
 
 
-class SpotifyTopArtistsService(SpotifyTopItemsService):
+class TopArtistsDataService(SpotifyTopItemsDataService):
     def __init__(self, client: AsyncClient, base_url: str):
         super().__init__(client=client, base_url=base_url, item_type=ItemType.ARTISTS)
 
