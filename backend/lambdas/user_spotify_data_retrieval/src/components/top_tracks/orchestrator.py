@@ -1,24 +1,24 @@
 from datetime import date
-from src.components.top_artists.models.domain import TopArtist
-from src.components.top_artists.data import SpotifyTopArtistsService
-from src.components.top_artists.repository import TopArtistsRepository
+from src.components.top_tracks.models.domain import TopTrack
+from src.components.top_tracks.data import SpotifyTopTracksService
+from src.components.top_tracks.repository import TopTracksRepository
 
 
-class TopArtistsOrchestrator:
-    def __init__(self, data: SpotifyTopArtistsService, repository: TopArtistsRepository):
+class TopTracksOrchestrator:
+    def __init__(self, data: SpotifyTopTracksService, repository: TopTracksRepository):
         self.data = data
         self.repository = repository
 
-    async def get_and_store_top_artists(self, user_id: str, access_token: str, time_range: str, collection_date: date) -> list[TopArtist]:
-        top_artists = await self.data.get_top_artists(access_token=access_token, time_range=time_range)
-        previous_top_artists = self.repository.get_previous_top_artists(user_id=user_id, time_range=time_range)
+    async def get_and_store_top_tracks(self, user_id: str, access_token: str, time_range: str, collection_date: date) -> list[TopTrack]:
+        top_tracks = await self.data.get_top_tracks(access_token=access_token, time_range=time_range)
+        previous_top_tracks = self.repository.get_previous_top_tracks(user_id=user_id, time_range=time_range)
 
-        if previous_top_artists:
+        if previous_top_tracks:
             self._calculate_and_populate_position_change(
-                previous_top_items=previous_top_artists, current_top_items=top_artists
+                previous_top_items=previous_top_tracks, current_top_items=top_tracks
             )
 
-        self.repository.store_top_artists(user_id=user_id, top_artists=top_artists, time_range=time_range, collection_date=collection_date)
+        self.repository.store_top_tracks(user_id=user_id, top_tracks=top_tracks, time_range=time_range, collection_date=collection_date)
 
-        return top_artists
+        return top_tracks
         

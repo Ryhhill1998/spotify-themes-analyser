@@ -1,4 +1,4 @@
-from src.shared.models.domain import SpotifyImage, SpotifyItemExternalUrls, SpotifyProfileFollowers
+from src.shared.models.domain import SpotifyImage, SpotifyItemExternalUrls, SpotifyProfileFollowers, TopItem
 from pydantic import BaseModel
 
 
@@ -12,16 +12,13 @@ class SpotifyArtist(BaseModel):
     popularity: int
 
 
-class TopArtist(BaseModel):
-    id: str
+class TopArtist(TopItem):
     name: str
     images: list[SpotifyImage]
     spotify_url: str
     genres: list[str]
     followers: int
     popularity: int
-    position: int | None = None
-    position_change: str | None = None
 
     @classmethod
     def from_spotify_artist(cls, artist: SpotifyArtist, position: int | None = None) -> "TopArtist":

@@ -1,4 +1,4 @@
-from src.shared.models.domain import SpotifyImage, SpotifyItemExternalUrls
+from src.shared.models.domain import SpotifyImage, SpotifyItemExternalUrls, TopItem
 from pydantic import BaseModel
 
 
@@ -24,8 +24,7 @@ class SpotifyTrack(BaseModel):
     popularity: int
 
 
-class TopTrack(BaseModel):
-    id: str
+class TopTrack(TopItem):
     name: str
     images: list[SpotifyImage]
     spotify_url: str
@@ -35,8 +34,6 @@ class TopTrack(BaseModel):
     explicit: bool
     duration_ms: int
     popularity: int
-    position: int | None = None
-    position_change: str | None = None
 
     @classmethod
     def from_spotify_track(cls, track: SpotifyTrack, position: int | None = None) -> "TopTrack":
