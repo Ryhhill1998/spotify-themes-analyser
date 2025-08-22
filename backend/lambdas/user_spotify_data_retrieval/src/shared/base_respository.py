@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 
-class BaseRespository:
+class BaseRepository:
     def __init__(self, db_session: Session):
         self.db_session = db_session
 
