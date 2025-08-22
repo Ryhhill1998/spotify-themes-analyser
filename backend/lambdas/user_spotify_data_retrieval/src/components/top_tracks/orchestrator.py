@@ -1,4 +1,5 @@
 from datetime import date
+from src.shared.utils.top_items import calculate_and_populate_position_changes
 from src.components.top_tracks.models.domain import TopTrack
 from src.components.top_tracks.data import SpotifyTopTracksService
 from src.components.top_tracks.repository import TopTracksRepository
@@ -14,7 +15,7 @@ class TopTracksOrchestrator:
         previous_top_tracks = self.repository.get_previous_top_tracks(user_id=user_id, time_range=time_range)
 
         if previous_top_tracks:
-            self._calculate_and_populate_position_change(
+            calculate_and_populate_position_changes(
                 previous_top_items=previous_top_tracks, current_top_items=top_tracks
             )
 

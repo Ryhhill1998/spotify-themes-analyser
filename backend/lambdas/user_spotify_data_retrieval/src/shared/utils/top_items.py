@@ -1,7 +1,7 @@
 from src.shared.models.domain import TopItem
 
 
-def calculate_and_populate_position_change(previous_top_items: list[TopItem], current_top_items: list[TopItem]) -> None:
+def calculate_and_populate_position_changes(previous_top_items: list[TopItem], current_top_items: list[TopItem]) -> None:
     previous_item_id_to_position_map = {artist.id: artist.position for artist in previous_top_items}
 
     for current_item in current_top_items:
