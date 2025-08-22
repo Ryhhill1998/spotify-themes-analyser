@@ -1,0 +1,2 @@
+class LyricsService:
+    pass
