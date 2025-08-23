@@ -46,9 +46,10 @@ class Profile(Base):
     __tablename__ = "profile"
 
     id: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str]
+    display_name: Mapped[str]
     email: Mapped[str | None]
-    image_url: Mapped[str | None]
+    images: Mapped[list[dict]] = mapped_column(JSONB) # list of {height, width, url}
+    spotify_url: Mapped[str]
     creation_timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(datetime.timezone.utc))
     followers: Mapped[int]
 
@@ -61,7 +62,7 @@ class Artist(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
-    images: Mapped[list[dict[int, int, str]]] = mapped_column(JSONB)  # list of {height, width, url}
+    images: Mapped[list[dict]] = mapped_column(JSONB)  # list of {height, width, url}
     spotify_url: Mapped[str]
     genres: Mapped[list[str]] = mapped_column(JSONB)
     followers: Mapped[int]
@@ -78,7 +79,7 @@ class Track(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str]
-    images: Mapped[list[dict[int, int, str]]] = mapped_column(JSONB)  # list of {height, width, url}
+    images: Mapped[list[dict]] = mapped_column(JSONB)  # list of {height, width, url}
     spotify_url: Mapped[str]
     release_date: Mapped[datetime]
     explicit: Mapped[bool]
