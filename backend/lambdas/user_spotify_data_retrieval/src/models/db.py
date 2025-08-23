@@ -1,8 +1,10 @@
-from datetime import datetime
-from typing import List, Dict
+from datetime import datetime, date
 
-from sqlalchemy import String, Integer, Float, Boolean, DateTime, JSON, Table, ForeignKey
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Enum, String, DateTime, Table, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+from src.models.enums import TimeRange
 
 
 # -----------------------------
@@ -10,6 +12,20 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 # -----------------------------
 class Base(DeclarativeBase):
     pass
+
+
+# -----------------------------
+# Abstract "TopItem" base
+# -----------------------------
+class TopItemBase(Base):
+    __abstract__ = True  # prevents a table being created
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"))
+    collection_date: Mapped[date]
+    time_range: Mapped[TimeRange] = mapped_column(Enum(TimeRange, name="time_range_enum"))
+    position: Mapped[int]
+    position_change: Mapped[int | None]
 
 
 # -----------------------------
@@ -29,17 +45,12 @@ track_artist_table = Table(
 class Profile(Base):
     __tablename__ = "profile"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True)
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    email: Mapped[str | None] = mapped_column(String, nullable=True)
-    image_url: Mapped[str | None] = mapped_column(String, nullable=True)
-    creation_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    followers: Mapped[int] = mapped_column(Integer, default=0)
-
-    top_artists: Mapped[List["TopArtist"]] = relationship(back_populates="profile")
-    top_tracks: Mapped[List["TopTrack"]] = relationship(back_populates="profile")
-    top_genres: Mapped[List["TopGenre"]] = relationship(back_populates="profile")
-    top_emotions: Mapped[List["TopEmotion"]] = relationship(back_populates="profile")
+    id: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    email: Mapped[str | None]
+    image_url: Mapped[str | None]
+    creation_timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(datetime.timezone.utc))
+    followers: Mapped[int]
 
 
 # -----------------------------
@@ -48,18 +59,15 @@ class Profile(Base):
 class Artist(Base):
     __tablename__ = "artist"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True)
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    images: Mapped[List[Dict]] = mapped_column(JSON)  # List of {height, width, url}
-    genres: Mapped[List[str]] = mapped_column(JSON)
-    followers: Mapped[int] = mapped_column(Integer, default=0)
-    popularity: Mapped[int] = mapped_column(Integer, default=0)
-    spotify_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    images: Mapped[list[dict[int, int, str]]] = mapped_column(JSONB)  # list of {height, width, url}
+    spotify_url: Mapped[str]
+    genres: Mapped[list[str]] = mapped_column(JSONB)
+    followers: Mapped[int]
+    popularity: Mapped[int]
 
-    tracks: Mapped[List["Track"]] = relationship(
-        secondary=track_artist_table,
-        back_populates="artists"
-    )
+    tracks: Mapped[list["Track"]] = relationship(secondary=track_artist_table, back_populates="artists")
 
 
 # -----------------------------
@@ -68,82 +76,71 @@ class Artist(Base):
 class Track(Base):
     __tablename__ = "track"
 
-    id: Mapped[str] = mapped_column(String, primary_key=True)
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    images: Mapped[List[Dict]] = mapped_column(JSON)
-    spotify_url: Mapped[str | None] = mapped_column(String, nullable=True)
-    release_date: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    explicit: Mapped[bool] = mapped_column(Boolean, default=False)
-    duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    popularity: Mapped[int] = mapped_column(Integer, default=0)
+    id: Mapped[str] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    images: Mapped[list[dict[int, int, str]]] = mapped_column(JSONB)  # list of {height, width, url}
+    spotify_url: Mapped[str]
+    release_date: Mapped[datetime]
+    explicit: Mapped[bool]
+    duration_ms: Mapped[int]
+    popularity: Mapped[int]
 
-    artists: Mapped[List[Artist]] = relationship(
-        secondary=track_artist_table,
-        back_populates="tracks"
-    )
+    artists: Mapped[list[Artist]] = relationship(secondary=track_artist_table, back_populates="tracks")
 
 
 # -----------------------------
 # TopArtist
 # -----------------------------
-class TopArtist(Base):
+class TopArtist(TopItemBase):
     __tablename__ = "top_artist"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), nullable=False)
-    artist_id: Mapped[str] = mapped_column(ForeignKey("artist.id"), nullable=False)
-    collection_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    time_range: Mapped[str] = mapped_column(String, nullable=False)
-    position: Mapped[int] = mapped_column(Integer, nullable=False)
-    position_change: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    artist_id: Mapped[str] = mapped_column(ForeignKey("artist.id"))
 
     artist: Mapped[Artist] = relationship()
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "artist_id", "collection_date", "time_range"),
+    )
 
 
 # -----------------------------
 # TopTrack
 # -----------------------------
-class TopTrack(Base):
+class TopTrack(TopItemBase):
     __tablename__ = "top_track"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), nullable=False)
-    track_id: Mapped[str] = mapped_column(ForeignKey("track.id"), nullable=False)
-    collection_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    time_range: Mapped[str] = mapped_column(String, nullable=False)
-    position: Mapped[int] = mapped_column(Integer, nullable=False)
-    position_change: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    track_id: Mapped[str] = mapped_column(ForeignKey("track.id"))
 
     track: Mapped[Track] = relationship()
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "track_id", "collection_date", "time_range"),
+    )
 
 
 # -----------------------------
 # TopGenre
 # -----------------------------
-class TopGenre(Base):
+class TopGenre(TopItemBase):
     __tablename__ = "top_genre"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), nullable=False)
-    genre_id: Mapped[str] = mapped_column(String, nullable=False)
-    percentage: Mapped[float] = mapped_column(Float, nullable=False)
-    collection_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    time_range: Mapped[str] = mapped_column(String, nullable=False)
-    position: Mapped[int] = mapped_column(Integer, nullable=False)
-    position_change: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    genre_id: Mapped[str]
+    percentage: Mapped[float]
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "genre_id", "collection_date", "time_range"),
+    )
 
 
 # -----------------------------
 # TopEmotion
 # -----------------------------
-class TopEmotion(Base):
+class TopEmotion(TopItemBase):
     __tablename__ = "top_emotion"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), nullable=False)
-    emotion_id: Mapped[str] = mapped_column(String, nullable=False)
-    percentage: Mapped[float] = mapped_column(Float, nullable=False)
-    collection_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    time_range: Mapped[str] = mapped_column(String, nullable=False)
-    position: Mapped[int] = mapped_column(Integer, nullable=False)
-    position_change: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    emotion_id: Mapped[str]
+    percentage: Mapped[float]
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "emotion_id", "collection_date", "time_range"),
+    )
