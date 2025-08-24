@@ -65,7 +65,7 @@ class Track:
     explicit: bool
     duration_ms: int
     popularity: int
-    artists: list[dict]  # list of {"id": str, "name": str}
+    artists: list[dict]
 
 
 # -----------------------------

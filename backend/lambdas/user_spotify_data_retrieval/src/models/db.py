@@ -17,7 +17,7 @@ class Base(DeclarativeBase):
 # -----------------------------
 # Abstract "TopItem" base
 # -----------------------------
-class TopItemBase(Base):
+class TopItemDBBase(Base):
     __abstract__ = True  # prevents a table being created
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -42,7 +42,7 @@ track_artist_table = Table(
 # -----------------------------
 # Profile
 # -----------------------------
-class Profile(Base):
+class ProfileDB(Base):
     __tablename__ = "profile"
 
     id: Mapped[str] = mapped_column(primary_key=True)
@@ -57,7 +57,7 @@ class Profile(Base):
 # -----------------------------
 # Artist
 # -----------------------------
-class Artist(Base):
+class ArtistDB(Base):
     __tablename__ = "artist"
 
     id: Mapped[str] = mapped_column(primary_key=True)
@@ -68,13 +68,13 @@ class Artist(Base):
     followers: Mapped[int]
     popularity: Mapped[int]
 
-    tracks: Mapped[list["Track"]] = relationship(secondary=track_artist_table, back_populates="artists")
+    tracks: Mapped[list["TrackDB"]] = relationship(secondary=track_artist_table, back_populates="artists")
 
 
 # -----------------------------
 # Track
 # -----------------------------
-class Track(Base):
+class TrackDB(Base):
     __tablename__ = "track"
 
     id: Mapped[str] = mapped_column(primary_key=True)
@@ -86,18 +86,18 @@ class Track(Base):
     duration_ms: Mapped[int]
     popularity: Mapped[int]
 
-    artists: Mapped[list[Artist]] = relationship(secondary=track_artist_table, back_populates="tracks")
+    artists: Mapped[list[ArtistDB]] = relationship(secondary=track_artist_table, back_populates="tracks")
 
 
 # -----------------------------
 # TopArtist
 # -----------------------------
-class TopArtist(TopItemBase):
+class TopArtistDB(TopItemDBBase):
     __tablename__ = "top_artist"
 
     artist_id: Mapped[str] = mapped_column(ForeignKey("artist.id"))
 
-    artist: Mapped[Artist] = relationship()
+    artist: Mapped[ArtistDB] = relationship()
 
     __table_args__ = (
         UniqueConstraint("user_id", "artist_id", "collection_date", "time_range"),
@@ -107,12 +107,12 @@ class TopArtist(TopItemBase):
 # -----------------------------
 # TopTrack
 # -----------------------------
-class TopTrack(TopItemBase):
+class TopTrackDB(TopItemDBBase):
     __tablename__ = "top_track"
 
     track_id: Mapped[str] = mapped_column(ForeignKey("track.id"))
 
-    track: Mapped[Track] = relationship()
+    track: Mapped[TrackDB] = relationship()
 
     __table_args__ = (
         UniqueConstraint("user_id", "track_id", "collection_date", "time_range"),
@@ -122,7 +122,7 @@ class TopTrack(TopItemBase):
 # -----------------------------
 # TopGenre
 # -----------------------------
-class TopGenre(TopItemBase):
+class TopGenreDB(TopItemDBBase):
     __tablename__ = "top_genre"
 
     genre_id: Mapped[str]
@@ -136,7 +136,7 @@ class TopGenre(TopItemBase):
 # -----------------------------
 # TopEmotion
 # -----------------------------
-class TopEmotion(TopItemBase):
+class TopEmotionDB(TopItemDBBase):
     __tablename__ = "top_emotion"
 
     emotion_id: Mapped[str]
