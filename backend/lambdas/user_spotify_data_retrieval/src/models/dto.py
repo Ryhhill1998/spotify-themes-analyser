@@ -32,6 +32,41 @@ class Artist:
 
 
 # -----------------------------
+# Track
+# -----------------------------
+@dataclass
+class TrackArtist:
+    id: str
+    name: str
+
+    
+@dataclass
+class Track:
+    id: str
+    name: str
+    images: list[dict]
+    spotify_url: str
+    release_date: str
+    explicit: bool
+    duration_ms: int
+    popularity: int
+    artists: list[TrackArtist]
+
+
+@dataclass
+class EnrichedTrack:
+    id: str
+    name: str
+    images: list[dict]
+    spotify_url: str
+    release_date: str
+    explicit: bool
+    duration_ms: int
+    popularity: int
+    artists: list[Artist]
+
+
+# -----------------------------
 # Top Item Base
 # -----------------------------
 @dataclass
@@ -56,28 +91,6 @@ class TopArtist(TopItemBase):
 
     def unique_id(self) -> str:
         return self.artist_id
-
-
-# -----------------------------
-# Track
-# -----------------------------
-@dataclass
-class TrackArtist:
-    id: str
-    name: str
-
-    
-@dataclass
-class Track:
-    id: str
-    name: str
-    images: list[dict]
-    spotify_url: str
-    release_date: str
-    explicit: bool
-    duration_ms: int
-    popularity: int
-    artists: list[dict]
 
 
 # -----------------------------

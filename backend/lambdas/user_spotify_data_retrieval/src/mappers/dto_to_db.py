@@ -1,5 +1,5 @@
 from src.models.dto import Artist, TopArtist
-from src.models.db import ArtistDB, TopArtistDB
+from src.models.db import ArtistDB, TopArtistDB, TopTrackDB
 
 def artist_to_artist_db(artist: Artist) -> ArtistDB:
     return ArtistDB(
@@ -21,4 +21,15 @@ def top_artist_to_top_artist_db(top_artist: TopArtist) -> TopArtistDB:
         time_range=top_artist.time_range,
         position=top_artist.position,
         position_change=top_artist.position_change,
+    )
+
+
+def top_track_to_top_track_db(top_track) -> TopTrackDB:
+    return TopTrackDB(
+        user_id=top_track.user_id,
+        track_id=top_track.track_id,
+        collection_date=top_track.collection_date,
+        time_range=top_track.time_range,
+        position=top_track.position,
+        position_change=top_track.position_change,
     )
