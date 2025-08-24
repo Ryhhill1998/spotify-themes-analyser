@@ -1,4 +1,8 @@
-from backend.lambdas.user_spotify_data_retrieval.src.services.spotify_service import SpotifyService
+from datetime import date
+from src.models.dto import Artist, TopArtist
+from src.models.enums import TimeRange
+from src.repositories.artist_repo import ArtistRepository
+from src.services.spotify_service import SpotifyService
 
 
 class TopArtistsPipeline:
@@ -6,12 +10,22 @@ class TopArtistsPipeline:
         self.spotify_service = spotify_service
         self.artist_repo = artist_repo
 
-    def run(self, access_token: str, user_id: str):
-        """
-        Executes the pipeline to fetch and store top artists for a user.
+    async def run(
+        self, access_token: str, user_id: str, time_range: TimeRange, collection_date: date
+    ) -> list[Artist]:
+        artists = await self.spotify_service.get_user_top_artists(access_token=access_token, time_range=time_range)
+        top_artists = [
+            TopArtist(
+                user_id=user_id,
+                artist_id=artist.id,
+                collection_date=collection_date,
+                time_range=time_range,
+                position=index + 1,
+                position_change=None,
+            )
+            for index, artist in enumerate(artists)
+        ]
+        self.artist_repo.upsert_many(artists)
 
-        :param user_id: The Spotify user ID.
-        """
-        top_artists = self.fetch_top_artists(user_id)
-        self.store_top_artists(user_id, top_artists)
-        return top_artists
+        return artists
+    

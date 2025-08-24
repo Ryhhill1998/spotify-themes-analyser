@@ -1,5 +1,6 @@
 from httpx import AsyncClient
 
+from src.models.enums import TimeRange
 from src.mappers.spotify_to_dto import spotify_artist_to_artist, spotify_profile_to_profile
 from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
 from src.models.dto import Profile, Artist, Track
@@ -31,11 +32,11 @@ class SpotifyService:
         return profile
 
     async def get_user_top_artists(
-        self, access_token: str, time_range: str, limit: int = 50
+        self, access_token: str, time_range: TimeRange, limit: int = 50
     ) -> list[Artist]:
         url = f"{self.base_url}/me/top/artists"
         headers = self._get_bearer_auth_headers(access_token)
-        params = {"time_range": time_range, "limit": limit}
+        params = {"time_range": time_range.value, "limit": limit}
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
         items = data.get("items", [])
         spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
@@ -44,11 +45,11 @@ class SpotifyService:
         return artists
 
     async def get_user_top_tracks(
-        self, access_token: str, time_range: str, limit: int = 50
+        self, access_token: str, time_range: TimeRange, limit: int = 50
     ) -> list[Track]:
         url = f"{self.base_url}/me/top/tracks"
         headers = self._get_bearer_auth_headers(access_token)
-        params = {"time_range": time_range, "limit": limit}
+        params = {"time_range": time_range.value, "limit": limit}
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
         items = data.get("items", [])
         spotify_tracks = [SpotifyTrack.model_validate(item) for item in items]

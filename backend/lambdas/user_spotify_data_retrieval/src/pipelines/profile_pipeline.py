@@ -8,9 +8,9 @@ class ProfilePipeline:
         self.spotify_service = spotify_service
         self.profile_repo = profile_repo
 
-    def run(self, access_token: str) -> Profile:
+    async def run(self, access_token: str) -> Profile:
         # 1. Get profile data from Spotify API
-        profile = self.spotify_service.get_user_profile(access_token)
+        profile = await self.spotify_service.get_user_profile(access_token)
 
         # 2. Persist to DB
         self.profile_repo.upsert(profile)

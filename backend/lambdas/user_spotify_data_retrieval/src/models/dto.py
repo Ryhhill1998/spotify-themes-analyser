@@ -36,7 +36,7 @@ class Artist:
 # -----------------------------
 @dataclass
 class TopItemBase:
-    id: int | None  # None if it hasn’t been stored in DB yet
+    id: int | None = None # None if it hasn’t been stored in DB yet
     user_id: str
     time_range: TimeRange
     collection_date: date
