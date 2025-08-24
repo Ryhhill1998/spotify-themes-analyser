@@ -3,7 +3,7 @@ from src.models.db import ProfileDB
 from src.models.dto import Profile
 
 
-class ProfileRepo:
+class ProfileRepository:
     def __init__(self, db_session: Session):
         self.session = db_session
 
