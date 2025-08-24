@@ -56,6 +56,12 @@ class TopArtist(TopItemBase):
 # Track
 # -----------------------------
 @dataclass
+class TrackArtist:
+    id: str
+    name: str
+
+    
+@dataclass
 class Track:
     id: str
     name: str

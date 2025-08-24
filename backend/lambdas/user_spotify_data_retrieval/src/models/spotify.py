@@ -19,9 +19,9 @@ class SpotifyItemExternalUrls(BaseModel):
 
 
 # -----------------------------
-# Profile API
+# Profile
 # -----------------------------
-class SpotifyProfileAPI(BaseModel):
+class SpotifyProfile(BaseModel):
     id: str
     display_name: str
     email: str | None
@@ -30,22 +30,22 @@ class SpotifyProfileAPI(BaseModel):
     followers: SpotifyProfileFollowers
 
 
-# -----------------------------
-# Profile Output
-# -----------------------------
-class SpotifyProfile(BaseModel):
-    id: str
-    display_name: str
-    email: str | None
-    images: list[SpotifyImage]
-    spotify_url: str
-    followers: int
+# # -----------------------------
+# # Profile Output
+# # -----------------------------
+# class SpotifyProfile(BaseModel):
+#     id: str
+#     display_name: str
+#     email: str | None
+#     images: list[SpotifyImage]
+#     spotify_url: str
+#     followers: int
 
 
 # -----------------------------
-# Artist API
+# Artist
 # -----------------------------
-class SpotifyArtistAPI(BaseModel):
+class SpotifyArtist(BaseModel):
     id: str
     name: str
     images: list[SpotifyImage]
@@ -55,21 +55,21 @@ class SpotifyArtistAPI(BaseModel):
     popularity: int
 
 
-# -----------------------------
-# Artist Output
-# -----------------------------
-class SpotifyArtist(BaseModel):
-    id: str
-    name: str
-    images: list[SpotifyImage]
-    spotify_url: str
-    genres: list[str]
-    followers: int
-    popularity: int
+# # -----------------------------
+# # Artist Output
+# # -----------------------------
+# class SpotifyArtist(BaseModel):
+#     id: str
+#     name: str
+#     images: list[SpotifyImage]
+#     spotify_url: str
+#     genres: list[str]
+#     followers: int
+#     popularity: int
 
 
 # -----------------------------
-# Track API
+# Track
 # -----------------------------
 class SpotifyTrackAlbum(BaseModel):
     name: str
@@ -82,7 +82,7 @@ class SpotifyTrackArtist(BaseModel):
     name: str
 
 
-class SpotifyTrackAPI(BaseModel):
+class SpotifyTrack(BaseModel):
     id: str
     name: str
     album: SpotifyTrackAlbum
@@ -93,16 +93,16 @@ class SpotifyTrackAPI(BaseModel):
     artists: list[SpotifyTrackArtist]
 
 
-# -----------------------------
-# Track Output
-# -----------------------------
-class SpotifyTrack(BaseModel):
-    id: str
-    name: str
-    images: list[SpotifyImage]
-    spotify_url: str
-    release_date: str
-    explicit: bool
-    duration_ms: int
-    popularity: int
-    artists: list[SpotifyTrackArtist]
+# # -----------------------------
+# # Track Output
+# # -----------------------------
+# class SpotifyTrack(BaseModel):
+#     id: str
+#     name: str
+#     images: list[SpotifyImage]
+#     spotify_url: str
+#     release_date: str
+#     explicit: bool
+#     duration_ms: int
+#     popularity: int
+#     artists: list[SpotifyTrackArtist]
