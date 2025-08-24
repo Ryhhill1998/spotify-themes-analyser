@@ -1,3 +1,5 @@
+import asyncio
+from itertools import batched
 from httpx import AsyncClient
 
 from src.models.enums import TimeRange
@@ -7,6 +9,8 @@ from src.models.dto import Profile, Artist, Track
 
 
 class SpotifyService:
+    BATCH_SIZE = 50
+
     def __init__(self, client: AsyncClient, base_url: str):
         self.client = client
         self.base_url = base_url
@@ -18,7 +22,7 @@ class SpotifyService:
     async def _get_data_from_api(
         self, url: str, headers: dict[str, str], params: dict | None
     ) -> dict:
-        response = self.client.get(url=url, headers=headers, params=params)
+        response = await self.client.get(url=url, headers=headers, params=params)
         response.raise_for_status()
         return response.json()
     
@@ -69,3 +73,25 @@ class SpotifyService:
         ]
 
         return tracks
+
+    async def _get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[Artist]:
+        url = f"{self.base_url}/artists"
+        headers = self._get_bearer_auth_headers(access_token)
+        params = {"ids": ",".join(artist_ids)}
+        data = await self._get_data_from_api(url=url, headers=headers, params=params)
+        items = data.get("artists", [])
+        spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
+        artists = [spotify_artist_to_artist(spotify_artist) for spotify_artist in spotify_artists]
+
+        return artists
+    
+    async def get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[Artist]:
+        batched_artist_ids = list(batched(artist_ids, SpotifyService.BATCH_SIZE))
+        tasks = [
+            self._get_artists_by_ids(access_token=access_token, artist_ids=batch)
+            for batch in batched_artist_ids
+        ]
+        results = await asyncio.gather(*tasks)
+        artists = [artist for batch in results for artist in batch] 
+        
+        return artists
