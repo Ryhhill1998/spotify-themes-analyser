@@ -10,20 +10,10 @@ class ProfilePipeline:
 
     def run(self, access_token: str) -> Profile:
         # 1. Get profile data from Spotify API
-        spotify_profile = self.spotify_service.get_profile(access_token)
+        profile = self.spotify_service.get_user_profile(access_token)
 
-        # 2. Convert API model to DTO (your service might already do this)
-        profile = Profile(
-            id=spotify_profile.id,
-            display_name=spotify_profile.display_name,
-            email=spotify_profile.email,
-            images=[img.model_dump() for img in spotify_profile.images],
-            spotify_url=spotify_profile.spotify_url,
-            followers=spotify_profile.followers,
-        )
-
-        # 3. Persist to DB
+        # 2. Persist to DB
         self.profile_repo.upsert(profile)
 
-        # 4. Return DTO so caller can use it
+        # 3. Return DTO so caller can use it
         return profile
