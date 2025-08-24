@@ -2,7 +2,7 @@ from backend.lambdas.user_spotify_data_retrieval.src.models.dto import TopItemBa
 from backend.lambdas.user_spotify_data_retrieval.src.models.enums import PositionChange
 
 
-def calculate_position_changes(current_items: list[TopItemBase], previous_items: list[TopItemBase]) -> None:
+def calculate_position_changes(previous_items: list[TopItemBase], current_items: list[TopItemBase]) -> None:
     """
     Updates the `position_change` field on each item in current_items based on previous_items.
 
@@ -12,7 +12,7 @@ def calculate_position_changes(current_items: list[TopItemBase], previous_items:
     - NEW if the item was not in previous_items
     - None if same position or no previous data -  default so no action needed
     """
-    
+
     if not previous_items:
         # No previous data; leave all position_change as None
         return

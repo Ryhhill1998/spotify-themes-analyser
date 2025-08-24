@@ -1,5 +1,5 @@
 from src.services.spotify_service import SpotifyService
-from src.repositories.profile_repo import ProfileRepository
+from backend.lambdas.user_spotify_data_retrieval.src.repositories.profile_repository import ProfileRepository
 from src.models.dto import Profile
 
 
