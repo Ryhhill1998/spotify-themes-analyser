@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 
-from src.mappers.spotify_to_dto import convert_spotify_profile_to_dto
+from src.mappers.spotify_to_dto import spotify_profile_to_profile
 from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
 from src.models.dto import Profile, Artist, Track
 
@@ -26,7 +26,7 @@ class SpotifyService:
         headers = self._get_bearer_auth_headers(access_token)
         data = await self._get_data_from_api(url=url, headers=headers)
         spotify_profile = SpotifyProfile.model_validate(data)
-        profile = convert_spotify_profile_to_dto(spotify_profile)
+        profile = spotify_profile_to_profile(spotify_profile)
 
         return profile
 

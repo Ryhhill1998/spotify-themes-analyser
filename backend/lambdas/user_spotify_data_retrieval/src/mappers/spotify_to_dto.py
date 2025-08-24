@@ -2,7 +2,7 @@ from src.models.dto import Profile
 from src.models.spotify import SpotifyProfile
 
 
-def convert_spotify_profile_to_dto(spotify_profile: SpotifyProfile) -> Profile:
+def spotify_profile_to_profile(spotify_profile: SpotifyProfile) -> Profile:
     profile = Profile(
         id=spotify_profile.id,
         display_name=spotify_profile.display_name,
