@@ -1,14 +1,26 @@
-from src.models.db import ArtistDB
-from src.models.dto import Artist
+from src.models.db import ArtistDB, TopArtistDB
+from src.models.dto import Artist, TopArtist
 
 
-def artist_db_to_artist(db_obj: ArtistDB) -> Artist:
+def artist_db_to_artist(db_artist: ArtistDB) -> Artist:
     return Artist(
-        id=db_obj.id,
-        name=db_obj.name,
-        images=db_obj.images,
-        spotify_url=db_obj.spotify_url,
-        genres=db_obj.genres,
-        followers=db_obj.followers,
-        popularity=db_obj.popularity
+        id=db_artist.id,
+        name=db_artist.name,
+        images=db_artist.images,
+        spotify_url=db_artist.spotify_url,
+        genres=db_artist.genres,
+        followers=db_artist.followers,
+        popularity=db_artist.popularity
+    )
+
+
+def top_artist_db_to_top_artist(db_top_artist: "TopArtistDB") -> "TopArtist":
+    return TopArtist(
+        id=db_top_artist.id,
+        user_id=db_top_artist.user_id,
+        artist_id=db_top_artist.artist_id,
+        collection_date=db_top_artist.collection_date,
+        time_range=db_top_artist.time_range,
+        position=db_top_artist.position,
+        position_change=db_top_artist.position_change,
     )

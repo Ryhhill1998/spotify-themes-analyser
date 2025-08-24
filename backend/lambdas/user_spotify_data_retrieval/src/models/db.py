@@ -4,7 +4,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import Enum, String, DateTime, Table, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from src.models.enums import TimeRange
+from src.models.enums import PositionChange, TimeRange
 
 
 # -----------------------------
@@ -20,12 +20,11 @@ class Base(DeclarativeBase):
 class TopItemDBBase(Base):
     __abstract__ = True  # prevents a table being created
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"))
-    collection_date: Mapped[date]
-    time_range: Mapped[TimeRange] = mapped_column(Enum(TimeRange, name="time_range_enum"))
+    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), primary_key=True)
+    collection_date: Mapped[date] = mapped_column(primary_key=True)
+    time_range: Mapped[TimeRange] = mapped_column(Enum(TimeRange, name="time_range_enum"), primary_key=True)
     position: Mapped[int]
-    position_change: Mapped[int | None]
+    position_change: Mapped[PositionChange | None] = mapped_column(Enum(PositionChange, name="position_change_enum"))
 
 
 # -----------------------------
@@ -95,13 +94,9 @@ class TrackDB(Base):
 class TopArtistDB(TopItemDBBase):
     __tablename__ = "top_artist"
 
-    artist_id: Mapped[str] = mapped_column(ForeignKey("artist.id"))
+    artist_id: Mapped[str] = mapped_column(ForeignKey("artist.id"), primary_key=True)
 
     artist: Mapped[ArtistDB] = relationship()
-
-    __table_args__ = (
-        UniqueConstraint("user_id", "artist_id", "collection_date", "time_range"),
-    )
 
 
 # -----------------------------

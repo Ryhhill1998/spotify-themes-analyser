@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 
-from src.models.enums import TimeRange
+from src.models.enums import PositionChange, TimeRange
 
 
 # -----------------------------
@@ -41,7 +41,10 @@ class TopItemBase:
     time_range: TimeRange
     collection_date: date
     position: int
-    position_change: int | None = None
+    position_change: PositionChange | None = None
+
+    def unique_id(self) -> str:
+        raise NotImplementedError
 
 
 # -----------------------------
@@ -50,6 +53,9 @@ class TopItemBase:
 @dataclass
 class TopArtist(TopItemBase):
     artist_id: str
+
+    def unique_id(self) -> str:
+        return self.artist_id
 
 
 # -----------------------------
@@ -81,6 +87,9 @@ class Track:
 class TopTrack(TopItemBase):
     track_id: str
 
+    def unique_id(self) -> str:
+        return self.track_id
+
 
 # -----------------------------
 # Top Genre
@@ -90,6 +99,9 @@ class TopGenre(TopItemBase):
     genre_id: str
     percentage: float
 
+    def unique_id(self) -> str:
+        return self.genre_id
+
 
 # -----------------------------
 # Top Emotion
@@ -98,6 +110,9 @@ class TopGenre(TopItemBase):
 class TopEmotion(TopItemBase):
     emotion_id: str
     percentage: float
+
+    def unique_id(self) -> str:
+        return self.emotion_id
 
 
 # -----------------------------
