@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from src.mappers.db_to_dto import artist_db_to_artist
 from src.mappers.dto_to_db import artist_to_artist_db
 from src.models.db import ArtistDB
 from src.models.dto import Artist
@@ -8,14 +7,6 @@ from src.models.dto import Artist
 class ArtistsRepository:
     def __init__(self, db_session: Session):
         self.session = db_session
-
-    def get_many(self, artist_ids: list[str]) -> list[Artist]:
-        db_artists = (
-            self.session.query(ArtistDB).filter(ArtistDB.id.in_(artist_ids)).all()
-        )
-        artists = [artist_db_to_artist(db_artist) for db_artist in db_artists]
-
-        return artists
 
     def upsert_many(self, artists: list[Artist]) -> None:
         for artist in artists:
