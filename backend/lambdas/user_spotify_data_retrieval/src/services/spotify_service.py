@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 
-from src.mappers.spotify_to_dto import spotify_profile_to_profile
+from src.mappers.spotify_to_dto import spotify_artist_to_artist, spotify_profile_to_profile
 from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
 from src.models.dto import Profile, Artist, Track
 
@@ -39,18 +39,7 @@ class SpotifyService:
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
         items = data.get("items", [])
         spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
-        artists = [
-            Artist(
-                id=artist.id,
-                name=artist.name,
-                images=[img.model_dump() for img in artist.images],
-                spotify_url=artist.external_urls.spotify,
-                genres=artist.genres,
-                followers=artist.followers.total,
-                popularity=artist.popularity,
-            ) 
-            for artist in spotify_artists
-        ]
+        artists = [spotify_artist_to_artist(spotify_artist) for spotify_artist in spotify_artists]
 
         return artists
 
