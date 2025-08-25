@@ -11,14 +11,62 @@ def profile_repo(db_session: Session) -> ProfileRepository:
     return ProfileRepository(db_session)
 
 
-def test_upsert_creates_new_profile_if_it_does_not_exist(
-        profile_repo: ProfileRepository, db_session: Session
-) -> None:
+def test_upsert_inserts_new_profile(
+    profile_repo: ProfileRepository, 
+    db_session: Session, 
+    caplog: pytest.LogCaptureFixture,
+):
     profile = Profile(
-        id="user123",
+        id="123",
         display_name="Test User",
-        email="test email",
-        images=[{"height": 300, "url": "http://image.url", "width": 300}],
-        spotify_url="http://spotify.url",
-        followers=100,
+        email="test@example.com",
+        images=[{"height": 300, "url": "http://example.com/image.jpg", "width": 300}],
+        spotify_url="https://spotify.com/testuser",
+        followers=10,
     )
+
+    profile_repo.upsert(profile)
+
+    db_profile = db_session.get(ProfileDB, "123")
+    assert db_profile is not None
+    assert db_profile.id == "123"
+    assert db_profile.display_name == "Test User"
+    assert db_profile.email == "test@example.com"
+    assert db_profile.images == [{"height": 300, "url": "http://example.com/image.jpg", "width": 300}]
+    assert db_profile.spotify_url == "https://spotify.com/testuser"
+    assert db_profile.followers == 10
+    assert "Inserting new profile with id: 123" in caplog.text
+
+
+def test_upsert_updates_existing_profile(
+    profile_repo: ProfileRepository, 
+    db_session: Session,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    existing = ProfileDB(
+        id="123",
+        display_name="Old User",
+        email="old@example.com",
+        images=[{"height": 300, "url": "http://example.com/image.jpg", "width": 300}],
+        spotify_url="https://spotify.com/olduser",
+        followers=5,
+    )
+    db_session.add(existing)
+    db_session.commit()
+    profile = Profile(
+        id="123",
+        display_name="Updated User",
+        email="updated@example.com",
+        images=[{"height": 300, "url": "http://example.com/image.jpg", "width": 300}],
+        spotify_url="https://spotify.com/updateduser",
+        followers=20,
+    )
+
+    profile_repo.upsert(profile)
+
+    db_profile = db_session.get(ProfileDB, "123")
+    assert db_profile.display_name == "Updated User"
+    assert db_profile.email == "updated@example.com"
+    assert db_profile.spotify_url == "https://spotify.com/updateduser"
+    assert db_profile.followers == 20
+    assert "Updating existing profile with id: 123" in caplog.text

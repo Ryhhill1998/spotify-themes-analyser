@@ -71,12 +71,11 @@ class EnrichedTrack:
 # -----------------------------
 @dataclass
 class TopItemBase:
-    id: int | None = None # None if it hasn’t been stored in DB yet
     user_id: str
     time_range: TimeRange
     collection_date: date
     position: int
-    position_change: PositionChange | None = None
+    position_change: PositionChange | None
 
     def unique_id(self) -> str:
         raise NotImplementedError

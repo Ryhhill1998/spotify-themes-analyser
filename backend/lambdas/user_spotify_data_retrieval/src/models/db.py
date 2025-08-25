@@ -1,7 +1,7 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import Enum, String, DateTime, Table, ForeignKey, UniqueConstraint
+from sqlalchemy import Enum, String, DateTime, Table, ForeignKey, UniqueConstraint, Column
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from src.models.enums import PositionChange, TimeRange
@@ -33,8 +33,8 @@ class TopItemDBBase(Base):
 track_artist_table = Table(
     "track_artist",
     Base.metadata,
-    mapped_column("track_id", String, ForeignKey("track.id"), primary_key=True),
-    mapped_column("artist_id", String, ForeignKey("artist.id"), primary_key=True),
+    Column("track_id", String, ForeignKey("track.id"), primary_key=True),
+    Column("artist_id", String, ForeignKey("artist.id"), primary_key=True),
 )
 
 
@@ -49,7 +49,7 @@ class ProfileDB(Base):
     email: Mapped[str | None]
     images: Mapped[list[dict]] = mapped_column(JSONB) # list of {height, width, url}
     spotify_url: Mapped[str]
-    creation_timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(datetime.timezone.utc))
+    creation_timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
     followers: Mapped[int]
 
 
