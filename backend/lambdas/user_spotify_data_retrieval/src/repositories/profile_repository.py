@@ -12,18 +12,16 @@ class ProfileRepository:
         Update if exists, else insert new Profile record
         """
         
-        db_obj = self.session.get(ProfileDB, profile.id)
+        db_profile = self.session.get(ProfileDB, profile.id)
 
-        if db_obj:
-            # Update fields
-            db_obj.display_name = profile.display_name
-            db_obj.email = profile.email
-            db_obj.images = profile.images
-            db_obj.spotify_url = profile.spotify_url
-            db_obj.followers = profile.followers
+        if db_profile:
+            db_profile.display_name = profile.display_name
+            db_profile.email = profile.email
+            db_profile.images = profile.images
+            db_profile.spotify_url = profile.spotify_url
+            db_profile.followers = profile.followers
         else:
-            # Insert new
-            db_obj = ProfileDB(
+            db_profile = ProfileDB(
                 id=profile.id,
                 name=profile.display_name,
                 email=profile.email,
@@ -31,6 +29,6 @@ class ProfileRepository:
                 spotify_url=profile.spotify_url,
                 followers=profile.followers,
             )
-            self.session.add(db_obj)
+            self.session.add(db_profile)
 
         self.session.commit()
