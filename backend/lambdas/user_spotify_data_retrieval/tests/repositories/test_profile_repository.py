@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from sqlalchemy.orm import Session
 
@@ -15,8 +17,8 @@ def test_upsert_inserts_new_profile(
     profile_repo: ProfileRepository, 
     db_session: Session, 
     caplog: pytest.LogCaptureFixture,
-):
-    profile = Profile(
+) -> None:
+    mock_profile_db = ProfileDB(
         id="123",
         display_name="Test User",
         email="test@example.com",
@@ -24,18 +26,22 @@ def test_upsert_inserts_new_profile(
         spotify_url="https://spotify.com/testuser",
         followers=10,
     )
+    with mock.patch("src.repositories.profile_repository.profile_to_profile_db") as mock_profile_to_profile_db:
+        mock_profile_to_profile_db.return_value = mock_profile_db
 
-    profile_repo.upsert(profile)
+        profile_repo.upsert(
+            Profile(id="", display_name="", email=None, images=[], spotify_url="", followers=0)
+        )
 
-    db_profile = db_session.get(ProfileDB, "123")
-    assert db_profile is not None
-    assert db_profile.id == "123"
-    assert db_profile.display_name == "Test User"
-    assert db_profile.email == "test@example.com"
-    assert db_profile.images == [{"height": 300, "url": "http://example.com/image.jpg", "width": 300}]
-    assert db_profile.spotify_url == "https://spotify.com/testuser"
-    assert db_profile.followers == 10
-    assert "Inserting new profile with id: 123" in caplog.text
+        db_profile = db_session.get(ProfileDB, "123")
+        assert db_profile is not None
+        assert db_profile.id == "123"
+        assert db_profile.display_name == "Test User"
+        assert db_profile.email == "test@example.com"
+        assert db_profile.images == [{"height": 300, "url": "http://example.com/image.jpg", "width": 300}]
+        assert db_profile.spotify_url == "https://spotify.com/testuser"
+        assert db_profile.followers == 10
+        assert "Inserting new profile with id: 123" in caplog.text
 
 
 def test_upsert_updates_existing_profile(

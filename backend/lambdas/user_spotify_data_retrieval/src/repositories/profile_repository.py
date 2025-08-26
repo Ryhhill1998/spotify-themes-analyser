@@ -17,15 +17,15 @@ class ProfileRepository:
         db_profile = self.session.get(ProfileDB, profile.id)
 
         if db_profile:
-            logger.debug(f"Updating existing profile with id: {profile.id}")
+            logger.debug(f"Updating existing profile with id: {db_profile.id}")
             db_profile.display_name = profile.display_name
             db_profile.email = profile.email
             db_profile.images = profile.images
             db_profile.spotify_url = profile.spotify_url
             db_profile.followers = profile.followers
         else:
-            logger.debug(f"Inserting new profile with id: {profile.id}")
             db_profile = profile_to_profile_db(profile)
+            logger.debug(f"Inserting new profile with id: {db_profile.id}")
             self.session.add(db_profile)
 
         self.session.commit()
