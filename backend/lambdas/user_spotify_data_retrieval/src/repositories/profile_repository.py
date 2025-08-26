@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from src.mappers.dto_to_db import profile_to_profile_db
 from src.models.db import ProfileDB
 from src.models.dto import Profile
 from loguru import logger
@@ -24,14 +25,7 @@ class ProfileRepository:
             db_profile.followers = profile.followers
         else:
             logger.debug(f"Inserting new profile with id: {profile.id}")
-            db_profile = ProfileDB(
-                id=profile.id,
-                display_name=profile.display_name,
-                email=profile.email,
-                images=profile.images,
-                spotify_url=profile.spotify_url,
-                followers=profile.followers,
-            )
+            db_profile = profile_to_profile_db(profile)
             self.session.add(db_profile)
 
         self.session.commit()

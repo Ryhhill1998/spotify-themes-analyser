@@ -1,5 +1,17 @@
 from src.models.dto import Artist, EnrichedTrack, TopArtist
-from src.models.db import ArtistDB, TopArtistDB, TopTrackDB, TrackDB
+from src.models.db import ArtistDB, ProfileDB, TopArtistDB, TopTrackDB, TrackDB
+
+
+def profile_to_profile_db(profile) -> ProfileDB:
+    return ProfileDB(
+        id=profile.id,
+        display_name=profile.display_name,
+        email=profile.email,
+        images=profile.images,
+        spotify_url=profile.spotify_url,
+        followers=profile.followers,
+    )
+
 
 def artist_to_artist_db(artist: Artist) -> ArtistDB:
     return ArtistDB(
