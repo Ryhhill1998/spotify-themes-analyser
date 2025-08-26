@@ -13,12 +13,9 @@ def profile_repo(db_session: Session) -> ProfileRepository:
     return ProfileRepository(db_session)
 
 
-def test_upsert_inserts_new_profile(
-    profile_repo: ProfileRepository, 
-    db_session: Session, 
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    mock_profile_db = ProfileDB(
+@pytest.fixture
+def mock_profile_db() -> ProfileDB:
+    return ProfileDB(
         id="123",
         display_name="Test User",
         email="test@example.com",
@@ -26,6 +23,14 @@ def test_upsert_inserts_new_profile(
         spotify_url="https://spotify.com/testuser",
         followers=10,
     )
+
+
+def test_upsert_inserts_new_profile(
+    profile_repo: ProfileRepository, 
+    db_session: Session, 
+    caplog: pytest.LogCaptureFixture,
+    mock_profile_db: ProfileDB,
+) -> None:
     with mock.patch("src.repositories.profile_repository.profile_to_profile_db") as mock_profile_to_profile_db:
         mock_profile_to_profile_db.return_value = mock_profile_db
 
@@ -48,15 +53,9 @@ def test_upsert_updates_existing_profile(
     profile_repo: ProfileRepository, 
     db_session: Session,
     caplog: pytest.LogCaptureFixture,
+    mock_profile_db: ProfileDB,
 ) -> None:
-    existing = ProfileDB(
-        id="123",
-        display_name="Old User",
-        email="old@example.com",
-        images=[{"height": 300, "url": "http://example.com/image.jpg", "width": 300}],
-        spotify_url="https://spotify.com/olduser",
-        followers=5,
-    )
+    existing = mock_profile_db
     db_session.add(existing)
     db_session.commit()
     profile = Profile(
