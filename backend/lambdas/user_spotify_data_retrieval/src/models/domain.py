@@ -1,6 +1,12 @@
+from dataclasses import dataclass
+from datetime import date
+
 from pydantic import BaseModel
 
+from backend.lambdas.user_spotify_data_retrieval.src.models.enums import TimeRange
 
+
+# ----------------------------- SPOTIFY ----------------------------- #
 # -----------------------------
 # Shared
 # -----------------------------
@@ -106,3 +112,67 @@ class SpotifyTrack(BaseModel):
     duration_ms: int
     popularity: int
     artists: list[SpotifyTrackArtist]
+
+
+# ----------------------------- TOP ITEMS ----------------------------- #
+# -----------------------------
+# Top Item Base
+# -----------------------------
+@dataclass
+class TopItem:
+    user_id: str
+    item_id: str
+    collection_date: date
+    time_range: TimeRange
+    position: int
+    position_change: int | None = None
+
+
+# -----------------------------
+# Top Artist
+# -----------------------------
+@dataclass
+class TopArtist(TopItem):
+    artist_id: str
+
+    @property
+    def item_id(self) -> str:
+        return self.artist_id
+
+
+# -----------------------------
+# Top Track
+# -----------------------------
+@dataclass
+class TopTrack(TopItem):
+    track_id: str
+
+    @property
+    def item_id(self) -> str:
+        return self.track_id
+
+
+# -----------------------------
+# Top Genre
+# -----------------------------
+@dataclass
+class TopGenre(TopItem):
+    genre_id: str
+    percentage: float
+
+    @property
+    def item_id(self) -> str:
+        return self.genre_id
+
+
+# -----------------------------
+# Top Emotion
+# -----------------------------
+@dataclass
+class TopEmotion(TopItem):
+    emotion_id: str
+    percentage: float
+
+    @property
+    def item_id(self) -> str:
+        return self.emotion_id

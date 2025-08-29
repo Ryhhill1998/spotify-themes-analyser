@@ -10,19 +10,23 @@ class TopItemsBaseRepository:
         self.db_session = db_session
 
     def _get_latest_snapshot(self, db_model: type[TopItemDBBase], user_id: str, time_range: TimeRange) -> list[TopItemDBBase]:
-        latest_date = (
+        latest_date_subquery = (
             self.db_session
             .query(func.max(db_model.collection_date))
-            .filter_by(user_id=user_id, time_range=time_range)
-            .scalar()
+            .filter(
+                db_model.user_id == user_id,
+                db_model.time_range == time_range
+            )
+            .scalar_subquery()
         )
-
-        if latest_date is None:
-            return []
 
         return (
             self.db_session
             .query(db_model)
-            .filter_by(user_id=user_id, time_range=time_range, collection_date=latest_date)
+            .filter(
+                db_model.user_id == user_id,
+                db_model.time_range == time_range,
+                db_model.collection_date == latest_date_subquery
+            )
             .all()
         )

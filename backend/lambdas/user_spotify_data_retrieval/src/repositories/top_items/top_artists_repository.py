@@ -1,18 +1,36 @@
 from sqlalchemy.orm import Session
-from src.mappers.db_to_dto import top_artist_db_to_top_artist
 from src.models.enums import TimeRange
 from src.repositories.top_items.base import TopItemsBaseRepository
 from src.models.db import TopArtistDB
-from src.models.dto import TopArtist
-from src.mappers.dto_to_db import top_artist_to_top_artist_db
+from sqlalchemy.dialects.postgresql import insert
+
 
 class TopArtistsRepository(TopItemsBaseRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def add_many(self, top_artists: list[TopArtist]) -> None:
-        db_top_artists = [top_artist_to_top_artist_db(top_artist) for top_artist in top_artists]
-        self.session.add_all(db_top_artists)
+    def add_many(self, top_artists: list[TopArtistDB]) -> None:
+        # 1. Convert ORM objects to a list of dictionaries
+        values = [
+            {
+                "id": artist.id,
+                "name": artist.name,
+                "images": artist.images,
+                "spotify_url": artist.spotify_url,
+                "genres": artist.genres,
+                "followers": artist.followers,
+                "popularity": artist.popularity,
+            }
+            for artist in top_artists
+        ]
+
+        # 2. Build the single bulk INSERT statement
+        stmt = insert(TopArtistDB).values(values)
+
+        # 3. Execute the statement
+        self.session.execute(stmt)
+
+        # 4. Commit the transaction once
         self.session.commit()
 
     def get_previous_top_artists(self, user_id: str, time_range: TimeRange) -> list[TopArtist]:
