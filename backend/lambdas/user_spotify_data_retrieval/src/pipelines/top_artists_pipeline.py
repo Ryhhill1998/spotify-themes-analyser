@@ -1,7 +1,7 @@
 from datetime import date
-from src.models.db import ArtistDB
+from src.models.db import ArtistDB, TopArtistDB
 from src.models.domain import SpotifyArtist, TopArtist
-from src.mappers.domain_to_db import spotify_artist_to_artist_db
+from src.mappers.domain_to_db import spotify_artist_to_artist_db, top_artist_to_top_artist_db
 from src.repositories.top_items.top_artists_repository import TopArtistsRepository
 from src.utils.calculations import calculate_position_changes
 from src.models.enums import TimeRange
@@ -34,7 +34,7 @@ class TopArtistsPipeline:
         # 3. Store in DB
         self.artists_repository.upsert_many(db_artists)
 
-        # 3. Create top artist objects
+        # 4. Create top artist objects
         top_artists: list[TopArtist] = [
             TopArtist(
                 user_id=user_id,
@@ -45,10 +45,17 @@ class TopArtistsPipeline:
             )
             for index, artist in enumerate(spotify_artists)
         ]
-        previous_top_artists = self.top_artists_repository.get_previous_top_artists(user_id=user_id, time_range=time_range)
-        calculate_position_changes(previous_items=previous_top_artists, current_items=top_artists)
-        self.top_artists_repository.add_many(top_artists)
 
-        # 4. Return the list of artists
-        return artists
+        # 5. Calculate position changes
+        previous_top_artists: list[TopArtistDB] = self.top_artists_repository.get_previous_top_artists(user_id=user_id, time_range=time_range)
+        calculate_position_changes(previous_items=previous_top_artists, current_items=top_artists)
+
+        # 6. Convert to TopArtistDB objects
+        db_top_artists = [top_artist_to_top_artist_db(artist) for artist in top_artists]
+
+        # 7. Store in DB
+        self.top_artists_repository.add_many(db_top_artists)
+
+        # 8. Return the list of spotify artists
+        return spotify_artists
     

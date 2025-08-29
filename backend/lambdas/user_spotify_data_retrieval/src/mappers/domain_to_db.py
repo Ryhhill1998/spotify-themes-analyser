@@ -1,5 +1,5 @@
-from src.models.db import ArtistDB, ProfileDB
-from src.models.domain import SpotifyArtist, SpotifyProfile
+from src.models.db import ArtistDB, ProfileDB, TopArtistDB
+from src.models.domain import SpotifyArtist, SpotifyProfile, TopArtist
 
 
 def spotify_profile_to_profile_db(spotify_profile: SpotifyProfile) -> ProfileDB:
@@ -22,4 +22,15 @@ def spotify_artist_to_artist_db(spotify_artist: SpotifyArtist) -> ArtistDB:
         genres=spotify_artist.genres,
         followers=spotify_artist.followers,
         popularity=spotify_artist.popularity,
+    )
+
+
+def top_artist_to_top_artist_db(top_artist: TopArtist) -> TopArtistDB:
+    return TopArtistDB(
+        user_id=top_artist.id,
+        artist_id=top_artist.artist_id,
+        collection_date=top_artist.collection_date,
+        time_range=top_artist.time_range,
+        position=top_artist.position,
+        position_change=top_artist.position_change,
     )

@@ -33,6 +33,6 @@ class TopArtistsRepository(TopItemsBaseRepository):
         # 4. Commit the transaction once
         self.session.commit()
 
-    def get_previous_top_artists(self, user_id: str, time_range: TimeRange) -> list[TopArtist]:
-        db_items = self._get_latest_snapshot(db_model=TopArtistDB, user_id=user_id, time_range=time_range)
-        return [top_artist_db_to_top_artist(item) for item in db_items]
+    def get_previous_top_artists(self, user_id: str, time_range: TimeRange) -> list[TopArtistDB]:
+        previous_top_artists = self._get_latest_snapshot(db_model=TopArtistDB, user_id=user_id, time_range=time_range)
+        return previous_top_artists
