@@ -1,4 +1,5 @@
 from datetime import date
+from src.mappers.domain_to_db import spotify_artist_to_artist_db
 from src.repositories.top_items.top_artists_repository import TopArtistsRepository
 from src.utils.calculations import calculate_position_changes
 from src.models.dto import Artist, TopArtist
@@ -22,10 +23,13 @@ class TopArtistsPipeline:
         self, access_token: str, user_id: str, time_range: TimeRange, collection_date: date
     ) -> list[Artist]:
         # 1. Get top artists from Spotify API
-        artists = await self.spotify_service.get_user_top_artists(access_token=access_token, time_range=time_range)
+        spotify_artists = await self.spotify_service.get_user_top_artists(access_token=access_token, time_range=time_range)
 
-        # 2. Persist artists to DB (if not already present)
-        self.artists_repository.upsert_many(artists)
+        # 2. Convert to ArtistDB objects
+        db_artists = [spotify_artist_to_artist_db(artist) for artist in spotify_artists]
+
+        # 3. Store in DB
+        self.artists_repository.upsert_many(db_artists)
 
         # 3. Create TopArtist DTOs, calculate position changes, and persist to DB
         top_artists = [

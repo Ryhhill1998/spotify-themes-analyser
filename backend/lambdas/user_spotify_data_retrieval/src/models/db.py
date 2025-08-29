@@ -30,7 +30,7 @@ class TopItemDBBase(Base):
 # -----------------------------
 # Association tables
 # -----------------------------
-track_artist_table = Table(
+track_artist_association = Table(
     "track_artist",
     Base.metadata,
     Column("track_id", String, ForeignKey("track.id"), primary_key=True),
@@ -67,7 +67,7 @@ class ArtistDB(Base):
     followers: Mapped[int]
     popularity: Mapped[int]
 
-    tracks: Mapped[list["TrackDB"]] = relationship(secondary=track_artist_table, back_populates="artists")
+    tracks: Mapped[list["TrackDB"]] = relationship(secondary=track_artist_association, back_populates="artists")
 
 
 # -----------------------------
@@ -85,7 +85,7 @@ class TrackDB(Base):
     duration_ms: Mapped[int]
     popularity: Mapped[int]
 
-    artists: Mapped[list[ArtistDB]] = relationship(secondary=track_artist_table, back_populates="tracks")
+    artists: Mapped[list[ArtistDB]] = relationship(secondary=track_artist_association, back_populates="tracks")
 
 
 # -----------------------------

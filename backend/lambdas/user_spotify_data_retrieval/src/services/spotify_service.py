@@ -3,7 +3,7 @@ from itertools import batched
 from httpx import AsyncClient
 
 from src.models.enums import TimeRange
-from src.models.spotify import SpotifyProfileAPI, SpotifyProfile, SpotifyArtistAPI, SpotifyArtist, SpotifyTrackArtist, SpotifyTrackAPI, SpotifyTrack
+from backend.lambdas.user_spotify_data_retrieval.src.models.domain import SpotifyProfileAPI, SpotifyProfile, SpotifyArtistAPI, SpotifyArtist, SpotifyTrackArtist, SpotifyTrackAPI, SpotifyTrack
 
 
 class SpotifyService:

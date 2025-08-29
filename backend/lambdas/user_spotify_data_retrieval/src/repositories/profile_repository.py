@@ -1,6 +1,6 @@
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from src.models.db import ProfileDB
-from loguru import logger
 
 
 class ProfileRepository:
@@ -8,22 +8,26 @@ class ProfileRepository:
         self.session = db_session
 
     def upsert(self, profile: ProfileDB) -> None:
-        """
-        Update if exists, else insert new Profile record
-        """
-        
-        profile_id = profile.id
-        existing_profile = self.session.get(ProfileDB, profile_id)
+        values = {
+            "id": profile.id,
+            "display_name": profile.name,
+            "email": profile.email,
+            "images": profile.images,
+            "spotify_url": profile.spotify_url,
+            "followers": profile.followers,
+        }
 
-        if existing_profile:
-            logger.debug(f"Updating existing profile with id: {profile_id}")
-            existing_profile.display_name = profile.display_name
-            existing_profile.email = profile.email
-            existing_profile.images = profile.images
-            existing_profile.spotify_url = profile.spotify_url
-            existing_profile.followers = profile.followers
-        else:
-            logger.debug(f"Inserting new profile with id: {profile_id}")
-            self.session.add(profile)
+        stmt = insert(ProfileDB).values(values)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["id"],
+            set_={
+                "display_name": stmt.excluded.display_name,
+                "email": stmt.excluded.email,
+                "images": stmt.excluded.images,
+                "spotify_url": stmt.excluded.spotify_url,
+                "followers": stmt.excluded.followers,
+            },
+        )
 
+        self.session.execute(stmt)
         self.session.commit()
