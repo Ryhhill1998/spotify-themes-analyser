@@ -1,4 +1,6 @@
+from dataclasses import asdict
 from sqlalchemy.orm import Session
+from src.models.domain import Artist
 from src.models.db import ArtistDB
 from sqlalchemy.dialects.postgresql import insert
 
@@ -7,19 +9,8 @@ class ArtistsRepository:
     def __init__(self, db_session: Session):
         self.session = db_session
 
-    def upsert_many(self, artists: list[ArtistDB]) -> None:
-        values = [
-            {
-                "id": artist.id,
-                "name": artist.name,
-                "images": artist.images,
-                "spotify_url": artist.spotify_url,
-                "genres": artist.genres,
-                "followers": artist.followers,
-                "popularity": artist.popularity,
-            }
-            for artist in artists
-        ]
+    def upsert_many(self, artists: list[Artist]) -> None:
+        values = [asdict(artist) for artist in artists]
 
         stmt = insert(ArtistDB).values(values)
         stmt = stmt.on_conflict_do_update(
