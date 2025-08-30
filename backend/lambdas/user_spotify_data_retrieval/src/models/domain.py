@@ -1,7 +1,8 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date
 
-from backend.lambdas.user_spotify_data_retrieval.src.models.enums import TimeRange
+from src.models.enums import PositionChange, TimeRange
 
 
 # -----------------------------
@@ -61,21 +62,24 @@ class Track:
 # -----------------------------
 # Top Item Base
 # -----------------------------
-@dataclass
-class TopItem:
+@dataclass(kw_only=True)
+class TopItemBase(ABC):
     user_id: str
-    item_id: str
     collection_date: date
     time_range: TimeRange
     position: int
-    position_change: int | None = None
+    position_change: PositionChange | None = None
+
+    @property
+    @abstractmethod
+    def item_id(self) -> str:...
 
 
 # -----------------------------
 # Top Artist
 # -----------------------------
 @dataclass
-class TopArtist(TopItem):
+class TopArtist(TopItemBase):
     artist_id: str
 
     @property
@@ -87,7 +91,7 @@ class TopArtist(TopItem):
 # Top Track
 # -----------------------------
 @dataclass
-class TopTrack(TopItem):
+class TopTrack(TopItemBase):
     track_id: str
 
     @property
@@ -99,7 +103,7 @@ class TopTrack(TopItem):
 # Top Genre
 # -----------------------------
 @dataclass
-class TopGenre(TopItem):
+class TopGenre(TopItemBase):
     genre_id: str
     percentage: float
 
@@ -112,7 +116,7 @@ class TopGenre(TopItem):
 # Top Emotion
 # -----------------------------
 @dataclass
-class TopEmotion(TopItem):
+class TopEmotion(TopItemBase):
     emotion_id: str
     percentage: float
 

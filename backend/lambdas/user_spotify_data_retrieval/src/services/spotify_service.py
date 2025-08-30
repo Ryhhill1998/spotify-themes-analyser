@@ -101,7 +101,7 @@ class SpotifyService:
 
         return tracks
 
-    async def _get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[SpotifyArtist]:
+    async def _get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[Artist]:
         url = f"{self.base_url}/artists"
         headers = self._get_bearer_auth_headers(access_token)
         params = {"ids": ",".join(artist_ids)}
@@ -113,7 +113,7 @@ class SpotifyService:
 
         return artists
     
-    async def get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[SpotifyArtist]:
+    async def get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[Artist]:
         batched_artist_ids = list(batched(artist_ids, SpotifyService.BATCH_SIZE))
         tasks = [
             self._get_artists_by_ids(access_token=access_token, artist_ids=batch)

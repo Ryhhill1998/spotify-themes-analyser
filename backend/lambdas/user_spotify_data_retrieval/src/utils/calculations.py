@@ -1,5 +1,5 @@
-from backend.lambdas.user_spotify_data_retrieval.src.models.dto import TopItemBase
-from backend.lambdas.user_spotify_data_retrieval.src.models.enums import PositionChange
+from src.models.domain import TopItemBase
+from src.models.enums import PositionChange
 
 
 def calculate_position_changes(previous_items: list[TopItemBase], current_items: list[TopItemBase]) -> None:
@@ -13,20 +13,16 @@ def calculate_position_changes(previous_items: list[TopItemBase], current_items:
     - None if same position or no previous data -  default so no action needed
     """
 
-    if not previous_items:
-        # No previous data; leave all position_change as None
-        return
-
     # Map previous items by their unique ID
-    prev_positions = {item.get_unique_id(): item.position for item in previous_items}
+    item_id_to_previous_positions_map = {item.item_id: item.position for item in previous_items}
 
     for item in current_items:
-        prev_pos = prev_positions.get(item.get_unique_id())
+        previous_position = item_id_to_previous_positions_map.get(item.item_id)
 
-        if prev_pos is None:
+        if previous_position is None:
             item.position_change = PositionChange.NEW
-        elif item.position < prev_pos:
+        elif item.position < previous_position:
             item.position_change = PositionChange.UP
-        elif item.position > prev_pos:
+        elif item.position > previous_position:
             item.position_change = PositionChange.DOWN
             

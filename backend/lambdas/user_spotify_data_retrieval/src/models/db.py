@@ -15,19 +15,6 @@ class Base(DeclarativeBase):
 
 
 # -----------------------------
-# Abstract "TopItem" base
-# -----------------------------
-class TopItemDBBase(Base):
-    __abstract__ = True  # prevents a table being created
-
-    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), primary_key=True)
-    collection_date: Mapped[date] = mapped_column(primary_key=True)
-    time_range: Mapped[TimeRange] = mapped_column(Enum(TimeRange, name="time_range_enum"), primary_key=True)
-    position: Mapped[int]
-    position_change: Mapped[PositionChange | None] = mapped_column(Enum(PositionChange, name="position_change_enum"))
-
-
-# -----------------------------
 # Association tables
 # -----------------------------
 track_artist_association = Table(
@@ -87,6 +74,19 @@ class TrackDB(Base):
     popularity: Mapped[int]
 
     artists: Mapped[list[ArtistDB]] = relationship(secondary=track_artist_association, back_populates="tracks")
+
+
+# -----------------------------
+# Abstract "TopItem" base
+# -----------------------------
+class TopItemDBBase(Base):
+    __abstract__ = True  # prevents a table being created
+
+    user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), primary_key=True)
+    collection_date: Mapped[date] = mapped_column(primary_key=True)
+    time_range: Mapped[TimeRange] = mapped_column(Enum(TimeRange, name="time_range_enum"), primary_key=True)
+    position: Mapped[int]
+    position_change: Mapped[PositionChange | None] = mapped_column(Enum(PositionChange, name="position_change_enum"))
 
 
 # -----------------------------
