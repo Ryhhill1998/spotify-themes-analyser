@@ -1,4 +1,6 @@
+from dataclasses import asdict
 from sqlalchemy.orm import Session
+from src.models.domain import Track
 from src.models.db import TrackDB, track_artist_association
 from sqlalchemy.dialects.postgresql import insert
 
@@ -7,20 +9,9 @@ class TracksRepository:
     def __init__(self, db_session: Session):
         self.session = db_session
 
-    def upsert_many(self, tracks: list[TrackDB]) -> None:
+    def upsert_many(self, tracks: list[Track]) -> None:
         # upsert tracks
-        values = [
-            {
-                "id": track.id,
-                "name": track.name,
-                "spotify_url": track.spotify_url,
-                "release_date": track.release_date,
-                "explicit": track.explicit,
-                "duration_ms": track.duration_ms,
-                "popularity": track.popularity,
-            }
-            for track in tracks
-        ]
+        values = [asdict(track) for track in tracks]
         
         stmt = insert(TrackDB).values(values)
         stmt = stmt.on_conflict_do_update(
@@ -38,9 +29,9 @@ class TracksRepository:
 
         # upsert track artist association
         association_values = [
-            {"track_id": track.id, "artist_id": artist.id}
+            {"track_id": track.id, "artist_id": artist_id}
             for track in tracks
-            for artist in track.artists
+            for artist_id in track.artist_ids
         ]
 
         if association_values:
