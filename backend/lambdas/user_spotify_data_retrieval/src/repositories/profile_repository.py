@@ -1,5 +1,6 @@
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
+from src.models.domain import Profile
 from src.models.db import ProfileDB
 
 
@@ -7,7 +8,7 @@ class ProfileRepository:
     def __init__(self, db_session: Session):
         self.session = db_session
 
-    def upsert(self, profile: ProfileDB) -> None:
+    def upsert(self, profile: Profile) -> None:
         values = {
             "id": profile.id,
             "display_name": profile.name,
