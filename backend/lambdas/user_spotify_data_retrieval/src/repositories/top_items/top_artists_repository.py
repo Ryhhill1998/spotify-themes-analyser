@@ -1,4 +1,6 @@
+from dataclasses import asdict
 from sqlalchemy.orm import Session
+from backend.lambdas.user_spotify_data_retrieval.src.models.domain import TopArtist
 from src.models.enums import TimeRange
 from src.repositories.top_items.base import TopItemsBaseRepository
 from src.models.db import TopArtistDB
@@ -9,20 +11,9 @@ class TopArtistsRepository(TopItemsBaseRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def add_many(self, top_artists: list[TopArtistDB]) -> None:
+    def add_many(self, top_artists: list[TopArtist]) -> None:
         # 1. Convert ORM objects to a list of dictionaries
-        values = [
-            {
-                "id": artist.id,
-                "name": artist.name,
-                "images": artist.images,
-                "spotify_url": artist.spotify_url,
-                "genres": artist.genres,
-                "followers": artist.followers,
-                "popularity": artist.popularity,
-            }
-            for artist in top_artists
-        ]
+        values = [asdict(artist) for artist in top_artists]
 
         # 2. Build the single bulk INSERT statement
         stmt = insert(TopArtistDB).values(values)
@@ -33,6 +24,16 @@ class TopArtistsRepository(TopItemsBaseRepository):
         # 4. Commit the transaction once
         self.session.commit()
 
-    def get_previous_top_artists(self, user_id: str, time_range: TimeRange) -> list[TopArtistDB]:
-        previous_top_artists = self._get_latest_snapshot(db_model=TopArtistDB, user_id=user_id, time_range=time_range)
-        return previous_top_artists
+    def get_previous_top_artists(self, user_id: str, time_range: TimeRange) -> list[TopArtist]:
+        db_top_artists = self._get_latest_snapshot(db_model=TopArtistDB, user_id=user_id, time_range=time_range)
+        top_artists = [
+            TopArtist(
+                user_id=artist.user_id,
+                artist_id=artist.artist_id,
+                collection_date=artist.collection_date,
+                time_range=artist.time_range, 
+                position=artist.position,
+            )
+            for artist in db_top_artists
+        ]
+        return top_artists
