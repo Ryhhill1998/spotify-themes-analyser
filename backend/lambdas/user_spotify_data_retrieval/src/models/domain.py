@@ -1,73 +1,40 @@
 from dataclasses import dataclass
 from datetime import date
 
-from pydantic import BaseModel
-
 from backend.lambdas.user_spotify_data_retrieval.src.models.enums import TimeRange
 
 
-# ----------------------------- SPOTIFY ----------------------------- #
 # -----------------------------
 # Shared
 # -----------------------------
-class SpotifyImage(BaseModel):
+@dataclass
+class Image:
     height: int
     width: int
     url: str
 
 
-class SpotifyProfileFollowers(BaseModel):
-    total: int
-
-
-class SpotifyItemExternalUrls(BaseModel):
-    spotify: str
-
-
 # -----------------------------
-# Profile API
+# Profile
 # -----------------------------
-class SpotifyProfileAPI(BaseModel):
+@dataclass
+class Profile:
     id: str
     display_name: str
     email: str | None
-    images: list[SpotifyImage]
-    href: str
-    followers: SpotifyProfileFollowers
-
-
-# -----------------------------
-# Profile Output
-# -----------------------------
-class SpotifyProfile(BaseModel):
-    id: str
-    display_name: str
-    email: str | None
-    images: list[SpotifyImage]
+    images: list[Image]
     spotify_url: str
     followers: int
 
 
 # -----------------------------
-# Artist API
+# Artist
 # -----------------------------
-class SpotifyArtistAPI(BaseModel):
+@dataclass
+class Artist:
     id: str
     name: str
-    images: list[SpotifyImage]
-    external_urls: SpotifyItemExternalUrls
-    genres: list[str]
-    followers: SpotifyProfileFollowers
-    popularity: int
-
-
-# -----------------------------
-# Artist Output
-# -----------------------------
-class SpotifyArtist(BaseModel):
-    id: str
-    name: str
-    images: list[SpotifyImage]
+    images: list[Image]
     spotify_url: str
     genres: list[str]
     followers: int
@@ -75,46 +42,22 @@ class SpotifyArtist(BaseModel):
 
 
 # -----------------------------
-# Track API
+# Track
 # -----------------------------
-class SpotifyTrackAlbum(BaseModel):
-    name: str
-    images: list[SpotifyImage]
-    release_date: str
-
-
-class SpotifyTrackArtist(BaseModel):
+@dataclass
+class Track:
     id: str
     name: str
-
-
-class SpotifyTrackAPI(BaseModel):
-    id: str
-    name: str
-    album: SpotifyTrackAlbum
-    external_urls: SpotifyItemExternalUrls
-    explicit: bool
-    duration_ms: int
-    popularity: int
-    artists: list[SpotifyTrackArtist]
-
-
-# -----------------------------
-# Track Output
-# -----------------------------
-class SpotifyTrack(BaseModel):
-    id: str
-    name: str
-    images: list[SpotifyImage]
+    images: list[Image]
     spotify_url: str
+    album_name: str
     release_date: str
     explicit: bool
     duration_ms: int
     popularity: int
-    artists: list[SpotifyTrackArtist]
+    artist_ids: list[str]
 
 
-# ----------------------------- TOP ITEMS ----------------------------- #
 # -----------------------------
 # Top Item Base
 # -----------------------------

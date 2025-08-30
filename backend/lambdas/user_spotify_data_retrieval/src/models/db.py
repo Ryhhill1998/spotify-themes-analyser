@@ -80,6 +80,7 @@ class TrackDB(Base):
     name: Mapped[str]
     images: Mapped[list[dict]] = mapped_column(JSONB)  # list of {height, width, url}
     spotify_url: Mapped[str]
+    album_name: Mapped[str]
     release_date: Mapped[datetime]
     explicit: Mapped[bool]
     duration_ms: Mapped[int]

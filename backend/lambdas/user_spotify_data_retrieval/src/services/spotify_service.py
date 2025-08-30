@@ -3,7 +3,8 @@ from itertools import batched
 from httpx import AsyncClient
 
 from src.models.enums import TimeRange
-from backend.lambdas.user_spotify_data_retrieval.src.models.domain import SpotifyProfileAPI, SpotifyProfile, SpotifyArtistAPI, SpotifyArtist, SpotifyTrackArtist, SpotifyTrackAPI, SpotifyTrack
+from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
+from src.models.domain import Image, Profile, Artist, Track
 
 
 class SpotifyService:
@@ -24,70 +25,79 @@ class SpotifyService:
         response.raise_for_status()
         return response.json()
     
-    async def get_user_profile(self, access_token: str) -> SpotifyProfile:
+    def _spotify_profile_to_profile(spotify_profile: SpotifyProfile) -> Profile:
+        return Profile(
+            id=spotify_profile.id,
+            display_name=spotify_profile.display_name,
+            email=spotify_profile.email,
+            href=spotify_profile.href,
+            images=spotify_profile.images,
+            followers=spotify_profile.followers.total
+        )
+    
+    async def get_user_profile(self, access_token: str) -> Profile:
         url = f"{self.base_url}/me"
         headers = self._get_bearer_auth_headers(access_token)
         data = await self._get_data_from_api(url=url, headers=headers)
 
-        profile_data = SpotifyProfileAPI.model_validate(data)
-        profile = SpotifyProfile(
-            id=profile_data.id,
-            display_name=profile_data.display_name,
-            email=profile_data.email,
-            href=profile_data.href,
-            images=profile_data.images,
-            followers=profile_data.followers.total
-        )
+        spotify_profile = SpotifyProfile.model_validate(data)
+        profile = self._spotify_profile_to_profile(spotify_profile)
 
         return profile
+    
+    def _spotify_artist_to_artist(spotify_artist: SpotifyArtist) -> Artist:
+        Artist(
+            id=spotify_artist.id,
+            name=spotify_artist.name,
+            images=spotify_artist.images,
+            spotify_url=spotify_artist.external_urls.spotify,
+            genres=spotify_artist.genres,
+            followers=spotify_artist.followers.total,
+            popularity=spotify_artist.popularity,
+        ) 
 
     async def get_user_top_artists(
         self, access_token: str, time_range: TimeRange, limit: int = 50
-    ) -> list[SpotifyArtist]:
+    ) -> list[Artist]:
         url = f"{self.base_url}/me/top/artists"
         headers = self._get_bearer_auth_headers(access_token)
         params = {"time_range": time_range.value, "limit": limit}
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
+
         items = data.get("items", [])
-        artists_data = [SpotifyArtist.model_validate(item) for item in items]
-        artists = [
-            SpotifyArtist(
-                id=artist.id,
-                name=artist.name,
-                images=artist.images,
-                spotify_url=artist.external_urls.spotify,
-                genres=artist.genres,
-                followers=artist.followers.total,
-                popularity=artist.popularity,
-            ) 
-            for artist in artists_data
-        ]
+        spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
+        artists = [self._spotify_artist_to_artist(artist) for artist in spotify_artists]
 
         return artists
+    
+    def _spotify_track_to_track(spotify_track: SpotifyTrack) -> Track:
+        Track(
+            id=spotify_track.id,
+            name=spotify_track.name,
+            images=[
+                Image(height=image.height, width=image.width, url=image.url) 
+                for image in spotify_track.album.images
+            ],
+            spotify_url=spotify_track.external_urls.spotify,
+            album_name=spotify_track.album.name,
+            release_date=spotify_track.album.release_date,
+            explicit=spotify_track.explicit,
+            duration_ms=spotify_track.duration_ms,
+            popularity=spotify_track.popularity,
+            artist_ids=[artist.id for artist in spotify_track.artists],
+        ) 
 
     async def get_user_top_tracks(
         self, access_token: str, time_range: TimeRange, limit: int = 50
-    ) -> list[SpotifyTrack]:
+    ) -> list[Track]:
         url = f"{self.base_url}/me/top/tracks"
         headers = self._get_bearer_auth_headers(access_token)
         params = {"time_range": time_range.value, "limit": limit}
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
+
         items = data.get("items", [])
-        tracks_data = [SpotifyTrack.model_validate(item) for item in items]
-        tracks = [
-            SpotifyTrack(
-                id=track.id,
-                name=track.name,
-                images=[img.model_dump() for img in track.album.images],
-                spotify_url=track.external_urls.spotify,
-                release_date=track.album.release_date,
-                explicit=track.explicit,
-                duration_ms=track.duration_ms,
-                popularity=track.popularity,
-                artists=[SpotifyTrackArtist(id=artist.id, name=artist.name) for artist in track.artists],
-            ) 
-            for track in tracks_data
-        ]
+        spotify_tracks = [SpotifyTrack.model_validate(item) for item in items]
+        tracks = [self._spotify_track_to_track(track) for track in spotify_tracks]
 
         return tracks
 
@@ -96,20 +106,10 @@ class SpotifyService:
         headers = self._get_bearer_auth_headers(access_token)
         params = {"ids": ",".join(artist_ids)}
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
+
         items = data.get("items", [])
-        artists_data = [SpotifyArtist.model_validate(item) for item in items]
-        artists = [
-            SpotifyArtist(
-                id=artist.id,
-                name=artist.name,
-                images=artist.images,
-                spotify_url=artist.external_urls.spotify,
-                genres=artist.genres,
-                followers=artist.followers.total,
-                popularity=artist.popularity,
-            ) 
-            for artist in artists_data
-        ]
+        spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
+        artists = [self._spotify_artist_to_artist(artist) for artist in spotify_artists]
 
         return artists
     
