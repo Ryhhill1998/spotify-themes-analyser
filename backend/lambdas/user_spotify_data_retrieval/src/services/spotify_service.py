@@ -19,19 +19,19 @@ class SpotifyService:
         return {"Authorization": f"Bearer {access_token}"}
     
     async def _get_data_from_api(
-        self, url: str, headers: dict[str, str], params: dict | None
+        self, url: str, headers: dict[str, str], params: dict | None = None
     ) -> dict:
         response = await self.client.get(url=url, headers=headers, params=params)
         response.raise_for_status()
         return response.json()
     
-    def _spotify_profile_to_profile(spotify_profile: SpotifyProfile) -> Profile:
+    def _spotify_profile_to_profile(self, spotify_profile: SpotifyProfile) -> Profile:
         return Profile(
             id=spotify_profile.id,
             display_name=spotify_profile.display_name,
             email=spotify_profile.email,
-            href=spotify_profile.href,
-            images=spotify_profile.images,
+            spotify_url=spotify_profile.external_urls.spotify,
+            images=[Image(**image.model_dump()) for image in spotify_profile.images],
             followers=spotify_profile.followers.total
         )
     
@@ -45,7 +45,7 @@ class SpotifyService:
 
         return profile
     
-    def _spotify_artist_to_artist(spotify_artist: SpotifyArtist) -> Artist:
+    def _spotify_artist_to_artist(self, spotify_artist: SpotifyArtist) -> Artist:
         Artist(
             id=spotify_artist.id,
             name=spotify_artist.name,
@@ -70,7 +70,7 @@ class SpotifyService:
 
         return artists
     
-    def _spotify_track_to_track(spotify_track: SpotifyTrack) -> Track:
+    def _spotify_track_to_track(self, spotify_track: SpotifyTrack) -> Track:
         Track(
             id=spotify_track.id,
             name=spotify_track.name,

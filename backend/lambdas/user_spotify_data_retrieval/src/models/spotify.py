@@ -24,9 +24,9 @@ class SpotifyItemExternalUrls(BaseModel):
 class SpotifyProfile(BaseModel):
     id: str
     display_name: str
-    email: str | None
+    email: str | None = None
     images: list[SpotifyImage]
-    href: str
+    external_urls: SpotifyItemExternalUrls
     followers: SpotifyProfileFollowers
 
 

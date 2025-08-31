@@ -1,6 +1,6 @@
 from dataclasses import asdict
 from sqlalchemy.orm import Session
-from backend.lambdas.user_spotify_data_retrieval.src.models.domain import TopArtist
+from src.models.domain import TopArtist
 from src.models.enums import TimeRange
 from src.repositories.top_items.base import TopItemsBaseRepository
 from src.models.db import TopArtistDB

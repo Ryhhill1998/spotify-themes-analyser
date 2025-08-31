@@ -1,5 +1,5 @@
 from datetime import date
-from backend.lambdas.user_spotify_data_retrieval.src.repositories.artists_repository import ArtistsRepository
+from src.repositories.artists_repository import ArtistsRepository
 from src.models.domain import Artist, TopTrack, Track
 from src.utils.calculations import calculate_position_changes
 from src.models.enums import TimeRange
