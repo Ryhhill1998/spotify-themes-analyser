@@ -13,6 +13,9 @@ def calculate_position_changes(previous_items: list[TopItemBase], current_items:
     - None if same position or no previous data -  default so no action needed
     """
 
+    if not current_items:
+        return
+
     # Map previous items by their unique ID
     item_id_to_previous_positions_map = {item.item_id: item.position for item in previous_items}
 

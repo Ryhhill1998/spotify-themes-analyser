@@ -74,10 +74,7 @@ class SpotifyService:
         return Track(
             id=spotify_track.id,
             name=spotify_track.name,
-            images=[
-                Image(height=image.height, width=image.width, url=image.url) 
-                for image in spotify_track.album.images
-            ],
+            images=[Image(**image.model_dump()) for image in spotify_track.album.images],
             spotify_url=spotify_track.external_urls.spotify,
             album_name=spotify_track.album.name,
             release_date=spotify_track.album.release_date,
@@ -107,7 +104,7 @@ class SpotifyService:
         params = {"ids": ",".join(artist_ids)}
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
 
-        items = data.get("items", [])
+        items = data.get("artists", [])
         spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
         artists = [self._spotify_artist_to_artist(artist) for artist in spotify_artists]
 

@@ -106,7 +106,7 @@ class TopArtistDB(TopItemDBBase):
 class TopTrackDB(TopItemDBBase):
     __tablename__ = "top_track"
 
-    track_id: Mapped[str] = mapped_column(ForeignKey("track.id"))
+    track_id: Mapped[str] = mapped_column(ForeignKey("track.id"), primary_key=True)
 
     track: Mapped[TrackDB] = relationship()
 

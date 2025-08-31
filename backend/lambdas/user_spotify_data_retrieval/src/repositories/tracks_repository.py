@@ -11,7 +11,12 @@ class TracksRepository:
 
     def upsert_many(self, tracks: list[Track]) -> None:
         # upsert tracks
-        values = [asdict(track) for track in tracks]
+        values = []
+        
+        for track in tracks:
+            track_data = asdict(track)
+            track_data.pop("artist_ids")
+            values.append(track_data)
         
         stmt = insert(TrackDB).values(values)
         stmt = stmt.on_conflict_do_update(
