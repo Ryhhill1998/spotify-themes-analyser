@@ -1,5 +1,4 @@
 from datetime import date
-from src.models.db import ArtistDB, TopArtistDB
 from src.models.domain import Artist, TopArtist
 from src.repositories.top_items.top_artists_repository import TopArtistsRepository
 from src.utils.calculations import calculate_position_changes
@@ -43,7 +42,7 @@ class TopArtistsPipeline:
         ]
 
         # 4. Calculate position changes
-        previous_top_artists: list[TopArtistDB] = self.top_artists_repository.get_previous_top_artists(user_id=user_id, time_range=time_range)
+        previous_top_artists: list[TopArtist] = self.top_artists_repository.get_previous_top_artists(user_id=user_id, time_range=time_range)
         calculate_position_changes(previous_items=previous_top_artists, current_items=top_artists)
 
         # 5. Store in DB

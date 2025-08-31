@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import insert
 
 class ArtistsRepository:
     def __init__(self, db_session: Session):
-        self.session = db_session
+        self.db_session = db_session
 
     def upsert_many(self, artists: list[Artist]) -> None:
         values = [asdict(artist) for artist in artists]
@@ -25,5 +25,5 @@ class ArtistsRepository:
             },
         )
 
-        self.session.execute(stmt)
-        self.session.commit()
+        self.db_session.execute(stmt)
+        self.db_session.commit()

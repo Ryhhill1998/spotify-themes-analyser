@@ -46,10 +46,10 @@ class SpotifyService:
         return profile
     
     def _spotify_artist_to_artist(self, spotify_artist: SpotifyArtist) -> Artist:
-        Artist(
+        return Artist(
             id=spotify_artist.id,
             name=spotify_artist.name,
-            images=spotify_artist.images,
+            images=[Image(**image.model_dump()) for image in spotify_artist.images],
             spotify_url=spotify_artist.external_urls.spotify,
             genres=spotify_artist.genres,
             followers=spotify_artist.followers.total,
@@ -71,7 +71,7 @@ class SpotifyService:
         return artists
     
     def _spotify_track_to_track(self, spotify_track: SpotifyTrack) -> Track:
-        Track(
+        return Track(
             id=spotify_track.id,
             name=spotify_track.name,
             images=[

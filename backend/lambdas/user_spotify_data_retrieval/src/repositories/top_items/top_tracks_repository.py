@@ -8,17 +8,17 @@ from sqlalchemy.dialects.postgresql import insert
 
 
 class TopTracksRepository(TopItemsBaseRepository):
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, db_session: Session):
+        self.db_session = db_session
 
     def add_many(self, top_tracks: list[TopTrack]) -> None:
         values = [asdict(track) for track in top_tracks]
 
         stmt = insert(TopTrackDB).values(values)
 
-        self.session.execute(stmt)
+        self.db_session.execute(stmt)
 
-        self.session.commit()
+        self.db_session.commit()
 
     def get_previous_top_tracks(self, user_id: str, time_range: TimeRange) -> list[TopTrack]:
         db_top_tracks = self._get_latest_snapshot(db_model=TopTrackDB, user_id=user_id, time_range=time_range)
