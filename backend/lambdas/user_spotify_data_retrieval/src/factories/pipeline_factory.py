@@ -1,0 +1,39 @@
+import httpx
+from sqlalchemy.orm import Session
+
+from src.pipelines.profile_pipeline import ProfilePipeline
+from src.pipelines.top_artists_pipeline import TopArtistsPipeline
+from src.pipelines.top_tracks_pipeline import TopTracksPipeline
+from src.repositories.artists_repository import ArtistsRepository
+from src.repositories.profile_repository import ProfileRepository
+from src.repositories.top_items.top_artists_repository import TopArtistsRepository
+from src.repositories.top_items.top_tracks_repository import TopTracksRepository
+from src.repositories.tracks_repository import TracksRepository
+from src.services.spotify_service import SpotifyService
+
+
+class PipelineFactory:
+    def __init__(self, spotify_service: SpotifyService, db_session: Session):
+        self.spotify_service = spotify_service
+        self.db_session = db_session
+
+    def create_profile_pipeline(self) -> ProfilePipeline:
+        return ProfilePipeline(
+            spotify_service=self.spotify_service,
+            profile_repository=ProfileRepository(self.db_session),
+        )
+
+    def create_top_artists_pipeline(self) -> TopArtistsPipeline:
+        return TopArtistsPipeline(
+            spotify_service=self.spotify_service,
+            artists_repository=ArtistsRepository(self.db_session),
+            top_artists_repository=TopArtistsRepository(self.db_session),
+        )
+
+    def create_top_tracks_pipeline(self) -> TopTracksPipeline:
+        return TopTracksPipeline(
+            spotify_service=self.spotify_service,
+            artists_repository=ArtistsRepository(self.db_session),
+            tracks_repository=TracksRepository(self.db_session),
+            top_tracks_repository=TopTracksRepository(self.db_session),
+        )
