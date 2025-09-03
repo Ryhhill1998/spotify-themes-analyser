@@ -37,3 +37,15 @@ class PipelineFactory:
             tracks_repository=TracksRepository(self.db_session),
             top_tracks_repository=TopTracksRepository(self.db_session),
         )
+    
+    def create_top_genres_pipeline(self) -> TopGenresPipeline:
+        return TopGenresPipeline(top_genres_repository=TopGenresRepository(self.db_session))
+    
+    def create_top_emotions_pipeline(self) -> TopEmotionsPipeline:
+        return TopEmotionsPipeline(
+            lyrics_service=self.lyrics_service,
+            lyrics_repository=LyricsRepository(self.db_session),
+            emotional_profile_service=self.emotional_profile_service,
+            emotional_profile_repository=EmotionalProfileRepository(self.db_session),
+            top_emotions_repository=TopEmotionsRepository(self.db_session),
+        )

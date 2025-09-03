@@ -78,7 +78,7 @@ class TopItemBase(ABC):
 # -----------------------------
 # Top Artist
 # -----------------------------
-@dataclass
+@dataclass(kw_only=True)
 class TopArtist(TopItemBase):
     artist_id: str
 
@@ -90,7 +90,7 @@ class TopArtist(TopItemBase):
 # -----------------------------
 # Top Track
 # -----------------------------
-@dataclass
+@dataclass(kw_only=True)
 class TopTrack(TopItemBase):
     track_id: str
 
@@ -102,7 +102,7 @@ class TopTrack(TopItemBase):
 # -----------------------------
 # Top Genre
 # -----------------------------
-@dataclass
+@dataclass(kw_only=True)
 class TopGenre(TopItemBase):
     genre_id: str
     percentage: float
@@ -115,7 +115,7 @@ class TopGenre(TopItemBase):
 # -----------------------------
 # Top Emotion
 # -----------------------------
-@dataclass
+@dataclass(kw_only=True)
 class TopEmotion(TopItemBase):
     emotion_id: str
     percentage: float
