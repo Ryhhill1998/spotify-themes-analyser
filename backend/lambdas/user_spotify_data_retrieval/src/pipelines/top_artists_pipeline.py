@@ -42,7 +42,7 @@ class TopArtistsPipeline:
         ]
 
         # 4. Calculate position changes
-        previous_top_artists: list[TopArtist] = self.top_artists_repository.get_previous_top_artists(user_id=user_id, time_range=time_range)
+        previous_top_artists: list[TopArtist] = self.top_artists_repository.get_previous_top_items(user_id=user_id, time_range=time_range)
         calculate_position_changes(previous_items=previous_top_artists, current_items=top_artists)
 
         # 5. Store in DB

@@ -19,5 +19,9 @@ def get_db_session(connection_string: str) -> Generator[Session, None, None]:
 
     try:
         yield session
+        session.commit() 
+    except Exception as e:
+        print(e)
+        session.rollback()
     finally:
         session.close()

@@ -121,7 +121,7 @@ class TopTrackDB(TopItemDBBase):
 class TopGenreDB(TopItemDBBase):
     __tablename__ = "top_genre"
 
-    genre_id: Mapped[str]
+    genre_id: Mapped[str] = mapped_column(primary_key=True)
     percentage: Mapped[float]
 
     __table_args__ = (
@@ -135,7 +135,7 @@ class TopGenreDB(TopItemDBBase):
 class TopEmotionDB(TopItemDBBase):
     __tablename__ = "top_emotion"
 
-    emotion_id: Mapped[str]
+    emotion_id: Mapped[str] = mapped_column(primary_key=True)
     percentage: Mapped[float]
 
     __table_args__ = (

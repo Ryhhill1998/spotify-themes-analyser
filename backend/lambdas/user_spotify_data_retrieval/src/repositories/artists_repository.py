@@ -26,4 +26,3 @@ class ArtistsRepository:
         )
 
         self.db_session.execute(stmt)
-        self.db_session.commit()

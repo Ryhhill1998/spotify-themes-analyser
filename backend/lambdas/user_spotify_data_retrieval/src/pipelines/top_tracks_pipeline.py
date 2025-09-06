@@ -52,7 +52,7 @@ class TopTracksPipeline:
         ]
 
         # 7. Calculate position changes
-        previous_top_tracks: list[TopTrack] = self.top_tracks_repository.get_previous_top_tracks(user_id=user_id, time_range=time_range)
+        previous_top_tracks: list[TopTrack] = self.top_tracks_repository.get_previous_top_items(user_id=user_id, time_range=time_range)
         calculate_position_changes(previous_items=previous_top_tracks, current_items=top_tracks)
 
         # 8. Store in DB

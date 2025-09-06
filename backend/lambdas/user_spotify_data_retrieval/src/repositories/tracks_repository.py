@@ -45,5 +45,3 @@ class TracksRepository:
                 index_elements=["track_id", "artist_id"]
             )
             self.session.execute(assoc_stmt)
-
-        self.session.commit()

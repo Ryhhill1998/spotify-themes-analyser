@@ -1,37 +1,58 @@
+from abc import ABC, abstractmethod
+from dataclasses import asdict
+from typing import Generic, TypeVar
 from sqlalchemy import func
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.postgresql import insert
 
+from src.models.domain import TopItemBase
 from src.models.db import TopItemDBBase
 from src.models.enums import TimeRange
 
+TopItemDBType = TypeVar("TopItemDBType", bound=TopItemDBBase)
+TopItemDomainType = TypeVar("TopItemDomainType", bound=TopItemBase)
 
-class TopItemsBaseRepository:
-    def __init__(self, db_session: Session):
+
+class TopItemsBaseRepository(ABC, Generic[TopItemDBType, TopItemDomainType]):
+    def __init__(self, db_session: Session, db_model: TopItemDBType):
         self.db_session = db_session
+        self.db_model = db_model
 
-    def _get_latest_snapshot[TopItemType: TopItemDBBase](
+    def add_many(self, top_items: list[TopItemDomainType]) -> None:
+        values = [asdict(item) for item in top_items]
+        stmt = insert(self.db_model).values(values)
+        self.db_session.execute(stmt)
+
+    def _get_latest_snapshot(
         self,
-        db_model: type[TopItemType],
         user_id: str,
         time_range: TimeRange,
-    ) -> list[TopItemType]:
+    ) -> list[TopItemDBType]:
         latest_date_subquery = (
             self.db_session
-            .query(func.max(db_model.collection_date))
+            .query(func.max(self.db_model.collection_date))
             .filter(
-                db_model.user_id == user_id,
-                db_model.time_range == time_range
+                self.db_model.user_id == user_id,
+                self.db_model.time_range == time_range
             )
             .scalar_subquery()
         )
 
         return (
             self.db_session
-            .query(db_model)
+            .query(self.db_model)
             .filter(
-                db_model.user_id == user_id,
-                db_model.time_range == time_range,
-                db_model.collection_date == latest_date_subquery
+                self.db_model.user_id == user_id,
+                self.db_model.time_range == time_range,
+                self.db_model.collection_date == latest_date_subquery
             )
             .all()
         )
+    
+    @staticmethod
+    @abstractmethod
+    def _to_domain_objects(db_items: list[TopItemDBType]) -> list[TopItemDomainType]: ...
+    
+    def get_previous_top_items(self, user_id: str, time_range: TimeRange) -> TopItemDomainType:
+        db_top_items = self._get_latest_snapshot(user_id=user_id, time_range=time_range) 
+        return self._to_domain_objects(db_top_items)

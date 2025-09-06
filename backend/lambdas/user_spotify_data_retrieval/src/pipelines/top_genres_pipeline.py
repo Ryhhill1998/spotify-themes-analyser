@@ -1,7 +1,8 @@
 from collections import Counter
-from decimal import Decimal, ROUND_HALF_UP
 from datetime import date
 
+from src.utils.calculations import calculate_position_changes
+from src.repositories.top_items.top_genres_repository import TopGenresRepository
 from src.models.enums import TimeRange
 from src.models.domain import Artist, TopGenre
 
@@ -16,7 +17,7 @@ class TopGenresPipeline:
         most_common_genres = genre_counts.most_common(5)
 
         # convert to TopGenre objects
-        total = len(all_genres)
+        total = sum([genre[1] for genre in most_common_genres])
 
         top_genres = [
             TopGenre(
@@ -29,6 +30,10 @@ class TopGenresPipeline:
             )
             for index, (genre, count) in enumerate(most_common_genres)
         ]
+
+        # 7. Calculate position changes
+        previous_top_genres: list[TopGenre] = self.top_genres_repository.get_previous_top_items(user_id=user_id, time_range=time_range)
+        calculate_position_changes(previous_items=previous_top_genres, current_items=top_genres)
 
         # Store in db
         self.top_genres_repository.add_many(top_genres)

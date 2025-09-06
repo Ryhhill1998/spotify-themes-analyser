@@ -1,6 +1,7 @@
-import httpx
 from sqlalchemy.orm import Session
 
+from src.pipelines.top_genres_pipeline import TopGenresPipeline
+from src.repositories.top_items.top_genres_repository import TopGenresRepository
 from src.pipelines.profile_pipeline import ProfilePipeline
 from src.pipelines.top_artists_pipeline import TopArtistsPipeline
 from src.pipelines.top_tracks_pipeline import TopTracksPipeline
@@ -41,11 +42,11 @@ class PipelineFactory:
     def create_top_genres_pipeline(self) -> TopGenresPipeline:
         return TopGenresPipeline(top_genres_repository=TopGenresRepository(self.db_session))
     
-    def create_top_emotions_pipeline(self) -> TopEmotionsPipeline:
-        return TopEmotionsPipeline(
-            lyrics_service=self.lyrics_service,
-            lyrics_repository=LyricsRepository(self.db_session),
-            emotional_profile_service=self.emotional_profile_service,
-            emotional_profile_repository=EmotionalProfileRepository(self.db_session),
-            top_emotions_repository=TopEmotionsRepository(self.db_session),
-        )
+    # def create_top_emotions_pipeline(self) -> TopEmotionsPipeline:
+    #     return TopEmotionsPipeline(
+    #         lyrics_service=self.lyrics_service,
+    #         lyrics_repository=LyricsRepository(self.db_session),
+    #         emotional_profile_service=self.emotional_profile_service,
+    #         emotional_profile_repository=EmotionalProfileRepository(self.db_session),
+    #         top_emotions_repository=TopEmotionsRepository(self.db_session),
+    #     )
