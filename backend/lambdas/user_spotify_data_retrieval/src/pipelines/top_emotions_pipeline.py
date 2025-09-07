@@ -4,6 +4,8 @@ from datetime import date
 from statistics import mean
 import heapq
 
+from src.repositories.track_emotional_profiles_repository import TrackEmotionalProfilesRepository
+from src.repositories.track_lyrics_repository import TrackLyricsRepository
 from src.repositories.top_items.top_emotions_repository import TopEmotionsRepository
 from src.services.emotional_profile_service import EmotionalProfileService
 from src.services.lyrics_service import LyricsService
@@ -16,9 +18,9 @@ class TopEmotionsPipeline:
     def __init__(
         self, 
         lyrics_service: LyricsService,
-        lyrics_repository: LyricsRepository,
+        lyrics_repository: TrackLyricsRepository,
         emotional_profile_service: EmotionalProfileService,
-        emotional_profile_repository: EmotionalProfileRepository,
+        emotional_profile_repository: TrackEmotionalProfilesRepository,
         top_emotions_repository: TopEmotionsRepository,
     ):
         self.lyrics_service = lyrics_service

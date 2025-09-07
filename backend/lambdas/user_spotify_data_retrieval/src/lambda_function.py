@@ -3,6 +3,8 @@ import httpx
 import asyncio
 
 from backend.lambdas.user_spotify_data_retrieval.src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
+from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profile_service import EmotionalProfileService
+from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics_service import LyricsService
 from src.pipelines.top_genres_pipeline import TopGenresPipeline
 from src.core.config import Settings
 from src.factories.pipeline_factory import PipelineFactory
@@ -63,7 +65,12 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
         )
 
         with get_db_session(settings.db_connection_string) as db_session:
-            pipeline_factory = PipelineFactory(spotify_service=spotify_service, db_session=db_session)
+            pipeline_factory = PipelineFactory(
+                spotify_service=spotify_service, 
+                db_session=db_session,
+                lyrics_service=lyrics_service,
+                emotional_profile_service=emotional_profile_service,
+            )
             profile_pipeline: ProfilePipeline = pipeline_factory.create_profile_pipeline()
             top_artists_pipeline: TopArtistsPipeline = pipeline_factory.create_top_artists_pipeline()
             top_tracks_pipeline: TopTracksPipeline = pipeline_factory.create_top_tracks_pipeline()
