@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date
+from typing import Annotated
+
+from pydantic import BaseModel, Field
 
 from src.models.enums import PositionChange, TimeRange
 
@@ -123,3 +126,48 @@ class TopEmotion(TopItemBase):
     @property
     def item_id(self) -> str:
         return self.emotion_id
+    
+
+@dataclass
+class LyricsRequest:
+    track_id: str
+    track_name: str
+    track_artist: str
+
+
+class TrackLyrics(BaseModel):
+    track_id: str
+    lyrics: str
+
+
+@dataclass
+class EmotionalProfileRequest:
+    track_id: str
+    lyrics: str
+
+
+EmotionPercentage = Annotated[float, Field(ge=0, le=1)]
+
+
+class EmotionalProfile(BaseModel):
+    joy: EmotionPercentage
+    sadness: EmotionPercentage
+    anger: EmotionPercentage
+    fear: EmotionPercentage
+    love: EmotionPercentage
+    hope: EmotionPercentage
+    nostalgia: EmotionPercentage
+    loneliness: EmotionPercentage
+    confidence: EmotionPercentage
+    despair: EmotionPercentage
+    excitement: EmotionPercentage
+    mystery: EmotionPercentage
+    defiance: EmotionPercentage
+    gratitude: EmotionPercentage
+    spirituality: EmotionPercentage
+
+
+@dataclass
+class TrackEmotionalProfile:
+    track_id: str
+    emotional_profile: EmotionalProfile
