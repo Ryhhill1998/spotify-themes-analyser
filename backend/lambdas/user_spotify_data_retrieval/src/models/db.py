@@ -74,6 +74,7 @@ class TrackDB(Base):
     popularity: Mapped[int]
 
     artists: Mapped[list[ArtistDB]] = relationship(secondary=track_artist_association, back_populates="tracks")
+    lyrics: Mapped[TrackLyricsDB] = relationship()
 
 
 # -----------------------------
@@ -141,3 +142,38 @@ class TopEmotionDB(TopItemDBBase):
     __table_args__ = (
         UniqueConstraint("user_id", "emotion_id", "collection_date", "time_range"),
     )
+
+
+# -----------------------------
+# TrackLyrics
+# -----------------------------
+class TrackLyricsDB:
+    __tablename__ = "track_lyrics"
+
+    track_id: Mapped[str] = mapped_column(ForeignKey("track.id"), primary_key=True)
+    lyrics: Mapped[str]
+
+
+# -----------------------------
+# TrackEmotionalProfile
+# -----------------------------
+class TrackEmotionalProfileDB:
+    __tablename__ = "track_emotional_profile"
+
+    track_id: Mapped[str] = mapped_column(ForeignKey("track.id"), primary_key=True)
+    
+    joy: Mapped[float]
+    sadness: Mapped[float]
+    anger: Mapped[float]
+    fear: Mapped[float]
+    love: Mapped[float]
+    hope: Mapped[float]
+    nostalgia: Mapped[float]
+    loneliness: Mapped[float]
+    confidence: Mapped[float]
+    despair: Mapped[float]
+    excitement: Mapped[float]
+    mystery: Mapped[float]
+    defiance: Mapped[float]
+    gratitude: Mapped[float]
+    spirituality: Mapped[float]

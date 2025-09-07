@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from backend.lambdas.user_spotify_data_retrieval.src.models.db import TopEmotionDB
-from backend.lambdas.user_spotify_data_retrieval.src.models.domain import TopEmotion
-from backend.lambdas.user_spotify_data_retrieval.src.repositories.top_items.base import TopItemsBaseRepository
+from src.models.db import TopEmotionDB
+from src.models.domain import TopEmotion
+from src.repositories.top_items.base import TopItemsBaseRepository
 
 
 class TopEmotionsRepository(TopItemsBaseRepository[TopEmotionDB, TopEmotion]):

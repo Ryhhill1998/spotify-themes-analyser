@@ -1,6 +1,5 @@
-from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from datetime import date
+import abc
+import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field
@@ -11,8 +10,7 @@ from src.models.enums import PositionChange, TimeRange
 # -----------------------------
 # Shared
 # -----------------------------
-@dataclass
-class Image:
+class Image(BaseModel):
     height: int
     width: int
     url: str
@@ -21,8 +19,7 @@ class Image:
 # -----------------------------
 # Profile
 # -----------------------------
-@dataclass
-class Profile:
+class Profile(BaseModel):
     id: str
     display_name: str
     email: str | None
@@ -34,8 +31,7 @@ class Profile:
 # -----------------------------
 # Artist
 # -----------------------------
-@dataclass
-class Artist:
+class Artist(BaseModel):
     id: str
     name: str
     images: list[Image]
@@ -48,8 +44,7 @@ class Artist:
 # -----------------------------
 # Track
 # -----------------------------
-@dataclass
-class Track:
+class Track(BaseModel):
     id: str
     name: str
     images: list[Image]
@@ -65,23 +60,21 @@ class Track:
 # -----------------------------
 # Top Item Base
 # -----------------------------
-@dataclass(kw_only=True)
-class TopItemBase(ABC):
+class TopItemBase(abc.ABC, BaseModel):
     user_id: str
-    collection_date: date
+    collection_date: datetime.date
     time_range: TimeRange
     position: int
     position_change: PositionChange | None = None
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def item_id(self) -> str:...
 
 
 # -----------------------------
 # Top Artist
 # -----------------------------
-@dataclass(kw_only=True)
 class TopArtist(TopItemBase):
     artist_id: str
 
@@ -93,7 +86,6 @@ class TopArtist(TopItemBase):
 # -----------------------------
 # Top Track
 # -----------------------------
-@dataclass(kw_only=True)
 class TopTrack(TopItemBase):
     track_id: str
 
@@ -105,7 +97,6 @@ class TopTrack(TopItemBase):
 # -----------------------------
 # Top Genre
 # -----------------------------
-@dataclass(kw_only=True)
 class TopGenre(TopItemBase):
     genre_id: str
     percentage: float
@@ -118,7 +109,6 @@ class TopGenre(TopItemBase):
 # -----------------------------
 # Top Emotion
 # -----------------------------
-@dataclass(kw_only=True)
 class TopEmotion(TopItemBase):
     emotion_id: str
     percentage: float
@@ -128,8 +118,10 @@ class TopEmotion(TopItemBase):
         return self.emotion_id
     
 
-@dataclass
-class LyricsRequest:
+# -----------------------------
+# Track Lyrics
+# -----------------------------
+class TrackLyricsRequest(BaseModel):
     track_id: str
     track_name: str
     track_artist: str
@@ -140,8 +132,10 @@ class TrackLyrics(BaseModel):
     lyrics: str
 
 
-@dataclass
-class EmotionalProfileRequest:
+# -----------------------------
+# Track Emotional Profile
+# -----------------------------
+class TrackEmotionalProfileRequest(BaseModel):
     track_id: str
     lyrics: str
 
@@ -167,7 +161,6 @@ class EmotionalProfile(BaseModel):
     spirituality: EmotionPercentage
 
 
-@dataclass
-class TrackEmotionalProfile:
+class TrackEmotionalProfile(BaseModel):
     track_id: str
     emotional_profile: EmotionalProfile

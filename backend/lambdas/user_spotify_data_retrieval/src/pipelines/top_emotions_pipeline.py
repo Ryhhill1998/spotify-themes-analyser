@@ -4,10 +4,11 @@ from datetime import date
 from statistics import mean
 import heapq
 
-from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profile_service import EmotionalProfileService
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics_service import LyricsService
-from backend.lambdas.user_spotify_data_retrieval.src.utils.calculations import calculate_position_changes
-from src.models.domain import EmotionalProfileRequest, LyricsRequest, TrackLyrics, TopEmotion, Track, TrackEmotionalProfile
+from src.repositories.top_items.top_emotions_repository import TopEmotionsRepository
+from src.services.emotional_profile_service import EmotionalProfileService
+from src.services.lyrics_service import LyricsService
+from src.utils.calculations import calculate_position_changes
+from src.models.domain import TrackEmotionalProfileRequest, TrackLyricsRequest, TrackLyrics, TopEmotion, Track, TrackEmotionalProfile
 from src.models.enums import TimeRange
 
 
@@ -26,19 +27,19 @@ class TopEmotionsPipeline:
         self.emotional_profile_repository = emotional_profile_repository
         self.top_emotions_repository = top_emotions_repository
 
-    async def _get_track_lyrics(self, request: LyricsRequest) -> TrackLyrics:
+    async def _get_track_lyrics(self, request: TrackLyricsRequest) -> TrackLyrics:
         lyrics = await self.lyrics_service.get_lyrics(artist_name=request.track_artist, track_title=request.track_name)
         return TrackLyrics(track_id=request.track_id, lyrics=lyrics)
 
-    async def _get_several_track_lyrics(self, lyrics_requests: list[LyricsRequest]) -> list[TrackLyrics]:
+    async def _get_several_track_lyrics(self, lyrics_requests: list[TrackLyricsRequest]) -> list[TrackLyrics]:
         tasks = [self._get_track_lyrics(request) for request in lyrics_requests]
         return await asyncio.gather(*tasks)
     
-    async def _get_track_emotional_profile(self, request: EmotionalProfileRequest) -> TrackEmotionalProfile:
+    async def _get_track_emotional_profile(self, request: TrackEmotionalProfileRequest) -> TrackEmotionalProfile:
         emotional_profile = await self.emotional_profile_service.get_emotional_profile(request.lyrics)
         return TrackEmotionalProfile(track_id=request.track_id, emotional_profile=emotional_profile)
 
-    async def _get_several_track_emotional_profiles(self, emotional_profile_requests: list[EmotionalProfileRequest]) -> list[TrackEmotionalProfile]:
+    async def _get_several_track_emotional_profiles(self, emotional_profile_requests: list[TrackEmotionalProfileRequest]) -> list[TrackEmotionalProfile]:
         tasks = [self._get_track_emotional_profile(request) for request in emotional_profile_requests]
         return await asyncio.gather(*tasks)
     
@@ -113,7 +114,7 @@ class TopEmotionsPipeline:
 
         # create lyrics request objects from tracks
         lyrics_requests = [
-            LyricsRequest(
+            TrackLyricsRequest(
                 track_id=track.id, 
                 track_name=track.name, 
                 track_artist=track.artist_ids[0],
@@ -130,7 +131,7 @@ class TopEmotionsPipeline:
         all_track_lyrics: list[TrackLyrics] = [*new_track_lyrics, *existing_track_lyrics]
 
         emotional_profile_requests = [
-            EmotionalProfileRequest(
+            TrackEmotionalProfileRequest(
                 track_id=lyrics.track_id, 
                 lyrics=lyrics.lyrics,
             )
