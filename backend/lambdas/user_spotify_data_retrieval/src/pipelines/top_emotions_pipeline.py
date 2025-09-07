@@ -1,7 +1,11 @@
+import asyncio
 from collections import defaultdict
 from datetime import date
 from statistics import mean
+import heapq
 
+from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profile_service import EmotionalProfileService
+from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics_service import LyricsService
 from backend.lambdas.user_spotify_data_retrieval.src.utils.calculations import calculate_position_changes
 from src.models.domain import EmotionalProfileRequest, LyricsRequest, TrackLyrics, TopEmotion, Track, TrackEmotionalProfile
 from src.models.enums import TimeRange
@@ -22,13 +26,24 @@ class TopEmotionsPipeline:
         self.emotional_profile_repository = emotional_profile_repository
         self.top_emotions_repository = top_emotions_repository
 
+    async def _get_track_lyrics(self, request: LyricsRequest) -> TrackLyrics:
+        lyrics = await self.lyrics_service.get_lyrics(artist_name=request.track_artist, track_title=request.track_name)
+        return TrackLyrics(track_id=request.track_id, lyrics=lyrics)
+
+    async def _get_several_track_lyrics(self, lyrics_requests: list[LyricsRequest]) -> list[TrackLyrics]:
+        tasks = [self._get_track_lyrics(request) for request in lyrics_requests]
+        return await asyncio.gather(*tasks)
+    
+    async def _get_track_emotional_profile(self, request: EmotionalProfileRequest) -> TrackEmotionalProfile:
+        emotional_profile = await self.emotional_profile_service.get_emotional_profile(request.lyrics)
+        return TrackEmotionalProfile(track_id=request.track_id, emotional_profile=emotional_profile)
+
+    async def _get_several_track_emotional_profiles(self, emotional_profile_requests: list[EmotionalProfileRequest]) -> list[TrackEmotionalProfile]:
+        tasks = [self._get_track_emotional_profile(request) for request in emotional_profile_requests]
+        return await asyncio.gather(*tasks)
+    
     @staticmethod
-    def _get_top_emotions(
-        emotional_profile_responses: list[TrackEmotionalProfile],
-        user_id: str, 
-        time_range: TimeRange, 
-        collection_date: date,
-    ) -> list[TopEmotion]:
+    def _aggregate_emotions(emotional_profile_responses: list[TrackEmotionalProfile]) -> dict[str, float]:
         all_emotion_percentages = defaultdict(list)
 
         # collect all percentages for each emotion
@@ -39,22 +54,33 @@ class TopEmotionsPipeline:
                 all_emotion_percentages[emotion].append(percentage)
 
         # find average percentage for each emotion
-        average_emotion_percentages = {
+        return {
             emotion: mean(percentages) 
             for emotion, percentages in all_emotion_percentages.items()
         }
+    
+    @staticmethod
+    def _rank_and_normalise_emotions(average_emotions: dict[str, float], n: int) -> dict[str, float]:
+        top_n_emotions = heapq.nlargest(n, average_emotions.items(), key=lambda _, percentage: percentage)
 
-        # get top 5 emotions by average percentage
-        highest_percentage_emotions = dict(
-            sorted(
-                average_emotion_percentages.items(), 
-                key=lambda _, percentage: percentage,
-                reverse=True,
-            )[:5]
-        )
+        total = sum(percentage for _, percentage in top_n_emotions)
 
-        # convert to TopEmotion objects
-        total = sum(highest_percentage_emotions.values())
+        return {
+            emotion: round(percentage / total, 2) 
+            for emotion, percentage in top_n_emotions
+        }
+
+    @staticmethod
+    def _get_top_emotions(
+        emotional_profile_responses: list[TrackEmotionalProfile],
+        user_id: str, 
+        time_range: TimeRange, 
+        collection_date: date,
+        n: int = 5,
+    ) -> list[TopEmotion]:
+        average_emotion_percentages = TopEmotionsPipeline._aggregate_emotions(emotional_profile_responses)
+
+        top_emotions_dict = TopEmotionsPipeline._rank_and_normalise_emotions(average_emotions=average_emotion_percentages, n=n)
 
         return [
             TopEmotion(
@@ -63,9 +89,9 @@ class TopEmotionsPipeline:
                 time_range=time_range,
                 position=index + 1,
                 emotion_id=emotion,
-                percentage=round(percentage / total, 2),
+                percentage=percentage,
             )
-            for index, (emotion, percentage) in enumerate(highest_percentage_emotions.items())
+            for index, (emotion, percentage) in enumerate(top_emotions_dict.items())
         ]
 
     async def run(
@@ -75,8 +101,9 @@ class TopEmotionsPipeline:
         time_range: TimeRange, 
         collection_date: date,
     ) -> None:
-        # see which tracks already have emotional profiles stored
         track_ids = set(track.id for track in tracks)
+
+        # see which tracks already have emotional profiles stored
         existing_track_emotional_profiles: list[TrackEmotionalProfile] = self.emotional_profile_repository.get_many(track_ids)
         track_ids -= set(profile.track_id for profile in existing_track_emotional_profiles)
 
@@ -96,11 +123,11 @@ class TopEmotionsPipeline:
         ]
 
         # get track lyrics from lyrics service and store in db
-        new_track_lyrics = await self.lyrics_requests.get_lyrics(lyrics_requests)
+        new_track_lyrics: list[TrackLyrics] = await self._get_several_track_lyrics(lyrics_requests)
         self.lyrics_repository.add_many(new_track_lyrics)
 
         # create emotional profile requests from lyrics
-        all_track_lyrics = [*new_track_lyrics, *existing_track_lyrics]
+        all_track_lyrics: list[TrackLyrics] = [*new_track_lyrics, *existing_track_lyrics]
 
         emotional_profile_requests = [
             EmotionalProfileRequest(
@@ -111,15 +138,13 @@ class TopEmotionsPipeline:
         ]
 
         # get emotional profile responses from emotional profile service and store in db
-        new_track_emotional_profiles = await self.emotional_profile_service.get_emotional_profile(
-            emotional_profile_requests
-        )
+        new_track_emotional_profiles: list[TrackEmotionalProfile] = await self._get_several_track_emotional_profiles(emotional_profile_requests)
         self.emotional_profile_repository.add_many(new_track_emotional_profiles)
 
         # calculate top emotions
-        all_track_emotional_profiles = [*new_track_emotional_profiles, *existing_track_emotional_profiles]
+        all_track_emotional_profiles: list[TrackEmotionalProfile] = [*new_track_emotional_profiles, *existing_track_emotional_profiles]
 
-        top_emotions = self._get_top_emotions(
+        top_emotions: list[TopEmotion] = self._get_top_emotions(
             emotional_profile_responses=all_track_emotional_profiles,
             user_id=user_id,
             time_range=time_range,

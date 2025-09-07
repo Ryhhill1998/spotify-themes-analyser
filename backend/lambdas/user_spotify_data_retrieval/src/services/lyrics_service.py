@@ -8,14 +8,14 @@ import bs4
 from loguru import logger
 
 
-class LyricsScraperException(Exception):
+class LyricsServiceException(Exception):
     """Base exception for errors encountered while scraping lyrics."""
 
     def __init__(self, message: str):
         super().__init__(message)
 
 
-class LyricsScraperNotFoundException(LyricsScraperException):
+class LyricsServiceNotFoundException(LyricsServiceException):
     """Exception raised when lyrics are not found on the target website."""
 
     def __init__(self, message: str):
@@ -74,11 +74,11 @@ class LyricsService:
             return response.text
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 404:
-                raise LyricsScraperNotFoundException(f"Page not found - {e}")
+                raise LyricsServiceNotFoundException(f"Page not found - {e}")
             else:
-                raise LyricsScraperException(f"Failed to access page - {e}")
+                raise LyricsServiceException(f"Failed to access page - {e}")
         except httpx.RequestError as e:
-            raise LyricsScraperException(f"Request failed - {e}")
+            raise LyricsServiceException(f"Request failed - {e}")
 
     def _extract_lyrics_from_html(html: str) -> str | None:
         soup = bs4.BeautifulSoup(html, "html.parser")
@@ -106,7 +106,7 @@ class LyricsService:
 
         return "<br/>".join(cleaned_lyrics)
     
-    async def scrape_lyrics(self, artist_name: str, track_title: str) -> str:
+    async def get_lyrics(self, artist_name: str, track_title: str) -> str:
         logger.info(f"Scraping lyrics for {artist_name} - {track_title}")
         url = self._get_url(artist_name, track_title)
 
@@ -116,7 +116,7 @@ class LyricsService:
         lyrics = self._extract_lyrics_from_html(html)
 
         if not lyrics:
-            raise LyricsScraperNotFoundException(f"Lyrics not found for {artist_name} - {track_title}")
+            raise LyricsServiceNotFoundException(f"Lyrics not found for {artist_name} - {track_title}")
 
         logger.info(f"Successfully scraped lyrics for {artist_name} - {track_title}")
 
