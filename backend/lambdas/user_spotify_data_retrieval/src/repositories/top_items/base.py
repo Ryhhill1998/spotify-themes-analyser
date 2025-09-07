@@ -22,6 +22,7 @@ class TopItemsBaseRepository(ABC, Generic[TopItemDBType, TopItemDomainType]):
         values = [asdict(item) for item in top_items]
         stmt = insert(self.db_model).values(values)
         self.db_session.execute(stmt)
+        self.db_session.commit()
 
     def _get_latest_snapshot(
         self,

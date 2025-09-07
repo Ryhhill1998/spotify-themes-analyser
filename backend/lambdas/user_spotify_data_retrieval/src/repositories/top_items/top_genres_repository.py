@@ -17,6 +17,7 @@ class TopGenresRepository(TopItemsBaseRepository):
                 collection_date=genre.collection_date,
                 time_range=genre.time_range, 
                 position=genre.position,
+                percentage=genre.percentage,
             )
             for genre in db_items
         ]
