@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+from loguru import logger
 
 from src.models.db import Base
 
@@ -21,7 +22,7 @@ def get_db_session(connection_string: str) -> Generator[Session, None, None]:
         yield session
         session.commit() 
     except Exception as e:
-        print(e)
+        logger.exception("Transaction failed, rolling back")
         session.rollback()
     finally:
         session.close()

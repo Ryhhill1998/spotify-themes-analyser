@@ -2,6 +2,7 @@ from datetime import date
 import httpx
 import asyncio
 
+from backend.lambdas.user_spotify_data_retrieval.src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
 from src.pipelines.top_genres_pipeline import TopGenresPipeline
 from src.core.config import Settings
 from src.factories.pipeline_factory import PipelineFactory
@@ -36,7 +37,7 @@ async def run_top_artists_and_genres_pipelines(
 
 async def run_top_tracks_and_emotions_pipelines(
     top_tracks_pipeline: TopTracksPipeline,
-    # top_emotions_pipeline: TopEmotionsPipeline,
+    top_emotions_pipeline: TopEmotionsPipeline,
     access_token: str,
     user_id: str,
     time_range: TimeRange,
@@ -48,18 +49,18 @@ async def run_top_tracks_and_emotions_pipelines(
         time_range=time_range,
         collection_date=collection_date,
     )
-    # await top_emotions_pipeline.run(
-    #     user_id=user_id, time_range=time_range, collection_date=collection_date, tracks=top_tracks
-    # )
+    await top_emotions_pipeline.run(
+        user_id=user_id, time_range=time_range, collection_date=collection_date, tracks=top_tracks
+    )
 
 
 async def main(access_token: str, time_range: TimeRange, collection_date: date) -> None:
     async with httpx.AsyncClient() as client:
         spotify_service = SpotifyService(client=client, base_url=settings.spotify_base_url)
-        # lyrics_service = LyricsService(client=client, base_url=settings.lyrics_base_url)
-        # emotional_profile_service = EmotionalProfileService(
-            # gcp_project_id=settings.gcp_project_id, gcp_location=settings.gcp_location, model_name=settings.model_name
-        # )
+        lyrics_service = LyricsService(client=client, base_url=settings.lyrics_base_url)
+        emotional_profile_service = EmotionalProfileService(
+            gcp_project_id=settings.gcp_project_id, gcp_location=settings.gcp_location, model_name=settings.model_name
+        )
 
         with get_db_session(settings.db_connection_string) as db_session:
             pipeline_factory = PipelineFactory(spotify_service=spotify_service, db_session=db_session)
@@ -67,7 +68,7 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
             top_artists_pipeline: TopArtistsPipeline = pipeline_factory.create_top_artists_pipeline()
             top_tracks_pipeline: TopTracksPipeline = pipeline_factory.create_top_tracks_pipeline()
             top_genres_pipeline: TopGenresPipeline = pipeline_factory.create_top_genres_pipeline()
-            # top_emotions_pipeline: TopEmotionsPipeline = pipeline_factory.create_top_emotions_pipeline()
+            top_emotions_pipeline: TopEmotionsPipeline = pipeline_factory.create_top_emotions_pipeline()
 
             profile = await profile_pipeline.run(access_token)
 
@@ -82,7 +83,7 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
                 ),
                 run_top_tracks_and_emotions_pipelines(
                     top_tracks_pipeline=top_tracks_pipeline,
-                    # top_emotions_pipeline=top_emotions_pipeline,
+                    top_emotions_pipeline=top_emotions_pipeline,
                     access_token=access_token,
                     user_id=profile.id,
                     time_range=time_range,

@@ -74,7 +74,7 @@ class TrackDB(Base):
     popularity: Mapped[int]
 
     artists: Mapped[list[ArtistDB]] = relationship(secondary=track_artist_association, back_populates="tracks")
-    lyrics: Mapped[TrackLyricsDB] = relationship()
+    lyrics: Mapped["TrackLyricsDB"] = relationship()
 
 
 # -----------------------------
