@@ -16,7 +16,6 @@ class TrackEmotionalProfilesRepository:
         ]
         stmt = insert(TrackEmotionalProfileDB).values(values)
         self.db_session.execute(stmt)
-        self.db_session.commit()
 
     def get_many(self, track_ids: set[str]) -> list[TrackEmotionalProfile]:
         db_track_emotional_profiles = (

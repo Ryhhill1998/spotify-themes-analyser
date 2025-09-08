@@ -35,15 +35,19 @@ class TopEmotionsPipeline:
 
     async def _get_several_track_lyrics(self, lyrics_requests: list[TrackLyricsRequest]) -> list[TrackLyrics]:
         tasks = [self._get_track_lyrics(request) for request in lyrics_requests]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        return [res for res in results if isinstance(res, TrackLyrics)]
     
     async def _get_track_emotional_profile(self, request: TrackEmotionalProfileRequest) -> TrackEmotionalProfile:
         emotional_profile = await self.emotional_profile_service.get_emotional_profile(request.lyrics)
+        print(f"{emotional_profile = }")
         return TrackEmotionalProfile(track_id=request.track_id, emotional_profile=emotional_profile)
 
     async def _get_several_track_emotional_profiles(self, emotional_profile_requests: list[TrackEmotionalProfileRequest]) -> list[TrackEmotionalProfile]:
         tasks = [self._get_track_emotional_profile(request) for request in emotional_profile_requests]
-        return await asyncio.gather(*tasks)
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        print(f"{results = }")
+        return [res for res in results if isinstance(res, TrackEmotionalProfile)]
     
     @staticmethod
     def _aggregate_emotions(emotional_profile_responses: list[TrackEmotionalProfile]) -> dict[str, float]:
@@ -64,7 +68,7 @@ class TopEmotionsPipeline:
     
     @staticmethod
     def _rank_and_normalise_emotions(average_emotions: dict[str, float], n: int) -> dict[str, float]:
-        top_n_emotions = heapq.nlargest(n, average_emotions.items(), key=lambda _, percentage: percentage)
+        top_n_emotions = heapq.nlargest(n, average_emotions.items(), key=lambda item: item[1])
 
         total = sum(percentage for _, percentage in top_n_emotions)
 
@@ -119,7 +123,7 @@ class TopEmotionsPipeline:
             TrackLyricsRequest(
                 track_id=track.id, 
                 track_name=track.name, 
-                track_artist=track.artist_ids[0],
+                track_artist=track.artists[0].name,
             ) 
             for track in tracks
             if track.id in track_ids
@@ -142,6 +146,7 @@ class TopEmotionsPipeline:
 
         # get emotional profile responses from emotional profile service and store in db
         new_track_emotional_profiles: list[TrackEmotionalProfile] = await self._get_several_track_emotional_profiles(emotional_profile_requests)
+        print(f"{new_track_emotional_profiles = }")
         self.emotional_profile_repository.add_many(new_track_emotional_profiles)
 
         # calculate top emotions

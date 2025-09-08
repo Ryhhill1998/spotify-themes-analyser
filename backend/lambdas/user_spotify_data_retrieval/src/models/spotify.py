@@ -1,15 +1,11 @@
 from pydantic import BaseModel
 
+from src.models.shared import Image, TrackArtist
+
 
 # -----------------------------
 # Shared
 # -----------------------------
-class SpotifyImage(BaseModel):
-    height: int
-    width: int
-    url: str
-
-
 class SpotifyProfileFollowers(BaseModel):
     total: int
 
@@ -25,7 +21,7 @@ class SpotifyProfile(BaseModel):
     id: str
     display_name: str
     email: str | None = None
-    images: list[SpotifyImage]
+    images: list[Image]
     external_urls: SpotifyItemExternalUrls
     followers: SpotifyProfileFollowers
 
@@ -36,7 +32,7 @@ class SpotifyProfile(BaseModel):
 class SpotifyArtist(BaseModel):
     id: str
     name: str
-    images: list[SpotifyImage]
+    images: list[Image]
     external_urls: SpotifyItemExternalUrls
     genres: list[str]
     followers: SpotifyProfileFollowers
@@ -48,13 +44,8 @@ class SpotifyArtist(BaseModel):
 # -----------------------------
 class SpotifyTrackAlbum(BaseModel):
     name: str
-    images: list[SpotifyImage]
+    images: list[Image]
     release_date: str
-
-
-class SpotifyTrackArtist(BaseModel):
-    id: str
-    name: str
 
 
 class SpotifyTrack(BaseModel):
@@ -65,4 +56,4 @@ class SpotifyTrack(BaseModel):
     explicit: bool
     duration_ms: int
     popularity: int
-    artists: list[SpotifyTrackArtist]
+    artists: list[TrackArtist]

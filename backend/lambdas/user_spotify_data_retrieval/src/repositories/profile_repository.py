@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 from src.models.domain import Profile
@@ -10,7 +9,7 @@ class ProfileRepository:
         self.session = db_session
 
     def upsert(self, profile: Profile) -> None:
-        values = asdict(profile)
+        values = profile.model_dump()
 
         stmt = insert(ProfileDB).values(values)
         stmt = stmt.on_conflict_do_update(

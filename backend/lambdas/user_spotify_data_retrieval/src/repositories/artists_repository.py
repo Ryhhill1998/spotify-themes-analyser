@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from sqlalchemy.orm import Session
 from src.models.domain import Artist
 from src.models.db import ArtistDB
@@ -10,7 +9,7 @@ class ArtistsRepository:
         self.db_session = db_session
 
     def upsert_many(self, artists: list[Artist]) -> None:
-        values = [asdict(artist) for artist in artists]
+        values = [artist.model_dump() for artist in artists]
 
         stmt = insert(ArtistDB).values(values)
         stmt = stmt.on_conflict_do_update(

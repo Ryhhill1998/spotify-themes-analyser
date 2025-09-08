@@ -2,9 +2,9 @@ from datetime import date
 import httpx
 import asyncio
 
-from backend.lambdas.user_spotify_data_retrieval.src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
-from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profile_service import EmotionalProfileService
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics_service import LyricsService
+from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
+from src.services.emotional_profile_service import EmotionalProfileService
+from src.services.lyrics_service import LyricsService
 from src.pipelines.top_genres_pipeline import TopGenresPipeline
 from src.core.config import Settings
 from src.factories.pipeline_factory import PipelineFactory
@@ -16,6 +16,8 @@ from src.pipelines.top_artists_pipeline import TopArtistsPipeline
 from src.pipelines.top_tracks_pipeline import TopTracksPipeline
 
 settings = Settings()
+
+lyrics_semaphore = asyncio.Semaphore(settings.lyrics_max_concurrent_scrapes)
 
 
 async def run_top_artists_and_genres_pipelines(
@@ -59,9 +61,14 @@ async def run_top_tracks_and_emotions_pipelines(
 async def main(access_token: str, time_range: TimeRange, collection_date: date) -> None:
     async with httpx.AsyncClient() as client:
         spotify_service = SpotifyService(client=client, base_url=settings.spotify_base_url)
-        lyrics_service = LyricsService(client=client, base_url=settings.lyrics_base_url)
+        lyrics_service = LyricsService(client=client, base_url=settings.lyrics_base_url, headers=settings.lyrics_headers, semaphore=lyrics_semaphore)
         emotional_profile_service = EmotionalProfileService(
-            gcp_project_id=settings.gcp_project_id, gcp_location=settings.gcp_location, model_name=settings.model_name
+            api_key=settings.model_api_key,
+            model=settings.model_name,
+            temperature=settings.model_temp,
+            max_tokens=settings.model_max_tokens,
+            top_p=settings.model_top_p,
+            instructions=settings.model_instructions,
         )
 
         with get_db_session(settings.db_connection_string) as db_session:
@@ -104,7 +111,7 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
 
 
 def handler(event, context) -> None:
-    access_token = "BQB62-q8NjI9_0rrQCjQdb8asnv-Tg0Vw6gwGvwLv-zWQvBcUOvI5s8gTE6YJrUIboIi0qu65S2GqjRII2EDxXcW9fyPjmK5R2wyGVKGJA7_0w6P1W6m8EWFPkoImugoBbOIH8Cu2Y0va3glw-aRH78BJyaJoFaA9mvKLm_nKTIdDkCWCCIlttm95_O8ZjBldsbCHayEfl9irYcIYXZZh1M7W8ui0OF-tkApLp4lETGSW0PW4hha4hZd"
+    access_token = "BQAgcDQIip6RBOJXJZGphn3CPlTUlzLz8vVNOkYYpYGyDLM7RT65fXhN2rRghc7YsUK7yd4lNEvvvArt4VjpWEKW3jUNH3jniqg0xIZ8mkAKiXy9NpmTuZFXx-gsURxIMuRFT_wi6qqwuTFwfRXzd-qffy41wqQp0eITwo0GZe4uupmlk0hl8xpvhYDkC8Uu1fvOYHoQhSV8NYEGn7eeKpnH3uTb-lZiQcTio_z62m6ePsxRPCPuqtU6"
     time_range = TimeRange.SHORT_TERM
     collection_date = date.today()
 

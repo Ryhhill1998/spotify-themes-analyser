@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from dataclasses import asdict
 from typing import Generic, TypeVar
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -19,10 +18,9 @@ class TopItemsBaseRepository(ABC, Generic[TopItemDBType, TopItemDomainType]):
         self.db_model = db_model
 
     def add_many(self, top_items: list[TopItemDomainType]) -> None:
-        values = [asdict(item) for item in top_items]
+        values = [item.model_dump() for item in top_items]
         stmt = insert(self.db_model).values(values)
         self.db_session.execute(stmt)
-        self.db_session.commit()
 
     def _get_latest_snapshot(
         self,

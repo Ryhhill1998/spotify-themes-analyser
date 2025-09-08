@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert
 
@@ -14,7 +13,6 @@ class TrackLyricsRepository:
         values = [item.model_dump() for item in top_items]
         stmt = insert(TrackLyricsDB).values(values)
         self.db_session.execute(stmt)
-        self.db_session.commit()
 
     def get_many(self, track_ids: set[str]) -> list[TrackLyrics]:
         db_track_emotional_profiles = (

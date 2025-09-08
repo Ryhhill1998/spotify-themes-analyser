@@ -21,7 +21,7 @@ def get_db_session(connection_string: str) -> Generator[Session, None, None]:
     try:
         yield session
         session.commit() 
-    except Exception as e:
+    except Exception:
         logger.exception("Transaction failed, rolling back")
         session.rollback()
     finally:

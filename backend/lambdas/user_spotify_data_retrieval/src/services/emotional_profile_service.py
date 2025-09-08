@@ -8,6 +8,7 @@ from src.models.domain import EmotionalProfile
 class EmotionalProfileService:
     def __init__(
         self, 
+        api_key: str,
         model: str, 
         temperature: float, 
         max_tokens: int, 
@@ -19,7 +20,7 @@ class EmotionalProfileService:
             max_tokens=max_tokens,
             top_p=top_p,
         )
-        provider = GoogleProvider(vertexai=True)
+        provider = GoogleProvider(api_key=api_key)
         model = GoogleModel(model, provider=provider)
         self.agent = Agent(
             model=model, 
@@ -29,4 +30,6 @@ class EmotionalProfileService:
         )
 
     async def get_emotional_profile(self, lyrics: str) -> EmotionalProfile:
-        return await self.agent.run(user_prompt=lyrics)
+        result = await self.agent.run(user_prompt=lyrics)
+        return result.output
+    

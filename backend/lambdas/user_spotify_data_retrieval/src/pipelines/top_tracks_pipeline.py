@@ -28,7 +28,7 @@ class TopTracksPipeline:
         tracks: list[Track] = await self.spotify_service.get_user_top_tracks(access_token=access_token, time_range=time_range)
 
         # 2. Extract unique artist ids from tracks
-        unique_artist_ids: set[str] = set(artist_id for track in tracks for artist_id in track.artist_ids)
+        unique_artist_ids: set[str] = set(artist.id for track in tracks for artist in track.artists)
 
         # 3. Get full artist details from Spotify API
         artists: list[Artist] = await self.spotify_service.get_artists_by_ids(access_token=access_token, artist_ids=list(unique_artist_ids))

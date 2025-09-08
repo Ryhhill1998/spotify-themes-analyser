@@ -1,4 +1,3 @@
-from dataclasses import asdict
 from sqlalchemy.orm import Session
 from src.models.domain import Track
 from src.models.db import TrackDB, track_artist_association
@@ -14,8 +13,8 @@ class TracksRepository:
         values = []
         
         for track in tracks:
-            track_data = asdict(track)
-            track_data.pop("artist_ids")
+            track_data = track.model_dump()
+            track_data.pop("artists")
             values.append(track_data)
         
         stmt = insert(TrackDB).values(values)
@@ -34,9 +33,9 @@ class TracksRepository:
 
         # upsert track artist association
         association_values = [
-            {"track_id": track.id, "artist_id": artist_id}
+            {"track_id": track.id, "artist_id": artist.id}
             for track in tracks
-            for artist_id in track.artist_ids
+            for artist in track.artists
         ]
 
         if association_values:

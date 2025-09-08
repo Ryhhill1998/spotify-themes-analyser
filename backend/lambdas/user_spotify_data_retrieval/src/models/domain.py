@@ -4,16 +4,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
+from src.models.shared import Image, TrackArtist
 from src.models.enums import PositionChange, TimeRange
-
-
-# -----------------------------
-# Shared
-# -----------------------------
-class Image(BaseModel):
-    height: int
-    width: int
-    url: str
 
 
 # -----------------------------
@@ -54,7 +46,7 @@ class Track(BaseModel):
     explicit: bool
     duration_ms: int
     popularity: int
-    artist_ids: list[str]
+    artists: list[TrackArtist]
 
 
 # -----------------------------

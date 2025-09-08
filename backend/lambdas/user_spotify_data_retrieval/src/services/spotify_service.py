@@ -4,7 +4,7 @@ from httpx import AsyncClient
 
 from src.models.enums import TimeRange
 from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
-from src.models.domain import Image, Profile, Artist, Track
+from src.models.domain import Profile, Artist, Track
 
 
 class SpotifyService:
@@ -31,7 +31,7 @@ class SpotifyService:
             display_name=spotify_profile.display_name,
             email=spotify_profile.email,
             spotify_url=spotify_profile.external_urls.spotify,
-            images=[Image(**image.model_dump()) for image in spotify_profile.images],
+            images=spotify_profile.images,
             followers=spotify_profile.followers.total
         )
     
@@ -49,7 +49,7 @@ class SpotifyService:
         return Artist(
             id=spotify_artist.id,
             name=spotify_artist.name,
-            images=[Image(**image.model_dump()) for image in spotify_artist.images],
+            images=spotify_artist.images,
             spotify_url=spotify_artist.external_urls.spotify,
             genres=spotify_artist.genres,
             followers=spotify_artist.followers.total,
@@ -74,14 +74,14 @@ class SpotifyService:
         return Track(
             id=spotify_track.id,
             name=spotify_track.name,
-            images=[Image(**image.model_dump()) for image in spotify_track.album.images],
+            images=spotify_track.album.images,
             spotify_url=spotify_track.external_urls.spotify,
             album_name=spotify_track.album.name,
             release_date=spotify_track.album.release_date,
             explicit=spotify_track.explicit,
             duration_ms=spotify_track.duration_ms,
             popularity=spotify_track.popularity,
-            artist_ids=[artist.id for artist in spotify_track.artists],
+            artists=spotify_track.artists,
         ) 
 
     async def get_user_top_tracks(

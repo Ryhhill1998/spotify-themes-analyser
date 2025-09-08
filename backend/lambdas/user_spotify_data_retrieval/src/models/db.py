@@ -147,7 +147,7 @@ class TopEmotionDB(TopItemDBBase):
 # -----------------------------
 # TrackLyrics
 # -----------------------------
-class TrackLyricsDB:
+class TrackLyricsDB(Base):
     __tablename__ = "track_lyrics"
 
     track_id: Mapped[str] = mapped_column(ForeignKey("track.id"), primary_key=True)
@@ -157,7 +157,7 @@ class TrackLyricsDB:
 # -----------------------------
 # TrackEmotionalProfile
 # -----------------------------
-class TrackEmotionalProfileDB:
+class TrackEmotionalProfileDB(Base):
     __tablename__ = "track_emotional_profile"
 
     track_id: Mapped[str] = mapped_column(ForeignKey("track.id"), primary_key=True)

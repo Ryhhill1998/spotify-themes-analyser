@@ -23,8 +23,10 @@ class LyricsServiceNotFoundException(LyricsServiceException):
 
 
 class LyricsService:
-    def __init__(self, client: httpx.AsyncClient, semaphore: asyncio.Semaphore):
+    def __init__(self, client: httpx.AsyncClient, base_url: str, headers: dict[str, str], semaphore: asyncio.Semaphore):
         self.client = client 
+        self.base_url = base_url
+        self.headers = headers
         self.semaphore = semaphore
 
     @staticmethod
@@ -58,12 +60,12 @@ class LyricsService:
         artist = self._format_string_for_url(artist).capitalize()
         title = self._format_string_for_url(title)
 
-        return f"/{artist}-{title}-lyrics"
+        return f"{self.base_url}/{artist}-{title}-lyrics"
     
     async def _make_limited_request(self, url: str, delay: float) -> httpx.Response:
         async with self.semaphore:
             await asyncio.sleep(delay)
-            response = await self.client.get(url=url, follow_redirects=True)
+            response = await self.client.get(url=url, headers=self.headers, follow_redirects=True)
 
         return response
     
@@ -80,7 +82,7 @@ class LyricsService:
         except httpx.RequestError as e:
             raise LyricsServiceException(f"Request failed - {e}")
 
-    def _extract_lyrics_from_html(html: str) -> str | None:
+    def _extract_lyrics_from_html(self, html: str) -> str | None:
         soup = bs4.BeautifulSoup(html, "html.parser")
         lyrics_containers = soup.select("div[data-lyrics-container='true']")
 
