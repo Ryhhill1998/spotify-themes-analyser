@@ -1,0 +1,1123 @@
+{
+	"me": {
+		"country": "X",
+		"display_name": "First",
+		"email": "first.last@domain.com",
+		"explicit_content": { "filter_enabled": false, "filter_locked": false },
+		"external_urls": { "spotify": "https://open.spotify.com/user/123" },
+		"followers": { "href": null, "total": 16 },
+		"href": "https://api.spotify.com/v1/users/123",
+		"id": "123",
+		"images": [
+			{
+				"url": "https://i.scdn.co/image/456",
+				"height": 300,
+				"width": 300
+			},
+			{ "url": "https://i.scdn.co/image/789", "height": 64, "width": 64 }
+		],
+		"product": "premium",
+		"type": "user",
+		"uri": "spotify:user:123"
+	},
+	"me/top/artists": {
+		"items": [
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+				},
+				"followers": { "href": null, "total": 2689316 },
+				"genres": ["progressive metal", "metalcore"],
+				"href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
+				"id": "2n2RSaZqBuUUukhbLlpnE6",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5ebd00c2ff422829437e6b5f1e0",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab67616100005174d00c2ff422829437e6b5f1e0",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f178d00c2ff422829437e6b5f1e0",
+						"width": 160
+					}
+				],
+				"name": "Sleep Token",
+				"popularity": 82,
+				"type": "artist",
+				"uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+				},
+				"followers": { "href": null, "total": 327844 },
+				"genres": [],
+				"href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD",
+				"id": "6NnBBumbcMYsaPTHFhPtXD",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5eb2b8c0a420a952a14a2e23c9c",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab676161000051742b8c0a420a952a14a2e23c9c",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f1782b8c0a420a952a14a2e23c9c",
+						"width": 160
+					}
+				],
+				"name": "VOILÀ",
+				"popularity": 70,
+				"type": "artist",
+				"uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/6TIYQ3jFPwQSRmorSezPxX"
+				},
+				"followers": { "href": null, "total": 5615062 },
+				"genres": [],
+				"href": "https://api.spotify.com/v1/artists/6TIYQ3jFPwQSRmorSezPxX",
+				"id": "6TIYQ3jFPwQSRmorSezPxX",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5eb85e7615a199f8b17fabfcd61",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab6761610000517485e7615a199f8b17fabfcd61",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f17885e7615a199f8b17fabfcd61",
+						"width": 160
+					}
+				],
+				"name": "mgk",
+				"popularity": 82,
+				"type": "artist",
+				"uri": "spotify:artist:6TIYQ3jFPwQSRmorSezPxX"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/70BYFdaZbEKbeauJ670ysI"
+				},
+				"followers": { "href": null, "total": 4499344 },
+				"genres": ["post-grunge", "alternative metal", "rock"],
+				"href": "https://api.spotify.com/v1/artists/70BYFdaZbEKbeauJ670ysI",
+				"id": "70BYFdaZbEKbeauJ670ysI",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5eb5c83ee58ebb4cfeed8a528e2",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab676161000051745c83ee58ebb4cfeed8a528e2",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f1785c83ee58ebb4cfeed8a528e2",
+						"width": 160
+					}
+				],
+				"name": "Shinedown",
+				"popularity": 75,
+				"type": "artist",
+				"uri": "spotify:artist:70BYFdaZbEKbeauJ670ysI"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/4oUHIQIBe0LHzYfvXNW4QM"
+				},
+				"followers": { "href": null, "total": 13629163 },
+				"genres": ["country"],
+				"href": "https://api.spotify.com/v1/artists/4oUHIQIBe0LHzYfvXNW4QM",
+				"id": "4oUHIQIBe0LHzYfvXNW4QM",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5eb4245b1652fcc23f2b76ccd07",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab676161000051744245b1652fcc23f2b76ccd07",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f1784245b1652fcc23f2b76ccd07",
+						"width": 160
+					}
+				],
+				"name": "Morgan Wallen",
+				"popularity": 94,
+				"type": "artist",
+				"uri": "spotify:artist:4oUHIQIBe0LHzYfvXNW4QM"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/6Ad91Jof8Niiw0lGLLi3NW"
+				},
+				"followers": { "href": null, "total": 3068496 },
+				"genres": [],
+				"href": "https://api.spotify.com/v1/artists/6Ad91Jof8Niiw0lGLLi3NW",
+				"id": "6Ad91Jof8Niiw0lGLLi3NW",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5eb7c9287712c4355e54c94e0d0",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab676161000051747c9287712c4355e54c94e0d0",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f1787c9287712c4355e54c94e0d0",
+						"width": 160
+					}
+				],
+				"name": "YUNGBLUD",
+				"popularity": 77,
+				"type": "artist",
+				"uri": "spotify:artist:6Ad91Jof8Niiw0lGLLi3NW"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/6XyY86QOPPrYVGvF9ch6wz"
+				},
+				"followers": { "href": null, "total": 31236950 },
+				"genres": [
+					"nu metal",
+					"rap metal",
+					"rock",
+					"alternative metal"
+				],
+				"href": "https://api.spotify.com/v1/artists/6XyY86QOPPrYVGvF9ch6wz",
+				"id": "6XyY86QOPPrYVGvF9ch6wz",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5eb527d95dabbe8b8b527e8136f",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab67616100005174527d95dabbe8b8b527e8136f",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f178527d95dabbe8b8b527e8136f",
+						"width": 160
+					}
+				],
+				"name": "Linkin Park",
+				"popularity": 92,
+				"type": "artist",
+				"uri": "spotify:artist:6XyY86QOPPrYVGvF9ch6wz"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/39VNwvlQTqE9SvgPjjnMpc"
+				},
+				"followers": { "href": null, "total": 572590 },
+				"genres": [],
+				"href": "https://api.spotify.com/v1/artists/39VNwvlQTqE9SvgPjjnMpc",
+				"id": "39VNwvlQTqE9SvgPjjnMpc",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5ebcd7961c989876a2982feb13e",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab67616100005174cd7961c989876a2982feb13e",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f178cd7961c989876a2982feb13e",
+						"width": 160
+					}
+				],
+				"name": "NOTHING MORE",
+				"popularity": 68,
+				"type": "artist",
+				"uri": "spotify:artist:39VNwvlQTqE9SvgPjjnMpc"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/3Ngh2zDBRPEriyxQDAMKd1"
+				},
+				"followers": { "href": null, "total": 2672282 },
+				"genres": ["post-grunge"],
+				"href": "https://api.spotify.com/v1/artists/3Ngh2zDBRPEriyxQDAMKd1",
+				"id": "3Ngh2zDBRPEriyxQDAMKd1",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5eb2600695faee2deeb736755f0",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab676161000051742600695faee2deeb736755f0",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f1782600695faee2deeb736755f0",
+						"width": 160
+					}
+				],
+				"name": "Matchbox Twenty",
+				"popularity": 71,
+				"type": "artist",
+				"uri": "spotify:artist:3Ngh2zDBRPEriyxQDAMKd1"
+			},
+			{
+				"external_urls": {
+					"spotify": "https://open.spotify.com/artist/3T55D3LMiygE9eSKFpiAye"
+				},
+				"followers": { "href": null, "total": 355499 },
+				"genres": ["post-grunge"],
+				"href": "https://api.spotify.com/v1/artists/3T55D3LMiygE9eSKFpiAye",
+				"id": "3T55D3LMiygE9eSKFpiAye",
+				"images": [
+					{
+						"height": 640,
+						"url": "https://i.scdn.co/image/ab6761610000e5ebd1634326a43dfa2aea839053",
+						"width": 640
+					},
+					{
+						"height": 320,
+						"url": "https://i.scdn.co/image/ab67616100005174d1634326a43dfa2aea839053",
+						"width": 320
+					},
+					{
+						"height": 160,
+						"url": "https://i.scdn.co/image/ab6761610000f178d1634326a43dfa2aea839053",
+						"width": 160
+					}
+				],
+				"name": "Badflower",
+				"popularity": 57,
+				"type": "artist",
+				"uri": "spotify:artist:3T55D3LMiygE9eSKFpiAye"
+			}
+		]
+	},
+	"/me/top/tracks": {
+		"items": [
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+							},
+							"href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
+							"id": "2n2RSaZqBuUUukhbLlpnE6",
+							"name": "Sleep Token",
+							"type": "artist",
+							"uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
+						}
+					],
+					"available_markets": ["MG", "MU", "MZ"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/1lS7FeRcSUuIGqyg99UGpj"
+					},
+					"href": "https://api.spotify.com/v1/albums/1lS7FeRcSUuIGqyg99UGpj",
+					"id": "1lS7FeRcSUuIGqyg99UGpj",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b2730e48dcb579fd8e59d0a3c218",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e020e48dcb579fd8e59d0a3c218",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d000048510e48dcb579fd8e59d0a3c218",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "Even In Arcadia",
+					"release_date": "2025-05-09",
+					"release_date_precision": "day",
+					"total_tracks": 10,
+					"type": "album",
+					"uri": "spotify:album:1lS7FeRcSUuIGqyg99UGpj"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+						},
+						"href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
+						"id": "2n2RSaZqBuUUukhbLlpnE6",
+						"name": "Sleep Token",
+						"type": "artist",
+						"uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
+					}
+				],
+				"available_markets": ["AR", "XK"],
+				"disc_number": 1,
+				"duration_ms": 466463,
+				"explicit": false,
+				"external_ids": { "isrc": "USRC12500013" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/4Lojbtk7XNMdSKRHSFbdkm"
+				},
+				"href": "https://api.spotify.com/v1/tracks/4Lojbtk7XNMdSKRHSFbdkm",
+				"id": "4Lojbtk7XNMdSKRHSFbdkm",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Look To Windward",
+				"popularity": 73,
+				"preview_url": null,
+				"track_number": 1,
+				"type": "track",
+				"uri": "spotify:track:4Lojbtk7XNMdSKRHSFbdkm"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/6Ad91Jof8Niiw0lGLLi3NW"
+							},
+							"href": "https://api.spotify.com/v1/artists/6Ad91Jof8Niiw0lGLLi3NW",
+							"id": "6Ad91Jof8Niiw0lGLLi3NW",
+							"name": "YUNGBLUD",
+							"type": "artist",
+							"uri": "spotify:artist:6Ad91Jof8Niiw0lGLLi3NW"
+						}
+					],
+					"available_markets": ["PW"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/19PD2IPfceDn9fLAa05TFE"
+					},
+					"href": "https://api.spotify.com/v1/albums/19PD2IPfceDn9fLAa05TFE",
+					"id": "19PD2IPfceDn9fLAa05TFE",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b2737808f0d7992027b6b10254dd",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e027808f0d7992027b6b10254dd",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d000048517808f0d7992027b6b10254dd",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "Idols",
+					"release_date": "2025-06-20",
+					"release_date_precision": "day",
+					"total_tracks": 12,
+					"type": "album",
+					"uri": "spotify:album:19PD2IPfceDn9fLAa05TFE"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/6Ad91Jof8Niiw0lGLLi3NW"
+						},
+						"href": "https://api.spotify.com/v1/artists/6Ad91Jof8Niiw0lGLLi3NW",
+						"id": "6Ad91Jof8Niiw0lGLLi3NW",
+						"name": "YUNGBLUD",
+						"type": "artist",
+						"uri": "spotify:artist:6Ad91Jof8Niiw0lGLLi3NW"
+					}
+				],
+				"available_markets": ["NG", "TZ", "UG", "BZ", "BF", "UZ", "ZW"],
+				"disc_number": 1,
+				"duration_ms": 246946,
+				"explicit": false,
+				"external_ids": { "isrc": "USUG12501758" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/42GKyvz5KBsHTBaLpo3cqJ"
+				},
+				"href": "https://api.spotify.com/v1/tracks/42GKyvz5KBsHTBaLpo3cqJ",
+				"id": "42GKyvz5KBsHTBaLpo3cqJ",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Zombie",
+				"popularity": 73,
+				"preview_url": null,
+				"track_number": 4,
+				"type": "track",
+				"uri": "spotify:track:42GKyvz5KBsHTBaLpo3cqJ"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/4IWBUUAFIplrNtaOHcJPRM"
+							},
+							"href": "https://api.spotify.com/v1/artists/4IWBUUAFIplrNtaOHcJPRM",
+							"id": "4IWBUUAFIplrNtaOHcJPRM",
+							"name": "James Arthur",
+							"type": "artist",
+							"uri": "spotify:artist:4IWBUUAFIplrNtaOHcJPRM"
+						}
+					],
+					"available_markets": ["DO", "DE", "EE", "SV"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/7nktQKQFOMkh40iOTOzzBS"
+					},
+					"href": "https://api.spotify.com/v1/albums/7nktQKQFOMkh40iOTOzzBS",
+					"id": "7nktQKQFOMkh40iOTOzzBS",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b273765c38475815f11c5487299e",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e02765c38475815f11c5487299e",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d00004851765c38475815f11c5487299e",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "PISCES",
+					"release_date": "2025-04-25",
+					"release_date_precision": "day",
+					"total_tracks": 12,
+					"type": "album",
+					"uri": "spotify:album:7nktQKQFOMkh40iOTOzzBS"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/4IWBUUAFIplrNtaOHcJPRM"
+						},
+						"href": "https://api.spotify.com/v1/artists/4IWBUUAFIplrNtaOHcJPRM",
+						"id": "4IWBUUAFIplrNtaOHcJPRM",
+						"name": "James Arthur",
+						"type": "artist",
+						"uri": "spotify:artist:4IWBUUAFIplrNtaOHcJPRM"
+					}
+				],
+				"available_markets": ["CL", "CO", "CR", "CY"],
+				"disc_number": 1,
+				"duration_ms": 255084,
+				"explicit": false,
+				"external_ids": { "isrc": "DEE862402264" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/0871iIk4stdN902Gj33P2d"
+				},
+				"href": "https://api.spotify.com/v1/tracks/0871iIk4stdN902Gj33P2d",
+				"id": "0871iIk4stdN902Gj33P2d",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Embers",
+				"popularity": 46,
+				"preview_url": null,
+				"track_number": 8,
+				"type": "track",
+				"uri": "spotify:track:0871iIk4stdN902Gj33P2d"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+							},
+							"href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD",
+							"id": "6NnBBumbcMYsaPTHFhPtXD",
+							"name": "VOILÀ",
+							"type": "artist",
+							"uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD"
+						}
+					],
+					"available_markets": ["CI", "DJ", "CD", "CG"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/5k77pSc53QUp8WNIXwseu7"
+					},
+					"href": "https://api.spotify.com/v1/albums/5k77pSc53QUp8WNIXwseu7",
+					"id": "5k77pSc53QUp8WNIXwseu7",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b273f017130e0c378fc869fc469e",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e02f017130e0c378fc869fc469e",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d00004851f017130e0c378fc869fc469e",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "The Last Laugh (Part I)",
+					"release_date": "2025-06-20",
+					"release_date_precision": "day",
+					"total_tracks": 14,
+					"type": "album",
+					"uri": "spotify:album:5k77pSc53QUp8WNIXwseu7"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+						},
+						"href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD",
+						"id": "6NnBBumbcMYsaPTHFhPtXD",
+						"name": "VOILÀ",
+						"type": "artist",
+						"uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD"
+					}
+				],
+				"available_markets": ["KH", "CM", "TD", "KM", "GQ", "SZ", "GA"],
+				"disc_number": 1,
+				"duration_ms": 245000,
+				"explicit": false,
+				"external_ids": { "isrc": "QM24S2501952" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/71w4bqfvnINCpLnypPM9Dj"
+				},
+				"href": "https://api.spotify.com/v1/tracks/71w4bqfvnINCpLnypPM9Dj",
+				"id": "71w4bqfvnINCpLnypPM9Dj",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Good Grief",
+				"popularity": 48,
+				"preview_url": null,
+				"track_number": 13,
+				"type": "track",
+				"uri": "spotify:track:71w4bqfvnINCpLnypPM9Dj"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+							},
+							"href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
+							"id": "2n2RSaZqBuUUukhbLlpnE6",
+							"name": "Sleep Token",
+							"type": "artist",
+							"uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
+						}
+					],
+					"available_markets": ["GR", "GT", "HN", "HK", "HU"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/1lS7FeRcSUuIGqyg99UGpj"
+					},
+					"href": "https://api.spotify.com/v1/albums/1lS7FeRcSUuIGqyg99UGpj",
+					"id": "1lS7FeRcSUuIGqyg99UGpj",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b2730e48dcb579fd8e59d0a3c218",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e020e48dcb579fd8e59d0a3c218",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d000048510e48dcb579fd8e59d0a3c218",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "Even In Arcadia",
+					"release_date": "2025-05-09",
+					"release_date_precision": "day",
+					"total_tracks": 10,
+					"type": "album",
+					"uri": "spotify:album:1lS7FeRcSUuIGqyg99UGpj"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+						},
+						"href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
+						"id": "2n2RSaZqBuUUukhbLlpnE6",
+						"name": "Sleep Token",
+						"type": "artist",
+						"uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
+					}
+				],
+				"available_markets": ["IQ", "LY", "TJ", "VE", "ET", "XK"],
+				"disc_number": 1,
+				"duration_ms": 214648,
+				"explicit": true,
+				"external_ids": { "isrc": "USRC12500015" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/0Uvf2v96tJ5CuyK0LtyAgd"
+				},
+				"href": "https://api.spotify.com/v1/tracks/0Uvf2v96tJ5CuyK0LtyAgd",
+				"id": "0Uvf2v96tJ5CuyK0LtyAgd",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Past Self",
+				"popularity": 73,
+				"preview_url": null,
+				"track_number": 3,
+				"type": "track",
+				"uri": "spotify:track:0Uvf2v96tJ5CuyK0LtyAgd"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+							},
+							"href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD",
+							"id": "6NnBBumbcMYsaPTHFhPtXD",
+							"name": "VOILÀ",
+							"type": "artist",
+							"uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD"
+						}
+					],
+					"available_markets": ["AR", "AU", "AT", "BE", "BO", "CA"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/5k77pSc53QUp8WNIXwseu7"
+					},
+					"href": "https://api.spotify.com/v1/albums/5k77pSc53QUp8WNIXwseu7",
+					"id": "5k77pSc53QUp8WNIXwseu7",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b273f017130e0c378fc869fc469e",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e02f017130e0c378fc869fc469e",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d00004851f017130e0c378fc869fc469e",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "The Last Laugh (Part I)",
+					"release_date": "2025-06-20",
+					"release_date_precision": "day",
+					"total_tracks": 14,
+					"type": "album",
+					"uri": "spotify:album:5k77pSc53QUp8WNIXwseu7"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+						},
+						"href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD",
+						"id": "6NnBBumbcMYsaPTHFhPtXD",
+						"name": "VOILÀ",
+						"type": "artist",
+						"uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD"
+					},
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/4OTFxPi5CtWyj1NThDe6z5"
+						},
+						"href": "https://api.spotify.com/v1/artists/4OTFxPi5CtWyj1NThDe6z5",
+						"id": "4OTFxPi5CtWyj1NThDe6z5",
+						"name": "Weathers",
+						"type": "artist",
+						"uri": "spotify:artist:4OTFxPi5CtWyj1NThDe6z5"
+					}
+				],
+				"available_markets": ["AR", "AU", "AT", "BE", "BO", "BR", "BG"],
+				"disc_number": 1,
+				"duration_ms": 194000,
+				"explicit": true,
+				"external_ids": { "isrc": "QM24S2501016" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/3bUp4O9m98QM9kvVpqtQKP"
+				},
+				"href": "https://api.spotify.com/v1/tracks/3bUp4O9m98QM9kvVpqtQKP",
+				"id": "3bUp4O9m98QM9kvVpqtQKP",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Unhappy Hour (with Weathers)",
+				"popularity": 45,
+				"preview_url": null,
+				"track_number": 8,
+				"type": "track",
+				"uri": "spotify:track:3bUp4O9m98QM9kvVpqtQKP"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/6XyY86QOPPrYVGvF9ch6wz"
+							},
+							"href": "https://api.spotify.com/v1/artists/6XyY86QOPPrYVGvF9ch6wz",
+							"id": "6XyY86QOPPrYVGvF9ch6wz",
+							"name": "Linkin Park",
+							"type": "artist",
+							"uri": "spotify:artist:6XyY86QOPPrYVGvF9ch6wz"
+						}
+					],
+					"available_markets": ["ZA", "SA", "IQ", "VE"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/5QfFvOMOJ0CrIDmu33RmSJ"
+					},
+					"href": "https://api.spotify.com/v1/albums/5QfFvOMOJ0CrIDmu33RmSJ",
+					"id": "5QfFvOMOJ0CrIDmu33RmSJ",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b273a493a67f01bcfe65b23bc910",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e02a493a67f01bcfe65b23bc910",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d00004851a493a67f01bcfe65b23bc910",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "From Zero (Deluxe Edition)",
+					"release_date": "2025-05-16",
+					"release_date_precision": "day",
+					"total_tracks": 14,
+					"type": "album",
+					"uri": "spotify:album:5QfFvOMOJ0CrIDmu33RmSJ"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/6XyY86QOPPrYVGvF9ch6wz"
+						},
+						"href": "https://api.spotify.com/v1/artists/6XyY86QOPPrYVGvF9ch6wz",
+						"id": "6XyY86QOPPrYVGvF9ch6wz",
+						"name": "Linkin Park",
+						"type": "artist",
+						"uri": "spotify:artist:6XyY86QOPPrYVGvF9ch6wz"
+					}
+				],
+				"available_markets": ["AR", "JO", "PS", "IN"],
+				"disc_number": 1,
+				"duration_ms": 183223,
+				"explicit": false,
+				"external_ids": { "isrc": "USWB12500290" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/2SwdMXPvGdciXamSjfoNH9"
+				},
+				"href": "https://api.spotify.com/v1/tracks/2SwdMXPvGdciXamSjfoNH9",
+				"id": "2SwdMXPvGdciXamSjfoNH9",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Up From the Bottom",
+				"popularity": 75,
+				"preview_url": null,
+				"track_number": 12,
+				"type": "track",
+				"uri": "spotify:track:2SwdMXPvGdciXamSjfoNH9"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/3T55D3LMiygE9eSKFpiAye"
+							},
+							"href": "https://api.spotify.com/v1/artists/3T55D3LMiygE9eSKFpiAye",
+							"id": "3T55D3LMiygE9eSKFpiAye",
+							"name": "Badflower",
+							"type": "artist",
+							"uri": "spotify:artist:3T55D3LMiygE9eSKFpiAye"
+						}
+					],
+					"available_markets": ["MZ", "AO", "CI", "DJ", "ZM"],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/1ApjqWf9VPtgc5RgWcLk68"
+					},
+					"href": "https://api.spotify.com/v1/albums/1ApjqWf9VPtgc5RgWcLk68",
+					"id": "1ApjqWf9VPtgc5RgWcLk68",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b2732c8255cfcc8dde98740db7c3",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e022c8255cfcc8dde98740db7c3",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d000048512c8255cfcc8dde98740db7c3",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "No Place Like Home",
+					"release_date": "2025-06-20",
+					"release_date_precision": "day",
+					"total_tracks": 13,
+					"type": "album",
+					"uri": "spotify:album:1ApjqWf9VPtgc5RgWcLk68"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/3T55D3LMiygE9eSKFpiAye"
+						},
+						"href": "https://api.spotify.com/v1/artists/3T55D3LMiygE9eSKFpiAye",
+						"id": "3T55D3LMiygE9eSKFpiAye",
+						"name": "Badflower",
+						"type": "artist",
+						"uri": "spotify:artist:3T55D3LMiygE9eSKFpiAye"
+					}
+				],
+				"disc_number": 1,
+				"duration_ms": 229920,
+				"explicit": true,
+				"external_ids": { "isrc": "QZRD92506600" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/1eXMGoTPkICi00jcVc8LQy"
+				},
+				"href": "https://api.spotify.com/v1/tracks/1eXMGoTPkICi00jcVc8LQy",
+				"id": "1eXMGoTPkICi00jcVc8LQy",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Story Of Our Lives",
+				"popularity": 40,
+				"preview_url": null,
+				"track_number": 4,
+				"type": "track",
+				"uri": "spotify:track:1eXMGoTPkICi00jcVc8LQy"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+							},
+							"href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
+							"id": "2n2RSaZqBuUUukhbLlpnE6",
+							"name": "Sleep Token",
+							"type": "artist",
+							"uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
+						}
+					],
+					"available_markets": [],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/1lS7FeRcSUuIGqyg99UGpj"
+					},
+					"href": "https://api.spotify.com/v1/albums/1lS7FeRcSUuIGqyg99UGpj",
+					"id": "1lS7FeRcSUuIGqyg99UGpj",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b2730e48dcb579fd8e59d0a3c218",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e020e48dcb579fd8e59d0a3c218",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d000048510e48dcb579fd8e59d0a3c218",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "Even In Arcadia",
+					"release_date": "2025-05-09",
+					"release_date_precision": "day",
+					"total_tracks": 10,
+					"type": "album",
+					"uri": "spotify:album:1lS7FeRcSUuIGqyg99UGpj"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+						},
+						"href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6",
+						"id": "2n2RSaZqBuUUukhbLlpnE6",
+						"name": "Sleep Token",
+						"type": "artist",
+						"uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6"
+					}
+				],
+				"available_markets": ["AR", "AU", "AT", "BE", "BO", "BR"],
+				"disc_number": 1,
+				"duration_ms": 268369,
+				"explicit": false,
+				"external_ids": { "isrc": "USRC12500018" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/4IixOTCzviJgIigKleiVbo"
+				},
+				"href": "https://api.spotify.com/v1/tracks/4IixOTCzviJgIigKleiVbo",
+				"id": "4IixOTCzviJgIigKleiVbo",
+				"is_local": false,
+				"is_playable": true,
+				"name": "Even In Arcadia",
+				"popularity": 72,
+				"preview_url": null,
+				"track_number": 6,
+				"type": "track",
+				"uri": "spotify:track:4IixOTCzviJgIigKleiVbo"
+			},
+			{
+				"album": {
+					"album_type": "album",
+					"artists": [
+						{
+							"external_urls": {
+								"spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+							},
+							"href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD",
+							"id": "6NnBBumbcMYsaPTHFhPtXD",
+							"name": "VOILÀ",
+							"type": "artist",
+							"uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD"
+						}
+					],
+					"available_markets": [
+						"BB",
+						"BZ",
+						"BT",
+						"BW",
+						"BF",
+						"CV",
+						"CW"
+					],
+					"external_urls": {
+						"spotify": "https://open.spotify.com/album/5k77pSc53QUp8WNIXwseu7"
+					},
+					"href": "https://api.spotify.com/v1/albums/5k77pSc53QUp8WNIXwseu7",
+					"id": "5k77pSc53QUp8WNIXwseu7",
+					"images": [
+						{
+							"height": 640,
+							"url": "https://i.scdn.co/image/ab67616d0000b273f017130e0c378fc869fc469e",
+							"width": 640
+						},
+						{
+							"height": 300,
+							"url": "https://i.scdn.co/image/ab67616d00001e02f017130e0c378fc869fc469e",
+							"width": 300
+						},
+						{
+							"height": 64,
+							"url": "https://i.scdn.co/image/ab67616d00004851f017130e0c378fc869fc469e",
+							"width": 64
+						}
+					],
+					"is_playable": true,
+					"name": "The Last Laugh (Part I)",
+					"release_date": "2025-06-20",
+					"release_date_precision": "day",
+					"total_tracks": 14,
+					"type": "album",
+					"uri": "spotify:album:5k77pSc53QUp8WNIXwseu7"
+				},
+				"artists": [
+					{
+						"external_urls": {
+							"spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+						},
+						"href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD",
+						"id": "6NnBBumbcMYsaPTHFhPtXD",
+						"name": "VOILÀ",
+						"type": "artist",
+						"uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD"
+					}
+				],
+				"available_markets": ["AR", "AU"],
+				"disc_number": 1,
+				"duration_ms": 219000,
+				"explicit": false,
+				"external_ids": { "isrc": "QM24S2501960" },
+				"external_urls": {
+					"spotify": "https://open.spotify.com/track/60mJhDxOT1LtHFtoBAcZxa"
+				},
+				"href": "https://api.spotify.com/v1/tracks/60mJhDxOT1LtHFtoBAcZxa",
+				"id": "60mJhDxOT1LtHFtoBAcZxa",
+				"is_local": false,
+				"is_playable": true,
+				"name": "The Last Laugh?",
+				"popularity": 45,
+				"preview_url": null,
+				"track_number": 1,
+				"type": "track",
+				"uri": "spotify:track:60mJhDxOT1LtHFtoBAcZxa"
+			}
+		]
+	}
+}

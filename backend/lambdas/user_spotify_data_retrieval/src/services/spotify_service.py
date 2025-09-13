@@ -1,6 +1,6 @@
 import asyncio
 from itertools import batched
-from httpx import AsyncClient
+import httpx
 
 from src.models.enums import TimeRange
 from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
@@ -10,21 +10,21 @@ from src.models.domain import Profile, Artist, Track
 class SpotifyService:
     BATCH_SIZE = 50
 
-    def __init__(self, client: AsyncClient, base_url: str):
+    def __init__(self, client: httpx.AsyncClient, base_url: str):
         self.client = client
         self.base_url = base_url
 
     @staticmethod
     def _get_bearer_auth_headers(access_token: str) -> dict[str, str]:
         return {"Authorization": f"Bearer {access_token}"}
-    
+
     async def _get_data_from_api(
         self, url: str, headers: dict[str, str], params: dict | None = None
     ) -> dict:
         response = await self.client.get(url=url, headers=headers, params=params)
         response.raise_for_status()
         return response.json()
-    
+
     def _spotify_profile_to_profile(self, spotify_profile: SpotifyProfile) -> Profile:
         return Profile(
             id=spotify_profile.id,
@@ -32,9 +32,9 @@ class SpotifyService:
             email=spotify_profile.email,
             spotify_url=spotify_profile.external_urls.spotify,
             images=spotify_profile.images,
-            followers=spotify_profile.followers.total
+            followers=spotify_profile.followers.total,
         )
-    
+
     async def get_user_profile(self, access_token: str) -> Profile:
         url = f"{self.base_url}/me"
         headers = self._get_bearer_auth_headers(access_token)
@@ -44,7 +44,7 @@ class SpotifyService:
         profile = self._spotify_profile_to_profile(spotify_profile)
 
         return profile
-    
+
     def _spotify_artist_to_artist(self, spotify_artist: SpotifyArtist) -> Artist:
         return Artist(
             id=spotify_artist.id,
@@ -54,7 +54,7 @@ class SpotifyService:
             genres=spotify_artist.genres,
             followers=spotify_artist.followers.total,
             popularity=spotify_artist.popularity,
-        ) 
+        )
 
     async def get_user_top_artists(
         self, access_token: str, time_range: TimeRange, limit: int = 50
@@ -69,7 +69,7 @@ class SpotifyService:
         artists = [self._spotify_artist_to_artist(artist) for artist in spotify_artists]
 
         return artists
-    
+
     def _spotify_track_to_track(self, spotify_track: SpotifyTrack) -> Track:
         return Track(
             id=spotify_track.id,
@@ -82,7 +82,7 @@ class SpotifyService:
             duration_ms=spotify_track.duration_ms,
             popularity=spotify_track.popularity,
             artists=spotify_track.artists,
-        ) 
+        )
 
     async def get_user_top_tracks(
         self, access_token: str, time_range: TimeRange, limit: int = 50
@@ -98,7 +98,9 @@ class SpotifyService:
 
         return tracks
 
-    async def _get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[Artist]:
+    async def _get_artists_by_ids(
+        self, access_token: str, artist_ids: list[str]
+    ) -> list[Artist]:
         url = f"{self.base_url}/artists"
         headers = self._get_bearer_auth_headers(access_token)
         params = {"ids": ",".join(artist_ids)}
@@ -109,14 +111,16 @@ class SpotifyService:
         artists = [self._spotify_artist_to_artist(artist) for artist in spotify_artists]
 
         return artists
-    
-    async def get_artists_by_ids(self, access_token: str, artist_ids: list[str]) -> list[Artist]:
+
+    async def get_artists_by_ids(
+        self, access_token: str, artist_ids: list[str]
+    ) -> list[Artist]:
         batched_artist_ids = list(batched(artist_ids, SpotifyService.BATCH_SIZE))
         tasks = [
             self._get_artists_by_ids(access_token=access_token, artist_ids=batch)
             for batch in batched_artist_ids
         ]
         results = await asyncio.gather(*tasks)
-        artists = [artist for batch in results for artist in batch] 
-        
+        artists = [artist for batch in results for artist in batch]
+
         return artists
