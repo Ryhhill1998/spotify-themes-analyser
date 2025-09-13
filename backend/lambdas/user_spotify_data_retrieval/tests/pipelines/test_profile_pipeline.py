@@ -2,6 +2,9 @@ import pytest
 
 from sqlalchemy.orm import Session
 
+from src.models.db import ProfileDB
+from src.models.shared import Image
+from src.models.domain import Profile
 from src.repositories.profile_repository import ProfileRepository
 from src.services.spotify_service import SpotifyService
 from src.pipelines.profile_pipeline import ProfilePipeline
@@ -19,9 +22,45 @@ def profile_pipeline(
 
 
 @pytest.mark.asyncio
-async def test_profile_pipeline_run(profile_pipeline: ProfilePipeline) -> None:
+async def test_profile_pipeline_run_returns_expected_profile(
+    profile_pipeline: ProfilePipeline,
+) -> None:
     access_token = "access_token"
 
     profile = await profile_pipeline.run(access_token)
 
-    print(profile)
+    expected_profile = Profile(
+        id="123",
+        display_name="First",
+        email="first.last@domain.com",
+        images=[
+            Image(url="https://i.scdn.co/image/456", height=300, width=300),
+            Image(url="https://i.scdn.co/image/789", height=64, width=64),
+        ],
+        spotify_url="https://open.spotify.com/user/123",
+        followers=16,
+    )
+    assert profile == expected_profile
+
+
+@pytest.mark.asyncio
+async def test_profile_pipeline_run_adds_profile_to_db(
+    profile_pipeline: ProfilePipeline,
+    db_session: Session,
+) -> None:
+    access_token = "access_token"
+
+    await profile_pipeline.run(access_token)
+
+    profile = db_session.get(ProfileDB, "123")
+    assert (
+        profile.display_name == "First"
+        and profile.email == "first.last@domain.com"
+        and profile.images
+        == [
+            {"url": "https://i.scdn.co/image/456", "height": 300, "width": 300},
+            {"url": "https://i.scdn.co/image/789", "height": 64, "width": 64},
+        ]
+        and profile.spotify_url == "https://open.spotify.com/user/123"
+        and profile.followers == 16
+    )
