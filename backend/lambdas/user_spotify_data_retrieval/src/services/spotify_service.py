@@ -1,10 +1,17 @@
 import asyncio
 from itertools import batched
 import httpx
+from loguru import logger
+import pydantic
 
 from src.models.enums import TimeRange
 from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
 from src.models.domain import Profile, Artist, Track
+
+
+class SpotifyServiceException(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
 
 
 class SpotifyService:
@@ -21,9 +28,13 @@ class SpotifyService:
     async def _get_data_from_api(
         self, url: str, headers: dict[str, str], params: dict | None = None
     ) -> dict:
-        response = await self.client.get(url=url, headers=headers, params=params)
-        response.raise_for_status()
-        return response.json()
+        try:
+            response = await self.client.get(url=url, headers=headers, params=params)
+            response.raise_for_status()
+            return response.json()
+        except (httpx.HTTPStatusError, httpx.RequestError) as e:
+            logger.error(f"API request failed for URL {url}: {e}")
+            raise SpotifyServiceException(f"Failed to fetch data from {url}.") from e
 
     def _spotify_profile_to_profile(self, spotify_profile: SpotifyProfile) -> Profile:
         return Profile(
@@ -35,15 +46,21 @@ class SpotifyService:
             followers=spotify_profile.followers.total,
         )
 
+    def _validate_and_transform_profile_data(self, data: dict) -> Profile:
+        try:
+            spotify_profile = SpotifyProfile.model_validate(data)
+            return self._spotify_profile_to_profile(spotify_profile)
+        except pydantic.ValidationError as e:
+            logger.error(f"Data validation error for user profile: {e}")
+            raise SpotifyServiceException(
+                "Invalid profile data received from API."
+            ) from e
+
     async def get_user_profile(self, access_token: str) -> Profile:
         url = f"{self.base_url}/me"
         headers = self._get_bearer_auth_headers(access_token)
         data = await self._get_data_from_api(url=url, headers=headers)
-
-        spotify_profile = SpotifyProfile.model_validate(data)
-        profile = self._spotify_profile_to_profile(spotify_profile)
-
-        return profile
+        return self._validate_and_transform_profile_data(data)
 
     def _spotify_artist_to_artist(self, spotify_artist: SpotifyArtist) -> Artist:
         return Artist(

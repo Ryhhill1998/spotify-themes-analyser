@@ -64,3 +64,42 @@ async def test_profile_pipeline_run_adds_profile_to_db(
         and profile.spotify_url == "https://open.spotify.com/user/123"
         and profile.followers == 16
     )
+
+
+@pytest.mark.asyncio
+async def test_profile_pipeline_run_updates_profile_in_db_if_already_exists(
+    profile_pipeline: ProfilePipeline,
+    db_session: Session,
+) -> None:
+    existing_profile = ProfileDB(
+        id="123",
+        display_name="Old First",
+        email="old.first.last@domain.com",
+        images=[
+            {"url": "https://i.scdn.co/image/456", "height": 300, "width": 300},
+            {"url": "https://i.scdn.co/image/789", "height": 64, "width": 64},
+        ],
+        spotify_url="https://open.spotify.com/user/123",
+        followers=10,
+    )
+    db_session.add(existing_profile)
+    db_session.commit()
+    creation_timestamp = db_session.get(ProfileDB, "123").creation_timestamp
+    access_token = "access_token"
+
+    await profile_pipeline.run(access_token)
+
+    db_session.commit()
+    profile = db_session.get(ProfileDB, "123")
+    assert (
+        profile.display_name == "First"
+        and profile.email == "first.last@domain.com"
+        and profile.images
+        == [
+            {"url": "https://i.scdn.co/image/456", "height": 300, "width": 300},
+            {"url": "https://i.scdn.co/image/789", "height": 64, "width": 64},
+        ]
+        and profile.spotify_url == "https://open.spotify.com/user/123"
+        and profile.followers == 16
+        and profile.creation_timestamp == creation_timestamp
+    )

@@ -10,7 +10,7 @@ from src.models.db import Base
 def create_session_factory(connection_string: str):
     engine = create_engine(connection_string)
     Base.metadata.create_all(engine)
-    return sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    return sessionmaker(bind=engine, autocommit=False, autoflush=True)
 
 
 @contextmanager
@@ -20,7 +20,7 @@ def get_db_session(connection_string: str) -> Generator[Session, None, None]:
 
     try:
         yield session
-        session.commit() 
+        session.commit()
     except Exception:
         logger.exception("Transaction failed, rolling back")
         session.rollback()

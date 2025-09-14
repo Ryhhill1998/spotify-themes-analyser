@@ -16,7 +16,7 @@ connection_string = "postgresql://neondb_owner:npg_XV9fA5MKUGlD@ep-rapid-cell-ab
 def db_session() -> Generator[Session, None, None]:
     engine = create_engine(connection_string)
     Base.metadata.create_all(engine)
-    SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    SessionLocal = sessionmaker(bind=engine, autoflush=True)
     session = SessionLocal()
 
     try:
