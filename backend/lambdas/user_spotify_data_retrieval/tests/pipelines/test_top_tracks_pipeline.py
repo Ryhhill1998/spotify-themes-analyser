@@ -7,7 +7,8 @@ import pytest
 import pytest_asyncio
 from sqlalchemy.orm import Session
 
-from src.models.shared import Image
+from src.repositories.artists_repository import ArtistsRepository
+from src.models.shared import Image, TrackArtist
 from src.models.domain import Track, TopTrack
 from src.models.enums import PositionChange, TimeRange
 from src.models.db import TrackDB, ProfileDB, TopTrackDB
@@ -803,42 +804,522 @@ TOP_TRACKS_DATA = {
     ]
 }
 
+ARTISTS_DATA = {
+    "artists": [
+        {
+            "external_urls": {
+                "spotify": "https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6"
+            },
+            "followers": {"href": None, "total": 2710561},
+            "genres": ["progressive metal", "metalcore"],
+            "href": "https://api.spotify.com/v1/artists/2n2RSaZqBuUUukhbLlpnE6?locale=en-GB%2Cen-US%3Bq%3D0.9%2Cen%3Bq%3D0.8",
+            "id": "2n2RSaZqBuUUukhbLlpnE6",
+            "images": [
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000e5ebd00c2ff422829437e6b5f1e0",
+                    "height": 640,
+                    "width": 640,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab67616100005174d00c2ff422829437e6b5f1e0",
+                    "height": 320,
+                    "width": 320,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000f178d00c2ff422829437e6b5f1e0",
+                    "height": 160,
+                    "width": 160,
+                },
+            ],
+            "name": "Sleep Token",
+            "popularity": 82,
+            "type": "artist",
+            "uri": "spotify:artist:2n2RSaZqBuUUukhbLlpnE6",
+        },
+        {
+            "external_urls": {
+                "spotify": "https://open.spotify.com/artist/6Ad91Jof8Niiw0lGLLi3NW"
+            },
+            "followers": {"href": None, "total": 3100156},
+            "genres": [],
+            "href": "https://api.spotify.com/v1/artists/6Ad91Jof8Niiw0lGLLi3NW?locale=en-GB%2Cen-US%3Bq%3D0.9%2Cen%3Bq%3D0.8",
+            "id": "6Ad91Jof8Niiw0lGLLi3NW",
+            "images": [
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000e5eb7c9287712c4355e54c94e0d0",
+                    "height": 640,
+                    "width": 640,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab676161000051747c9287712c4355e54c94e0d0",
+                    "height": 320,
+                    "width": 320,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000f1787c9287712c4355e54c94e0d0",
+                    "height": 160,
+                    "width": 160,
+                },
+            ],
+            "name": "YUNGBLUD",
+            "popularity": 78,
+            "type": "artist",
+            "uri": "spotify:artist:6Ad91Jof8Niiw0lGLLi3NW",
+        },
+        {
+            "external_urls": {
+                "spotify": "https://open.spotify.com/artist/4IWBUUAFIplrNtaOHcJPRM"
+            },
+            "followers": {"href": None, "total": 20722129},
+            "genres": ["soft pop"],
+            "href": "https://api.spotify.com/v1/artists/4IWBUUAFIplrNtaOHcJPRM?locale=en-GB%2Cen-US%3Bq%3D0.9%2Cen%3Bq%3D0.8",
+            "id": "4IWBUUAFIplrNtaOHcJPRM",
+            "images": [
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000e5eb5a55e66595e80fb12dc5f5fa",
+                    "height": 640,
+                    "width": 640,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab676161000051745a55e66595e80fb12dc5f5fa",
+                    "height": 320,
+                    "width": 320,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000f1785a55e66595e80fb12dc5f5fa",
+                    "height": 160,
+                    "width": 160,
+                },
+            ],
+            "name": "James Arthur",
+            "popularity": 83,
+            "type": "artist",
+            "uri": "spotify:artist:4IWBUUAFIplrNtaOHcJPRM",
+        },
+        {
+            "external_urls": {
+                "spotify": "https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD"
+            },
+            "followers": {"href": None, "total": 331103},
+            "genres": [],
+            "href": "https://api.spotify.com/v1/artists/6NnBBumbcMYsaPTHFhPtXD?locale=en-GB%2Cen-US%3Bq%3D0.9%2Cen%3Bq%3D0.8",
+            "id": "6NnBBumbcMYsaPTHFhPtXD",
+            "images": [
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000e5eb2b8c0a420a952a14a2e23c9c",
+                    "height": 640,
+                    "width": 640,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab676161000051742b8c0a420a952a14a2e23c9c",
+                    "height": 320,
+                    "width": 320,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000f1782b8c0a420a952a14a2e23c9c",
+                    "height": 160,
+                    "width": 160,
+                },
+            ],
+            "name": "VOILÀ",
+            "popularity": 70,
+            "type": "artist",
+            "uri": "spotify:artist:6NnBBumbcMYsaPTHFhPtXD",
+        },
+        {
+            "external_urls": {
+                "spotify": "https://open.spotify.com/artist/6XyY86QOPPrYVGvF9ch6wz"
+            },
+            "followers": {"href": None, "total": 31331065},
+            "genres": ["nu metal", "rap metal", "rock", "alternative metal"],
+            "href": "https://api.spotify.com/v1/artists/6XyY86QOPPrYVGvF9ch6wz?locale=en-GB%2Cen-US%3Bq%3D0.9%2Cen%3Bq%3D0.8",
+            "id": "6XyY86QOPPrYVGvF9ch6wz",
+            "images": [
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000e5eb527d95dabbe8b8b527e8136f",
+                    "height": 640,
+                    "width": 640,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab67616100005174527d95dabbe8b8b527e8136f",
+                    "height": 320,
+                    "width": 320,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000f178527d95dabbe8b8b527e8136f",
+                    "height": 160,
+                    "width": 160,
+                },
+            ],
+            "name": "Linkin Park",
+            "popularity": 92,
+            "type": "artist",
+            "uri": "spotify:artist:6XyY86QOPPrYVGvF9ch6wz",
+        },
+        {
+            "external_urls": {
+                "spotify": "https://open.spotify.com/artist/3T55D3LMiygE9eSKFpiAye"
+            },
+            "followers": {"href": None, "total": 354863},
+            "genres": ["post-grunge"],
+            "href": "https://api.spotify.com/v1/artists/3T55D3LMiygE9eSKFpiAye?locale=en-GB%2Cen-US%3Bq%3D0.9%2Cen%3Bq%3D0.8",
+            "id": "3T55D3LMiygE9eSKFpiAye",
+            "images": [
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000e5ebd1634326a43dfa2aea839053",
+                    "height": 640,
+                    "width": 640,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab67616100005174d1634326a43dfa2aea839053",
+                    "height": 320,
+                    "width": 320,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000f178d1634326a43dfa2aea839053",
+                    "height": 160,
+                    "width": 160,
+                },
+            ],
+            "name": "Badflower",
+            "popularity": 56,
+            "type": "artist",
+            "uri": "spotify:artist:3T55D3LMiygE9eSKFpiAye",
+        },
+        {
+            "external_urls": {
+                "spotify": "https://open.spotify.com/artist/4OTFxPi5CtWyj1NThDe6z5"
+            },
+            "followers": {"href": None, "total": 314623},
+            "genres": [],
+            "href": "https://api.spotify.com/v1/artists/4OTFxPi5CtWyj1NThDe6z5?locale=en-GB%2Cen-US%3Bq%3D0.9%2Cen%3Bq%3D0.8",
+            "id": "4OTFxPi5CtWyj1NThDe6z5",
+            "images": [
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000e5ebe650e4a00f56efec44be31a5",
+                    "height": 640,
+                    "width": 640,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab67616100005174e650e4a00f56efec44be31a5",
+                    "height": 320,
+                    "width": 320,
+                },
+                {
+                    "url": "https://i.scdn.co/image/ab6761610000f178e650e4a00f56efec44be31a5",
+                    "height": 160,
+                    "width": 160,
+                },
+            ],
+            "name": "Weathers",
+            "popularity": 54,
+            "type": "artist",
+            "uri": "spotify:artist:4OTFxPi5CtWyj1NThDe6z5",
+        },
+    ]
+}
+
 EXPECTED_TRACKS = [
     Track(
-        id="2n2RSaZqBuUUukhbLlpnE6",
-        name="The Summoning",
+        id="4Lojbtk7XNMdSKRHSFbdkm",
+        name="Look To Windward",
         images=[
             Image(
                 height=640,
-                url="https://i.scdn.co/image/ab67616d0000b2730e48dcb579fd8e59d0a3c218",
                 width=640,
+                url="https://i.scdn.co/image/ab67616d0000b2730e48dcb579fd8e59d0a3c218",
             ),
             Image(
                 height=300,
-                url="https://i.scdn.co/image/ab67616d00001e020e48dcb579fd8e59d0a3c218",
                 width=300,
+                url="https://i.scdn.co/image/ab67616d00001e020e48dcb579fd8e59d0a3c218",
             ),
             Image(
                 height=64,
-                url="https://i.scdn.co/image/ab67616d000048510e48dcb579fd8e59d0a3c218",
                 width=64,
+                url="https://i.scdn.co/image/ab67616d000048510e48dcb579fd8e59d0a3c218",
             ),
         ],
-        spotify_url="https://open.spotify.com/track/2n2RSaZqBuUUukhbLlpnE6",
-        genres=["modern rock", "rock"],
-        followers=123456,
-        popularity=70,
-    )
+        spotify_url="https://open.spotify.com/track/4Lojbtk7XNMdSKRHSFbdkm",
+        album_name="Even In Arcadia",
+        release_date="2025-05-09",
+        explicit=False,
+        duration_ms=466463,
+        popularity=73,
+        artists=[TrackArtist(id="2n2RSaZqBuUUukhbLlpnE6", name="Sleep Token")],
+    ),
+    Track(
+        id="42GKyvz5KBsHTBaLpo3cqJ",
+        name="Zombie",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b2737808f0d7992027b6b10254dd",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e027808f0d7992027b6b10254dd",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d000048517808f0d7992027b6b10254dd",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/42GKyvz5KBsHTBaLpo3cqJ",
+        album_name="Idols",
+        release_date="2025-06-20",
+        explicit=False,
+        duration_ms=246946,
+        popularity=73,
+        artists=[TrackArtist(id="6Ad91Jof8Niiw0lGLLi3NW", name="YUNGBLUD")],
+    ),
+    Track(
+        id="0871iIk4stdN902Gj33P2d",
+        name="Embers",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b273765c38475815f11c5487299e",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e02765c38475815f11c5487299e",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d00004851765c38475815f11c5487299e",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/0871iIk4stdN902Gj33P2d",
+        album_name="PISCES",
+        release_date="2025-04-25",
+        explicit=False,
+        duration_ms=255084,
+        popularity=46,
+        artists=[TrackArtist(id="4IWBUUAFIplrNtaOHcJPRM", name="James Arthur")],
+    ),
+    Track(
+        id="71w4bqfvnINCpLnypPM9Dj",
+        name="Good Grief",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b273f017130e0c378fc869fc469e",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e02f017130e0c378fc869fc469e",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d00004851f017130e0c378fc869fc469e",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/71w4bqfvnINCpLnypPM9Dj",
+        album_name="The Last Laugh (Part I)",
+        release_date="2025-06-20",
+        explicit=False,
+        duration_ms=245000,
+        popularity=48,
+        artists=[TrackArtist(id="6NnBBumbcMYsaPTHFhPtXD", name="VOILÀ")],
+    ),
+    Track(
+        id="0Uvf2v96tJ5CuyK0LtyAgd",
+        name="Past Self",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b2730e48dcb579fd8e59d0a3c218",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e020e48dcb579fd8e59d0a3c218",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d000048510e48dcb579fd8e59d0a3c218",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/0Uvf2v96tJ5CuyK0LtyAgd",
+        album_name="Even In Arcadia",
+        release_date="2025-05-09",
+        explicit=True,
+        duration_ms=214648,
+        popularity=73,
+        artists=[TrackArtist(id="2n2RSaZqBuUUukhbLlpnE6", name="Sleep Token")],
+    ),
+    Track(
+        id="3bUp4O9m98QM9kvVpqtQKP",
+        name="Unhappy Hour (with Weathers)",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b273f017130e0c378fc869fc469e",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e02f017130e0c378fc869fc469e",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d00004851f017130e0c378fc869fc469e",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/3bUp4O9m98QM9kvVpqtQKP",
+        album_name="The Last Laugh (Part I)",
+        release_date="2025-06-20",
+        explicit=True,
+        duration_ms=194000,
+        popularity=45,
+        artists=[
+            TrackArtist(id="6NnBBumbcMYsaPTHFhPtXD", name="VOILÀ"),
+            TrackArtist(id="4OTFxPi5CtWyj1NThDe6z5", name="Weathers"),
+        ],
+    ),
+    Track(
+        id="2SwdMXPvGdciXamSjfoNH9",
+        name="Up From the Bottom",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b273a493a67f01bcfe65b23bc910",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e02a493a67f01bcfe65b23bc910",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d00004851a493a67f01bcfe65b23bc910",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/2SwdMXPvGdciXamSjfoNH9",
+        album_name="From Zero (Deluxe Edition)",
+        release_date="2025-05-16",
+        explicit=False,
+        duration_ms=183223,
+        popularity=75,
+        artists=[TrackArtist(id="6XyY86QOPPrYVGvF9ch6wz", name="Linkin Park")],
+    ),
+    Track(
+        id="1eXMGoTPkICi00jcVc8LQy",
+        name="Story Of Our Lives",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b2732c8255cfcc8dde98740db7c3",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e022c8255cfcc8dde98740db7c3",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d000048512c8255cfcc8dde98740db7c3",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/1eXMGoTPkICi00jcVc8LQy",
+        album_name="No Place Like Home",
+        release_date="2025-06-20",
+        explicit=True,
+        duration_ms=229920,
+        popularity=40,
+        artists=[TrackArtist(id="3T55D3LMiygE9eSKFpiAye", name="Badflower")],
+    ),
+    Track(
+        id="4IixOTCzviJgIigKleiVbo",
+        name="Even In Arcadia",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b2730e48dcb579fd8e59d0a3c218",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e020e48dcb579fd8e59d0a3c218",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d000048510e48dcb579fd8e59d0a3c218",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/4IixOTCzviJgIigKleiVbo",
+        album_name="Even In Arcadia",
+        release_date="2025-05-09",
+        explicit=False,
+        duration_ms=268369,
+        popularity=72,
+        artists=[TrackArtist(id="2n2RSaZqBuUUukhbLlpnE6", name="Sleep Token")],
+    ),
+    Track(
+        id="60mJhDxOT1LtHFtoBAcZxa",
+        name="The Last Laugh?",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab67616d0000b273f017130e0c378fc869fc469e",
+            ),
+            Image(
+                height=300,
+                width=300,
+                url="https://i.scdn.co/image/ab67616d00001e02f017130e0c378fc869fc469e",
+            ),
+            Image(
+                height=64,
+                width=64,
+                url="https://i.scdn.co/image/ab67616d00004851f017130e0c378fc869fc469e",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/track/60mJhDxOT1LtHFtoBAcZxa",
+        album_name="The Last Laugh (Part I)",
+        release_date="2025-06-20",
+        explicit=False,
+        duration_ms=219000,
+        popularity=45,
+        artists=[TrackArtist(id="6NnBBumbcMYsaPTHFhPtXD", name="VOILÀ")],
+    ),
 ]
 
 
 @pytest_asyncio.fixture
 async def spotify_service(httpx_mock) -> AsyncGenerator[SpotifyService, None]:
-    url_pattern = re.compile("http://localhost:8000/me/top/tracks.*")
+    top_tracks_url_pattern = re.compile("http://localhost:8000/me/top/tracks.*")
     httpx_mock.add_response(
         method="GET",
-        url=url_pattern,
+        url=top_tracks_url_pattern,
         json=TOP_TRACKS_DATA,
+        status_code=200,
+    )
+    artists_url_pattern = re.compile("http://localhost:8000/artists.*")
+    httpx_mock.add_response(
+        method="GET",
+        url=artists_url_pattern,
+        json=ARTISTS_DATA,
         status_code=200,
     )
 
@@ -850,11 +1331,13 @@ async def spotify_service(httpx_mock) -> AsyncGenerator[SpotifyService, None]:
 def top_tracks_pipeline(
     db_session: Session, spotify_service: SpotifyService
 ) -> TopTracksPipeline:
+    artists_repository = ArtistsRepository(db_session)
     tracks_repository = TracksRepository(db_session)
     top_tracks_repository = TopTracksRepository(db_session)
 
     return TopTracksPipeline(
         spotify_service=spotify_service,
+        artists_repository=artists_repository,
         tracks_repository=tracks_repository,
         top_tracks_repository=top_tracks_repository,
     )
