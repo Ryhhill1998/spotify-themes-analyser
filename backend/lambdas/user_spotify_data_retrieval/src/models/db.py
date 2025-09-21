@@ -1,7 +1,15 @@
 from datetime import datetime, date, timezone
 
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import Enum, String, DateTime, Table, ForeignKey, UniqueConstraint, Column
+from sqlalchemy import (
+    Enum,
+    String,
+    DateTime,
+    Table,
+    ForeignKey,
+    UniqueConstraint,
+    Column,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from src.models.enums import PositionChange, TimeRange
@@ -34,9 +42,11 @@ class ProfileDB(Base):
     id: Mapped[str] = mapped_column(primary_key=True)
     display_name: Mapped[str]
     email: Mapped[str | None]
-    images: Mapped[list[dict]] = mapped_column(JSONB) # list of {height, width, url}
+    images: Mapped[list[dict]] = mapped_column(JSONB)  # list of {height, width, url}
     spotify_url: Mapped[str]
-    creation_timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(timezone.utc))
+    creation_timestamp: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.now(timezone.utc)
+    )
     followers: Mapped[int]
 
 
@@ -54,7 +64,9 @@ class ArtistDB(Base):
     followers: Mapped[int]
     popularity: Mapped[int]
 
-    tracks: Mapped[list["TrackDB"]] = relationship(secondary=track_artist_association, back_populates="artists")
+    tracks: Mapped[list["TrackDB"]] = relationship(
+        secondary=track_artist_association, back_populates="artists"
+    )
 
 
 # -----------------------------
@@ -68,12 +80,14 @@ class TrackDB(Base):
     images: Mapped[list[dict]] = mapped_column(JSONB)  # list of {height, width, url}
     spotify_url: Mapped[str]
     album_name: Mapped[str]
-    release_date: Mapped[datetime]
+    release_date: Mapped[str]
     explicit: Mapped[bool]
     duration_ms: Mapped[int]
     popularity: Mapped[int]
 
-    artists: Mapped[list[ArtistDB]] = relationship(secondary=track_artist_association, back_populates="tracks")
+    artists: Mapped[list[ArtistDB]] = relationship(
+        secondary=track_artist_association, back_populates="tracks"
+    )
     lyrics: Mapped["TrackLyricsDB"] = relationship()
 
 
@@ -85,9 +99,13 @@ class TopItemDBBase(Base):
 
     user_id: Mapped[str] = mapped_column(ForeignKey("profile.id"), primary_key=True)
     collection_date: Mapped[date] = mapped_column(primary_key=True)
-    time_range: Mapped[TimeRange] = mapped_column(Enum(TimeRange, name="time_range_enum"), primary_key=True)
+    time_range: Mapped[TimeRange] = mapped_column(
+        Enum(TimeRange, name="time_range_enum"), primary_key=True
+    )
     position: Mapped[int]
-    position_change: Mapped[PositionChange | None] = mapped_column(Enum(PositionChange, name="position_change_enum"))
+    position_change: Mapped[PositionChange | None] = mapped_column(
+        Enum(PositionChange, name="position_change_enum")
+    )
 
 
 # -----------------------------
@@ -161,7 +179,7 @@ class TrackEmotionalProfileDB(Base):
     __tablename__ = "track_emotional_profile"
 
     track_id: Mapped[str] = mapped_column(ForeignKey("track.id"), primary_key=True)
-    
+
     joy: Mapped[float]
     sadness: Mapped[float]
     anger: Mapped[float]

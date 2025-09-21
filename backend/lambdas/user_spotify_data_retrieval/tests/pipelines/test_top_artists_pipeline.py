@@ -816,15 +816,13 @@ async def test_top_artists_pipeline_run_updates_artist_if_already_exists(
     )
 
     db_artist = db_session.get(ArtistDB, existing_artist.id)
-    assert (
-        db_artist.id == existing_artist.id
-        and db_artist.name == existing_artist.name
-        and db_artist.images == [image.model_dump() for image in existing_artist.images]
-        and db_artist.spotify_url == existing_artist.spotify_url
-        and db_artist.genres == existing_artist.genres
-        and db_artist.followers == existing_artist.followers
-        and db_artist.popularity == existing_artist.popularity
-    )
+    assert db_artist.id == existing_artist.id
+    assert db_artist.name == existing_artist.name
+    assert db_artist.images == [image.model_dump() for image in existing_artist.images]
+    assert db_artist.spotify_url == existing_artist.spotify_url
+    assert db_artist.genres == existing_artist.genres
+    assert db_artist.followers == existing_artist.followers
+    assert db_artist.popularity == existing_artist.popularity
 
 
 @pytest.mark.asyncio

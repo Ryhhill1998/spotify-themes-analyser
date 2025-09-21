@@ -18,7 +18,9 @@ class TopTracksRepository(TopItemsBaseRepository):
         try:
             super().add_many(top_items)
         except sqlalchemy.exc.IntegrityError as e:
-            raise TopTracksRepository("Cannot overwrite a top track entry.") from e
+            raise TopTracksRepositoryException(
+                "Cannot overwrite a top track entry."
+            ) from e
 
     @staticmethod
     def _to_domain_objects(db_items: list[TopTrackDB]) -> list[TopTrack]:

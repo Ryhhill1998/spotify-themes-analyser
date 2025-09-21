@@ -1440,12 +1440,12 @@ async def test_top_tracks_pipeline_run_adds_top_tracks_to_db_with_expected_posit
     time_range = TimeRange.SHORT_TERM
     collection_date = datetime.date.today()
     up_track_ids = set(
-        ["2n2RSaZqBuUUukhbLlpnE6", "6TIYQ3jFPwQSRmorSezPxX"]
+        ["4Lojbtk7XNMdSKRHSFbdkm", "0871iIk4stdN902Gj33P2d"]
     )  # 4->1, 6->3
     down_track_ids = set(
-        ["6NnBBumbcMYsaPTHFhPtXD", "4oUHIQIBe0LHzYfvXNW4QM"]
+        ["42GKyvz5KBsHTBaLpo3cqJ", "0Uvf2v96tJ5CuyK0LtyAgd"]
     )  # 1->2, 2->5
-    new_track_ids = set(["6XyY86QOPPrYVGvF9ch6wz"])  # New track at 7
+    new_track_ids = set(["2SwdMXPvGdciXamSjfoNH9"])  # New track at 7
     tracks_to_add = [*EXPECTED_TRACKS]
     tracks_to_add.pop(6)  # Remove track 7 to simulate it being a new track
     db_session.add_all(
@@ -1455,8 +1455,10 @@ async def test_top_tracks_pipeline_run_adds_top_tracks_to_db_with_expected_posit
                 name=track.name,
                 images=[image.model_dump() for image in track.images],
                 spotify_url=track.spotify_url,
-                genres=track.genres,
-                followers=track.followers,
+                album_name=track.album_name,
+                release_date=track.release_date,
+                explicit=track.explicit,
+                duration_ms=track.duration_ms,
                 popularity=track.popularity,
             )
             for track in tracks_to_add
@@ -1538,8 +1540,10 @@ async def test_top_tracks_pipeline_run_updates_track_if_already_exists(
             name=existing_track.name + " Old",
             images=[image.model_dump() for image in existing_track.images],
             spotify_url=existing_track.spotify_url,
-            genres=existing_track.genres,
-            followers=existing_track.followers,
+            album_name=existing_track.album_name,
+            release_date=existing_track.release_date,
+            explicit=existing_track.explicit,
+            duration_ms=existing_track.duration_ms,
             popularity=existing_track.popularity,
         )
     )
@@ -1553,15 +1557,15 @@ async def test_top_tracks_pipeline_run_updates_track_if_already_exists(
     )
 
     db_track = db_session.get(TrackDB, existing_track.id)
-    assert (
-        db_track.id == existing_track.id
-        and db_track.name == existing_track.name
-        and db_track.images == [image.model_dump() for image in existing_track.images]
-        and db_track.spotify_url == existing_track.spotify_url
-        and db_track.genres == existing_track.genres
-        and db_track.followers == existing_track.followers
-        and db_track.popularity == existing_track.popularity
-    )
+    assert db_track.id == existing_track.id
+    assert db_track.name == existing_track.name
+    assert db_track.images == [image.model_dump() for image in existing_track.images]
+    assert db_track.spotify_url == existing_track.spotify_url
+    assert db_track.album_name == existing_track.album_name
+    assert db_track.release_date == existing_track.release_date
+    assert db_track.explicit == existing_track.explicit
+    assert db_track.duration_ms == existing_track.duration_ms
+    assert db_track.popularity == existing_track.popularity
 
 
 @pytest.mark.asyncio
@@ -1581,8 +1585,10 @@ async def test_top_tracks_pipeline_run_raises_exception_if_top_track_exists(
             name=existing_track.name,
             images=[image.model_dump() for image in existing_track.images],
             spotify_url=existing_track.spotify_url,
-            genres=existing_track.genres,
-            followers=existing_track.followers,
+            album_name=existing_track.album_name,
+            release_date=existing_track.release_date,
+            explicit=existing_track.explicit,
+            duration_ms=existing_track.duration_ms,
             popularity=existing_track.popularity,
         )
     )
