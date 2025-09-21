@@ -11,7 +11,10 @@ from src.models.domain import Artist, TopArtist
 from src.models.enums import PositionChange, TimeRange
 from src.models.db import ArtistDB, ProfileDB, TopArtistDB
 from src.repositories.artists_repository import ArtistsRepository
-from src.repositories.top_items.top_artists_repository import TopArtistsRepository
+from src.repositories.top_items.top_artists_repository import (
+    TopArtistsRepository,
+    TopArtistsRepositoryException,
+)
 from src.services.spotify_service import SpotifyService
 from src.pipelines.top_artists_pipeline import TopArtistsPipeline
 
@@ -778,3 +781,47 @@ async def test_top_artists_pipeline_run_adds_top_artists_to_db_with_expected_pos
         elif top_artist.artist_id in new_artist_ids:
             top_artist.position_change = PositionChange.NEW
     assert top_artists == expected_top_artists
+
+
+@pytest.mark.asyncio
+async def test_top_artists_pipeline_run_raises_exception_if_top_artist_exists(
+    db_session: Session,
+    top_artists_pipeline: TopArtistsPipeline,
+    existing_profile: ProfileDB,
+) -> None:
+    access_token = "access_token"
+    user_id = existing_profile.id
+    time_range = TimeRange.SHORT_TERM
+    collection_date = datetime.date.today()
+    existing_artist = EXPECTED_ARTISTS[0]
+    db_session.add(
+        ArtistDB(
+            id=existing_artist.id,
+            name=existing_artist.name,
+            images=[image.model_dump() for image in existing_artist.images],
+            spotify_url=existing_artist.spotify_url,
+            genres=existing_artist.genres,
+            followers=existing_artist.followers,
+            popularity=existing_artist.popularity,
+        )
+    )
+    db_session.commit()
+    db_session.add(
+        TopArtistDB(
+            user_id=existing_profile.id,
+            artist_id=existing_artist.id,
+            collection_date=collection_date,
+            time_range=time_range,
+            position=1,
+            position_change=None,
+        )
+    )
+    db_session.commit()
+
+    with pytest.raises(TopArtistsRepositoryException):
+        await top_artists_pipeline.run(
+            access_token=access_token,
+            user_id=user_id,
+            time_range=time_range,
+            collection_date=collection_date,
+        )

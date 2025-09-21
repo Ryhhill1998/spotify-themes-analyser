@@ -28,30 +28,31 @@ class TopItemsBaseRepository(ABC, Generic[TopItemDBType, TopItemDomainType]):
         time_range: TimeRange,
     ) -> list[TopItemDBType]:
         latest_date_subquery = (
-            self.db_session
-            .query(func.max(self.db_model.collection_date))
+            self.db_session.query(func.max(self.db_model.collection_date))
             .filter(
-                self.db_model.user_id == user_id,
-                self.db_model.time_range == time_range
+                self.db_model.user_id == user_id, self.db_model.time_range == time_range
             )
             .scalar_subquery()
         )
 
         return (
-            self.db_session
-            .query(self.db_model)
+            self.db_session.query(self.db_model)
             .filter(
                 self.db_model.user_id == user_id,
                 self.db_model.time_range == time_range,
-                self.db_model.collection_date == latest_date_subquery
+                self.db_model.collection_date == latest_date_subquery,
             )
             .all()
         )
-    
+
     @staticmethod
     @abstractmethod
-    def _to_domain_objects(db_items: list[TopItemDBType]) -> list[TopItemDomainType]: ...
-    
-    def get_previous_top_items(self, user_id: str, time_range: TimeRange) -> TopItemDomainType:
-        db_top_items = self._get_latest_snapshot(user_id=user_id, time_range=time_range) 
+    def _to_domain_objects(
+        db_items: list[TopItemDBType],
+    ) -> list[TopItemDomainType]: ...
+
+    def get_previous_top_items(
+        self, user_id: str, time_range: TimeRange
+    ) -> TopItemDomainType:
+        db_top_items = self._get_latest_snapshot(user_id=user_id, time_range=time_range)
         return self._to_domain_objects(db_top_items)
