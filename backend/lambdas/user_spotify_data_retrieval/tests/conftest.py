@@ -57,3 +57,15 @@ def caplog(
     )
     yield caplog
     logger.remove(handler_id)
+
+
+@pytest_asyncio.fixture
+async def client() -> AsyncGenerator[httpx.AsyncClient, None]:
+    cl = httpx.AsyncClient()
+    yield cl
+    await cl.aclose()
+
+
+@pytest.fixture
+def spotify_service(client: httpx.AsyncClient) -> SpotifyService:
+    return SpotifyService(client=client, base_url="http://localhost:8000")
