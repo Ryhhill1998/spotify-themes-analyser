@@ -784,6 +784,49 @@ async def test_top_artists_pipeline_run_adds_top_artists_to_db_with_expected_pos
 
 
 @pytest.mark.asyncio
+async def test_top_artists_pipeline_run_updates_artist_if_already_exists(
+    db_session: Session,
+    top_artists_pipeline: TopArtistsPipeline,
+    existing_profile: ProfileDB,
+) -> None:
+    access_token = "access_token"
+    user_id = existing_profile.id
+    time_range = TimeRange.SHORT_TERM
+    collection_date = datetime.date.today()
+    existing_artist = EXPECTED_ARTISTS[0]
+    db_session.add(
+        ArtistDB(
+            id=existing_artist.id,
+            name=existing_artist.name + " Old",
+            images=[image.model_dump() for image in existing_artist.images],
+            spotify_url=existing_artist.spotify_url,
+            genres=existing_artist.genres,
+            followers=existing_artist.followers,
+            popularity=existing_artist.popularity,
+        )
+    )
+    db_session.commit()
+
+    await top_artists_pipeline.run(
+        access_token=access_token,
+        user_id=user_id,
+        time_range=time_range,
+        collection_date=collection_date,
+    )
+
+    db_artist = db_session.get(ArtistDB, existing_artist.id)
+    assert (
+        db_artist.id == existing_artist.id
+        and db_artist.name == existing_artist.name
+        and db_artist.images == [image.model_dump() for image in existing_artist.images]
+        and db_artist.spotify_url == existing_artist.spotify_url
+        and db_artist.genres == existing_artist.genres
+        and db_artist.followers == existing_artist.followers
+        and db_artist.popularity == existing_artist.popularity
+    )
+
+
+@pytest.mark.asyncio
 async def test_top_artists_pipeline_run_raises_exception_if_top_artist_exists(
     db_session: Session,
     top_artists_pipeline: TopArtistsPipeline,
