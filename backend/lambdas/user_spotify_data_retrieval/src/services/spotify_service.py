@@ -46,9 +46,9 @@ class SpotifyService:
             followers=spotify_profile.followers.total,
         )
 
-    def _validate_and_transform_profile_data(self, data: dict) -> Profile:
+    def _validate_and_transform_profile_data(self, profile_data: dict) -> Profile:
         try:
-            spotify_profile = SpotifyProfile.model_validate(data)
+            spotify_profile = SpotifyProfile.model_validate(profile_data)
             return self._spotify_profile_to_profile(spotify_profile)
         except pydantic.ValidationError as e:
             logger.error(f"Data validation error for user profile: {e}")
@@ -73,6 +73,20 @@ class SpotifyService:
             popularity=spotify_artist.popularity,
         )
 
+    def _validate_and_transform_artists_data(self, artists_data: list[dict]) -> Profile:
+        try:
+            spotify_artists = [
+                SpotifyArtist.model_validate(item) for item in artists_data
+            ]
+            return [
+                self._spotify_artist_to_artist(artist) for artist in spotify_artists
+            ]
+        except pydantic.ValidationError as e:
+            logger.error(f"Data validation error for artists: {e}")
+            raise SpotifyServiceException(
+                "Invalid artists data received from API."
+            ) from e
+
     async def get_user_top_artists(
         self, access_token: str, time_range: TimeRange, limit: int = 50
     ) -> list[Artist]:
@@ -82,10 +96,7 @@ class SpotifyService:
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
 
         items = data.get("items", [])
-        spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
-        artists = [self._spotify_artist_to_artist(artist) for artist in spotify_artists]
-
-        return artists
+        return self._validate_and_transform_artists_data(items)
 
     def _spotify_track_to_track(self, spotify_track: SpotifyTrack) -> Track:
         return Track(
@@ -101,6 +112,18 @@ class SpotifyService:
             artists=spotify_track.artists,
         )
 
+    def _validate_and_transform_tracks_data(
+        self, tracks_data: list[dict]
+    ) -> list[Track]:
+        try:
+            spotify_tracks = [SpotifyTrack.model_validate(item) for item in tracks_data]
+            return [self._spotify_track_to_track(track) for track in spotify_tracks]
+        except pydantic.ValidationError as e:
+            logger.error(f"Data validation error for tracks: {e}")
+            raise SpotifyServiceException(
+                "Invalid tracks data received from API."
+            ) from e
+
     async def get_user_top_tracks(
         self, access_token: str, time_range: TimeRange, limit: int = 50
     ) -> list[Track]:
@@ -110,10 +133,7 @@ class SpotifyService:
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
 
         items = data.get("items", [])
-        spotify_tracks = [SpotifyTrack.model_validate(item) for item in items]
-        tracks = [self._spotify_track_to_track(track) for track in spotify_tracks]
-
-        return tracks
+        return self._validate_and_transform_tracks_data(items)
 
     async def _get_artists_by_ids(
         self, access_token: str, artist_ids: list[str]
@@ -124,10 +144,7 @@ class SpotifyService:
         data = await self._get_data_from_api(url=url, headers=headers, params=params)
 
         items = data.get("artists", [])
-        spotify_artists = [SpotifyArtist.model_validate(item) for item in items]
-        artists = [self._spotify_artist_to_artist(artist) for artist in spotify_artists]
-
-        return artists
+        return self._validate_and_transform_artists_data(items)
 
     async def get_artists_by_ids(
         self, access_token: str, artist_ids: list[str]
