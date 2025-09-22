@@ -113,7 +113,7 @@ class TopEmotionsPipeline:
             )
             for track in tracks
         ]
-        track_lyrics: list[TrackLyrics] = self.lyrics_service.get_many_lyrics(
+        track_lyrics: list[TrackLyrics] = await self.lyrics_service.get_many_lyrics(
             lyrics_requests
         )
 
