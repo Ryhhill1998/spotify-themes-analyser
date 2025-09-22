@@ -1,10 +1,9 @@
 import asyncio
-from backend.lambdas.user_spotify_data_retrieval.src.models.domain import (
-    TrackLyrics,
-    TrackLyricsRequest,
-)
+from src.models.domain import TrackLyrics, TrackLyricsRequest
 from src.repositories.track_lyrics_repository import TrackLyricsRepository
-from src.services.lyrics_scraper import LyricsScraper
+from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_scraper import (
+    LyricsScraper,
+)
 
 
 class LyricsService:

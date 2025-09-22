@@ -6,8 +6,10 @@ from src.repositories.track_emotional_profiles_repository import (
     TrackEmotionalProfilesRepository,
 )
 from src.repositories.track_lyrics_repository import TrackLyricsRepository
-from src.services.emotional_profile_service import EmotionalProfileService
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics_scraper import (
+from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profiles.model_service import (
+    ModelService,
+)
+from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_scraper import (
     LyricsScraper,
 )
 from src.pipelines.top_genres_pipeline import TopGenresPipeline
@@ -29,7 +31,7 @@ class PipelineFactory:
         spotify_service: SpotifyService,
         db_session: Session,
         lyrics_service: LyricsScraper,
-        emotional_profile_service: EmotionalProfileService,
+        emotional_profile_service: ModelService,
     ):
         self.spotify_service = spotify_service
         self.db_session = db_session

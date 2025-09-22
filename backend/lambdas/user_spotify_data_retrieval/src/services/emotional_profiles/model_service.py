@@ -5,13 +5,13 @@ from pydantic_ai.providers.google import GoogleProvider
 from src.models.domain import EmotionalProfile
 
 
-class EmotionalProfileService:
+class ModelService:
     def __init__(
-        self, 
+        self,
         api_key: str,
-        model: str, 
-        temperature: float, 
-        max_tokens: int, 
+        model: str,
+        temperature: float,
+        max_tokens: int,
         top_p: float,
         instructions: str,
     ):
@@ -23,13 +23,12 @@ class EmotionalProfileService:
         provider = GoogleProvider(api_key=api_key)
         model = GoogleModel(model, provider=provider)
         self.agent = Agent(
-            model=model, 
-            model_settings=settings, 
-            instructions=instructions, 
+            model=model,
+            model_settings=settings,
+            instructions=instructions,
             output_type=EmotionalProfile,
         )
 
     async def get_emotional_profile(self, lyrics: str) -> EmotionalProfile:
         result = await self.agent.run(user_prompt=lyrics)
         return result.output
-    

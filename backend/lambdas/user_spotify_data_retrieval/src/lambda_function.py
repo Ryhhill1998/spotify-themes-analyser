@@ -3,8 +3,10 @@ import httpx
 import asyncio
 
 from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
-from src.services.emotional_profile_service import EmotionalProfileService
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics_scraper import (
+from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profiles.model_service import (
+    ModelService,
+)
+from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_scraper import (
     LyricsScraper,
 )
 from src.pipelines.top_genres_pipeline import TopGenresPipeline
@@ -77,7 +79,7 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
             headers=settings.lyrics_headers,
             semaphore=lyrics_semaphore,
         )
-        emotional_profile_service = EmotionalProfileService(
+        emotional_profile_service = ModelService(
             api_key=settings.model_api_key,
             model=settings.model_name,
             temperature=settings.model_temp,
