@@ -8,30 +8,27 @@ import bs4
 from loguru import logger
 
 
-class LyricsServiceException(Exception):
-    """Base exception for errors encountered while scraping lyrics."""
-
+class LyricsScraperException(Exception):
     def __init__(self, message: str):
         super().__init__(message)
 
 
-class LyricsServiceNotFoundException(LyricsServiceException):
-    """Exception raised when lyrics are not found on the target website."""
-
-    def __init__(self, message: str):
-        super().__init__(message)
-
-
-class LyricsService:
-    def __init__(self, client: httpx.AsyncClient, base_url: str, headers: dict[str, str], semaphore: asyncio.Semaphore):
-        self.client = client 
+class LyricsScraper:
+    def __init__(
+        self,
+        client: httpx.AsyncClient,
+        base_url: str,
+        headers: dict[str, str],
+        semaphore: asyncio.Semaphore,
+    ):
+        self.client = client
         self.base_url = base_url
         self.headers = headers
         self.semaphore = semaphore
 
     @staticmethod
     def _format_string_for_url(s: str) -> str:
-        s = unicodedata.normalize('NFKD', s).encode('ascii', 'ignore').decode('ascii')
+        s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
 
         def handle_parentheses(match):
             """Removes content if it contains 'feat' or 'with'"""
@@ -52,35 +49,36 @@ class LyricsService:
         # Convert to lowercase, replace hyphens with '-' and remove leading/trailing '-'
         s = s.lower().replace(" ", "-").strip("-")
 
-        s = re.sub(r'-+', '-', s)
+        s = re.sub(r"-+", "-", s)
 
         return s
-    
+
     def _get_url(self, artist: str, title: str) -> str:
         artist = self._format_string_for_url(artist).capitalize()
         title = self._format_string_for_url(title)
 
         return f"{self.base_url}/{artist}-{title}-lyrics"
-    
+
     async def _make_limited_request(self, url: str, delay: float) -> httpx.Response:
         async with self.semaphore:
             await asyncio.sleep(delay)
-            response = await self.client.get(url=url, headers=self.headers, follow_redirects=True)
+            response = await self.client.get(
+                url=url, headers=self.headers, follow_redirects=True
+            )
 
         return response
-    
+
     async def _get_html(self, url: str) -> str:
         try:
-            response = await self._make_limited_request(url=url, delay=random.uniform(0.25, 1))
+            response = await self._make_limited_request(
+                url=url, delay=random.uniform(0.25, 1)
+            )
             response.raise_for_status()
             return response.text
         except httpx.HTTPStatusError as e:
-            if e.response.status_code == 404:
-                raise LyricsServiceNotFoundException(f"Page not found - {e}")
-            else:
-                raise LyricsServiceException(f"Failed to access page - {e}")
+            raise LyricsScraperException(f"Failed to get page html - {e}")
         except httpx.RequestError as e:
-            raise LyricsServiceException(f"Request failed - {e}")
+            raise LyricsScraperException(f"Request failed - {e}")
 
     def _extract_lyrics_from_html(self, html: str) -> str | None:
         soup = bs4.BeautifulSoup(html, "html.parser")
@@ -107,7 +105,7 @@ class LyricsService:
             cleaned_lyrics.append(section)
 
         return "<br/>".join(cleaned_lyrics)
-    
+
     async def get_lyrics(self, artist_name: str, track_title: str) -> str:
         logger.info(f"Scraping lyrics for {artist_name} - {track_title}")
         url = self._get_url(artist_name, track_title)
@@ -118,7 +116,9 @@ class LyricsService:
         lyrics = self._extract_lyrics_from_html(html)
 
         if not lyrics:
-            raise LyricsServiceNotFoundException(f"Lyrics not found for {artist_name} - {track_title}")
+            raise LyricsScraperException(
+                f"Lyrics not found for {artist_name} - {track_title}"
+            )
 
         logger.info(f"Successfully scraped lyrics for {artist_name} - {track_title}")
 
