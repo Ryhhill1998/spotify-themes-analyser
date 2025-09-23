@@ -88,12 +88,14 @@ async def run_data_collection_pipeline(
         top_p=settings.model_top_p,
         instructions=settings.model_instructions,
     )
+
     pipeline_factory = PipelineFactory(
         spotify_service=spotify_service,
         db_session=db_session,
         lyrics_scraper=lyrics_scraper,
         model_service=model_service,
     )
+
     profile_pipeline: ProfilePipeline = pipeline_factory.create_profile_pipeline()
     top_artists_pipeline: TopArtistsPipeline = (
         pipeline_factory.create_top_artists_pipeline()
