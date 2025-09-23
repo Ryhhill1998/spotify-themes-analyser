@@ -14,7 +14,7 @@ class TopGenresRepository(TopItemsBaseRepository):
     def __init__(self, db_session: Session):
         super().__init__(db_session=db_session, db_model=TopGenreDB)
 
-    def add_many(self, top_items):
+    def add_many(self, top_items: list[TopGenre]) -> None:
         try:
             super().add_many(top_items)
         except sqlalchemy.exc.IntegrityError as e:
