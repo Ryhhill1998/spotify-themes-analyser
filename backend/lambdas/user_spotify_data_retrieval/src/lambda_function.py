@@ -3,12 +3,8 @@ import httpx
 import asyncio
 
 from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
-from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profiles.model_service import (
-    ModelService,
-)
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_scraper import (
-    LyricsScraper,
-)
+from src.services.emotional_profiles.model_service import ModelService
+from src.services.lyrics.lyrics_scraper import LyricsScraper
 from src.pipelines.top_genres_pipeline import TopGenresPipeline
 from src.core.config import Settings
 from src.factories.pipeline_factory import PipelineFactory
@@ -73,13 +69,13 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
         spotify_service = SpotifyService(
             client=client, base_url=settings.spotify_base_url
         )
-        lyrics_service = LyricsScraper(
+        lyrics_scraper = LyricsScraper(
             client=client,
             base_url=settings.lyrics_base_url,
             headers=settings.lyrics_headers,
             semaphore=lyrics_semaphore,
         )
-        emotional_profile_service = ModelService(
+        model_service = ModelService(
             api_key=settings.model_api_key,
             model=settings.model_name,
             temperature=settings.model_temp,
@@ -92,8 +88,8 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
             pipeline_factory = PipelineFactory(
                 spotify_service=spotify_service,
                 db_session=db_session,
-                lyrics_service=lyrics_service,
-                emotional_profile_service=emotional_profile_service,
+                lyrics_scraper=lyrics_scraper,
+                model_service=model_service,
             )
             profile_pipeline: ProfilePipeline = (
                 pipeline_factory.create_profile_pipeline()

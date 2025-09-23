@@ -1,5 +1,11 @@
 from sqlalchemy.orm import Session
 
+from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profiles.emotional_profiles_service import (
+    EmotionalProfilesService,
+)
+from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_service import (
+    LyricsService,
+)
 from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
 from src.repositories.top_items.top_emotions_repository import TopEmotionsRepository
 from src.repositories.track_emotional_profiles_repository import (
@@ -30,13 +36,13 @@ class PipelineFactory:
         self,
         spotify_service: SpotifyService,
         db_session: Session,
-        lyrics_service: LyricsScraper,
-        emotional_profile_service: ModelService,
+        lyrics_scraper: LyricsScraper,
+        model_service: ModelService,
     ):
         self.spotify_service = spotify_service
         self.db_session = db_session
-        self.lyrics_service = lyrics_service
-        self.emotional_profile_service = emotional_profile_service
+        self.lyrics_scraper = lyrics_scraper
+        self.model_service = model_service
 
     def create_profile_pipeline(self) -> ProfilePipeline:
         return ProfilePipeline(
@@ -65,12 +71,18 @@ class PipelineFactory:
         )
 
     def create_top_emotions_pipeline(self) -> TopEmotionsPipeline:
-        return TopEmotionsPipeline(
-            lyrics_service=self.lyrics_service,
+        lyrics_service = LyricsService(
             lyrics_repository=TrackLyricsRepository(self.db_session),
-            emotional_profile_service=self.emotional_profile_service,
+            lyrics_scraper=self.lyrics_scraper,
+        )
+        emotional_profile_service = EmotionalProfilesService(
             emotional_profile_repository=TrackEmotionalProfilesRepository(
                 self.db_session
             ),
+            model_service=self.model_service,
+        )
+        return TopEmotionsPipeline(
+            lyrics_service=lyrics_service,
+            emotional_profile_service=emotional_profile_service,
             top_emotions_repository=TopEmotionsRepository(self.db_session),
         )
