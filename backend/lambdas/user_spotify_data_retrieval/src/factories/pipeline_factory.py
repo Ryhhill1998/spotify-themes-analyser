@@ -1,23 +1,17 @@
 from sqlalchemy.orm import Session
 
-from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profiles.emotional_profiles_service import (
+from src.services.emotional_profiles.emotional_profiles_service import (
     EmotionalProfilesService,
 )
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_service import (
-    LyricsService,
-)
+from src.services.lyrics.lyrics_service import LyricsService
 from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
 from src.repositories.top_items.top_emotions_repository import TopEmotionsRepository
 from src.repositories.track_emotional_profiles_repository import (
     TrackEmotionalProfilesRepository,
 )
 from src.repositories.track_lyrics_repository import TrackLyricsRepository
-from backend.lambdas.user_spotify_data_retrieval.src.services.emotional_profiles.model_service import (
-    ModelService,
-)
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_scraper import (
-    LyricsScraper,
-)
+from src.services.emotional_profiles.model_service import ModelService
+from src.services.lyrics.lyrics_scraper import LyricsScraper
 from src.pipelines.top_genres_pipeline import TopGenresPipeline
 from src.repositories.top_items.top_genres_repository import TopGenresRepository
 from src.pipelines.profile_pipeline import ProfilePipeline
