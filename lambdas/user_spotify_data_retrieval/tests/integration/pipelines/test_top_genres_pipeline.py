@@ -270,6 +270,7 @@ def top_genres_pipeline(db_session: Session) -> TopGenresPipeline:
     return TopGenresPipeline(top_genres_repository=top_genres_repository)
 
 
+@pytest.mark.integration
 def test_top_genres_pipeline_run_adds_top_genres_to_db(
     db_session: Session,
     top_genres_pipeline: TopGenresPipeline,

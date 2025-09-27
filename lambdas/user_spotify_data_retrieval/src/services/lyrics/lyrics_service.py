@@ -1,9 +1,13 @@
 import asyncio
+from loguru import logger
 from src.models.domain import TrackLyrics, TrackLyricsRequest
 from src.repositories.track_lyrics_repository import TrackLyricsRepository
-from backend.lambdas.user_spotify_data_retrieval.src.services.lyrics.lyrics_scraper import (
-    LyricsScraper,
-)
+from src.services.lyrics.lyrics_scraper import LyricsScraper
+
+
+class LyricsServiceException(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
 
 
 class LyricsService:
@@ -26,7 +30,20 @@ class LyricsService:
     ) -> list[TrackLyrics]:
         tasks = [self._scrape_lyrics(request) for request in lyrics_requests]
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        return [res for res in results if isinstance(res, TrackLyrics)]
+
+        successful_results = []
+        for request, result in zip(lyrics_requests, results):
+            if isinstance(result, TrackLyrics):
+                successful_results.append(result)
+            elif isinstance(result, Exception):
+                logger.warning(
+                    f"Failed to scrape lyrics for {request.track_artist} - {request.track_name}: {result}"
+                )
+
+        if not successful_results:
+            raise LyricsServiceException("No lyrics were successfully scraped")
+
+        return successful_results
 
     async def get_many_lyrics(
         self, lyrics_requests: list[TrackLyricsRequest]

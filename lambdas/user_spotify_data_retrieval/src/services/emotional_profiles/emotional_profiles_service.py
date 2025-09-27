@@ -1,9 +1,15 @@
 import asyncio
+from loguru import logger
 from src.models.domain import TrackEmotionalProfile, TrackEmotionalProfileRequest
 from src.services.emotional_profiles.model_service import ModelService
 from src.repositories.track_emotional_profiles_repository import (
     TrackEmotionalProfilesRepository,
 )
+
+
+class EmotionalProfilesServiceException(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
 
 
 class EmotionalProfilesService:
@@ -30,7 +36,22 @@ class EmotionalProfilesService:
     ) -> list[TrackEmotionalProfile]:
         tasks = [self._calculate_emotional_profile(request) for request in requests]
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        return [res for res in results if isinstance(res, TrackEmotionalProfile)]
+
+        successful_results = []
+        for request, result in zip(requests, results):
+            if isinstance(result, TrackEmotionalProfile):
+                successful_results.append(result)
+            elif isinstance(result, Exception):
+                logger.warning(
+                    f"Failed to calculate emotional profile for track {request.track_id}: {result}"
+                )
+
+        if not successful_results:
+            raise EmotionalProfilesServiceException(
+                "No emotional profiles were successfully calculated"
+            )
+
+        return successful_results
 
     async def get_many_emotional_profiles(
         self, requests: list[TrackEmotionalProfileRequest]

@@ -116,6 +116,7 @@ class LyricsScraper:
         lyrics = self._extract_lyrics_from_html(html)
 
         if not lyrics:
+            logger.error(f"Lyrics not found for {artist_name} - {track_title}")
             raise LyricsScraperException(
                 f"Lyrics not found for {artist_name} - {track_title}"
             )

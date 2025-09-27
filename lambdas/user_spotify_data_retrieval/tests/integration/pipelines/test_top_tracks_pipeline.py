@@ -1343,6 +1343,7 @@ def top_tracks_pipeline(
     )
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_tracks_pipeline_run_returns_expected_tracks(
     top_tracks_pipeline: TopTracksPipeline, existing_profile: ProfileDB
@@ -1362,6 +1363,7 @@ async def test_top_tracks_pipeline_run_returns_expected_tracks(
     assert tracks == EXPECTED_TRACKS
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_tracks_pipeline_run_adds_tracks_to_db(
     db_session: Session,
@@ -1386,6 +1388,7 @@ async def test_top_tracks_pipeline_run_adds_tracks_to_db(
     assert db_track_ids == expected_track_ids
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_tracks_pipeline_run_adds_top_tracks_to_db(
     db_session: Session,
@@ -1429,6 +1432,7 @@ async def test_top_tracks_pipeline_run_adds_top_tracks_to_db(
     assert top_tracks == expected_top_tracks
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_tracks_pipeline_run_adds_top_tracks_to_db_with_expected_position_changes(
     db_session: Session,
@@ -1523,6 +1527,7 @@ async def test_top_tracks_pipeline_run_adds_top_tracks_to_db_with_expected_posit
     assert top_tracks == expected_top_tracks
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_tracks_pipeline_run_updates_track_if_already_exists(
     db_session: Session,
@@ -1568,6 +1573,7 @@ async def test_top_tracks_pipeline_run_updates_track_if_already_exists(
     assert db_track.popularity == existing_track.popularity
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_tracks_pipeline_run_raises_exception_if_top_track_exists(
     db_session: Session,

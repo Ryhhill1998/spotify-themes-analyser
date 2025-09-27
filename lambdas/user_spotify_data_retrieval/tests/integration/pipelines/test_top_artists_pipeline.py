@@ -606,6 +606,7 @@ def top_artists_pipeline(
     )
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_artists_pipeline_run_returns_expected_artists(
     top_artists_pipeline: TopArtistsPipeline, existing_profile: ProfileDB
@@ -625,6 +626,7 @@ async def test_top_artists_pipeline_run_returns_expected_artists(
     assert artists == EXPECTED_ARTISTS
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_artists_pipeline_run_adds_artists_to_db(
     db_session: Session,
@@ -649,6 +651,7 @@ async def test_top_artists_pipeline_run_adds_artists_to_db(
     assert db_artist_ids == expected_artist_ids
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_artists_pipeline_run_adds_top_artists_to_db(
     db_session: Session,
@@ -692,6 +695,7 @@ async def test_top_artists_pipeline_run_adds_top_artists_to_db(
     assert top_artists == expected_top_artists
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_artists_pipeline_run_adds_top_artists_to_db_with_expected_position_changes(
     db_session: Session,
@@ -784,6 +788,7 @@ async def test_top_artists_pipeline_run_adds_top_artists_to_db_with_expected_pos
     assert top_artists == expected_top_artists
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_artists_pipeline_run_updates_artist_if_already_exists(
     db_session: Session,
@@ -825,6 +830,7 @@ async def test_top_artists_pipeline_run_updates_artist_if_already_exists(
     assert db_artist.popularity == existing_artist.popularity
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_top_artists_pipeline_run_raises_exception_if_top_artist_exists(
     db_session: Session,

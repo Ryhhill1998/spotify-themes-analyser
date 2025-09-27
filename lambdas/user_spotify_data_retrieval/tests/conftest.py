@@ -1,3 +1,5 @@
+import sys
+from pathlib import Path
 from typing import AsyncGenerator, Generator
 import httpx
 import pytest
@@ -5,6 +7,11 @@ import pytest_asyncio
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from loguru import logger
+
+# Add the project root to Python path
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 from src.services.spotify_service import SpotifyService
 from src.models.db import Base, ProfileDB
@@ -21,6 +28,10 @@ def db_session() -> Generator[Session, None, None]:
 
     try:
         yield session
+        session.commit()
+    except Exception:
+        logger.exception("Transaction failed, rolling back")
+        session.rollback()
     finally:
         session.close()
         Base.metadata.drop_all(engine)

@@ -2,12 +2,17 @@ from collections import defaultdict
 from datetime import date
 from statistics import mean
 import heapq
+from loguru import logger
 
 from src.services.emotional_profiles.emotional_profiles_service import (
     EmotionalProfilesService,
+    EmotionalProfilesServiceException,
 )
-from src.services.lyrics.lyrics_service import LyricsService
-from src.repositories.top_items.top_emotions_repository import TopEmotionsRepository
+from src.services.lyrics.lyrics_service import LyricsService, LyricsServiceException
+from src.repositories.top_items.top_emotions_repository import (
+    TopEmotionsRepository,
+    TopEmotionsRepositoryException,
+)
 from src.utils.calculations import calculate_position_changes
 from src.models.domain import (
     TrackEmotionalProfileRequest,
@@ -105,46 +110,59 @@ class TopEmotionsPipeline:
         time_range: TimeRange,
         collection_date: date,
     ) -> None:
-        lyrics_requests = [
-            TrackLyricsRequest(
-                track_id=track.id,
-                track_name=track.name,
-                track_artist=track.artists[0].name,
+        try:
+            lyrics_requests = [
+                TrackLyricsRequest(
+                    track_id=track.id,
+                    track_name=track.name,
+                    track_artist=track.artists[0].name,
+                )
+                for track in tracks
+            ]
+            track_lyrics: list[TrackLyrics] = await self.lyrics_service.get_many_lyrics(
+                lyrics_requests
             )
-            for track in tracks
-        ]
-        track_lyrics: list[TrackLyrics] = await self.lyrics_service.get_many_lyrics(
-            lyrics_requests
-        )
 
-        emotional_profile_requests = [
-            TrackEmotionalProfileRequest(
-                track_id=lyrics.track_id,
-                lyrics=lyrics.lyrics,
+            emotional_profile_requests = [
+                TrackEmotionalProfileRequest(
+                    track_id=lyrics.track_id,
+                    lyrics=lyrics.lyrics,
+                )
+                for lyrics in track_lyrics
+            ]
+            track_emotional_profiles: list[TrackEmotionalProfile] = (
+                await self.emotional_profile_service.get_many_emotional_profiles(
+                    emotional_profile_requests
+                )
             )
-            for lyrics in track_lyrics
-        ]
-        track_emotional_profiles: list[TrackEmotionalProfile] = (
-            await self.emotional_profile_service.get_many_emotional_profiles(
-                emotional_profile_requests
+
+            top_emotions: list[TopEmotion] = self._get_top_emotions(
+                emotional_profiles=track_emotional_profiles,
+                user_id=user_id,
+                time_range=time_range,
+                collection_date=collection_date,
             )
-        )
 
-        top_emotions: list[TopEmotion] = self._get_top_emotions(
-            emotional_profiles=track_emotional_profiles,
-            user_id=user_id,
-            time_range=time_range,
-            collection_date=collection_date,
-        )
-
-        # store in db
-        previous_top_emotions: list[TopEmotion] = (
-            self.top_emotions_repository.get_previous_top_items(
-                user_id=user_id, time_range=time_range
+            # store in db
+            previous_top_emotions: list[TopEmotion] = (
+                self.top_emotions_repository.get_previous_top_items(
+                    user_id=user_id, time_range=time_range
+                )
             )
-        )
-        calculate_position_changes(
-            previous_items=previous_top_emotions, current_items=top_emotions
-        )
+            calculate_position_changes(
+                previous_items=previous_top_emotions, current_items=top_emotions
+            )
 
-        self.top_emotions_repository.add_many(top_emotions)
+            self.top_emotions_repository.add_many(top_emotions)
+        except (
+            LyricsServiceException,
+            EmotionalProfilesServiceException,
+            TopEmotionsRepositoryException,
+        ) as e:
+            logger.error(f"Top emotions pipeline failed: {e}")
+            raise TopEmotionsPipelineException("Top emotions pipeline failed.") from e
+        except Exception as e:
+            logger.error(f"Unexpected error in top emotions pipeline: {e}")
+            raise TopEmotionsPipelineException(
+                "Unexpected error in top emotions pipeline."
+            ) from e

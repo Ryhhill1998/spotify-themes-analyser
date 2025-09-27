@@ -11,8 +11,7 @@ from src.services.spotify_service import SpotifyService, SpotifyServiceException
 
 
 class TopArtistsPipelineException(Exception):
-    def __init__(self, message: str):
-        super().__init__(message)
+    pass
 
 
 class TopArtistsPipeline:

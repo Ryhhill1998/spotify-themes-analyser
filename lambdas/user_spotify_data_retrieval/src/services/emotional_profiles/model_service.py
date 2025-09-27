@@ -1,8 +1,19 @@
 from pydantic_ai import Agent
 from pydantic_ai.models.google import GoogleModel, GoogleModelSettings
 from pydantic_ai.providers.google import GoogleProvider
+from pydantic_ai.exceptions import (
+    AgentRunError,
+    UsageLimitExceeded,
+    UnexpectedModelBehavior,
+)
+from loguru import logger
 
 from src.models.domain import EmotionalProfile
+
+
+class ModelServiceException(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
 
 
 class ModelService:
@@ -30,5 +41,21 @@ class ModelService:
         )
 
     async def get_emotional_profile(self, lyrics: str) -> EmotionalProfile:
-        result = await self.agent.run(user_prompt=lyrics)
-        return result.output
+        try:
+            result = await self.agent.run(user_prompt=lyrics)
+            return result.output
+        except UsageLimitExceeded as e:
+            logger.warning(
+                f"Usage limit exceeded for emotional profile generation: {str(e)}"
+            )
+            raise ModelServiceException(f"Usage limit exceeded: {str(e)}") from e
+        except UnexpectedModelBehavior as e:
+            logger.warning(
+                f"Unexpected model behavior during emotional profile generation: {str(e)}"
+            )
+            raise ModelServiceException(f"Unexpected model behavior: {str(e)}") from e
+        except AgentRunError as e:
+            logger.warning(
+                f"Agent run error during emotional profile generation: {str(e)}"
+            )
+            raise ModelServiceException(f"Agent run error: {str(e)}") from e

@@ -55,6 +55,7 @@ def profile_pipeline(
     )
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_profile_pipeline_run_returns_expected_profile(
     profile_pipeline: ProfilePipeline,
@@ -77,6 +78,7 @@ async def test_profile_pipeline_run_returns_expected_profile(
     assert profile == expected_profile
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_profile_pipeline_run_adds_profile_to_db(
     profile_pipeline: ProfilePipeline,
@@ -100,6 +102,7 @@ async def test_profile_pipeline_run_adds_profile_to_db(
     )
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_profile_pipeline_run_updates_profile_in_db_if_already_exists(
     profile_pipeline: ProfilePipeline, db_session: Session, existing_profile: ProfileDB

@@ -10,10 +10,10 @@ settings = Settings()
 data_collection_service = DataCollectionService(settings)
 
 
-def handler(event: LambdaEvent, _: context_.LambdaContext) -> None:
+def handler(event: LambdaEvent, _: context_.Context) -> None:
     try:
         config = parse_event(event)
-        
+
         asyncio.run(
             data_collection_service.collect_user_data(
                 access_token=config.access_token,
