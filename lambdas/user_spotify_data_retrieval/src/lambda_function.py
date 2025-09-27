@@ -2,9 +2,10 @@ import datetime
 import httpx
 import asyncio
 import json
-import sqlalchemy.orm
+import sqlalchemy
 import pydantic
 import typing
+from aws_lambda_typing import context as context_, events
 
 from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
 from src.services.emotional_profiles.model_service import ModelService
@@ -34,7 +35,13 @@ class RunConfig(pydantic.BaseModel):
 class ParseEventException(Exception): ...
 
 
-def parse_event(event: typing.Dict[str, typing.Any]) -> RunConfig:
+# AWS Lambda event types
+SQSEvent = events.SQSEvent
+DirectEvent = typing.Dict[str, typing.Any]
+LambdaEvent = typing.Union[SQSEvent, DirectEvent]
+
+
+def parse_event(event: LambdaEvent) -> RunConfig:
     try:
         config_data = event
 
@@ -175,7 +182,7 @@ async def main(access_token: str, time_range: TimeRange, collection_date: dateti
             )
 
 
-def handler(event, context) -> None:
+def handler(event: LambdaEvent, _: context_.LambdaContext) -> None:
     try:
         config: RunConfig = parse_event(event)
         
