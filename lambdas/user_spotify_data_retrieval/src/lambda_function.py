@@ -1,7 +1,10 @@
 from datetime import date
 import httpx
 import asyncio
+import json
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, Field, BeforeValidator
+from typing import Dict, Any, Annotated
 
 from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
 from src.services.emotional_profiles.model_service import ModelService
@@ -19,6 +22,27 @@ from src.pipelines.top_tracks_pipeline import TopTracksPipeline
 settings = Settings()
 
 lyrics_semaphore = asyncio.Semaphore(settings.lyrics_max_concurrent_scrapes)
+
+
+class RunConfig(BaseModel):
+    """Configuration for running the data collection pipeline"""
+    access_token: str = Field(..., min_length=1)
+    time_range: Annotated[TimeRange, BeforeValidator(lambda v: TimeRange(v))] = Field(default=TimeRange.SHORT_TERM)
+    collection_date: Annotated[date, BeforeValidator(lambda v: date.fromisoformat(v))] = Field(default_factory=date.today)
+
+
+def parse_event(event: Dict[str, Any]) -> RunConfig:
+    if "Records" in event and len(event["Records"]) > 0:
+        message_body = event["Records"][0]["body"]
+        
+        try:
+            body_data = json.loads(message_body)
+            return RunConfig.model_validate(body_data)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON in SQS message body: {e}")
+    else:
+        # Fallback for direct Lambda invocation (non-SQS)
+        return RunConfig.model_validate(event)
 
 
 async def run_top_artists_and_genres_pipelines(
@@ -150,17 +174,12 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
 
 
 def handler(event, context) -> None:
-    access_token = "BQAgcDQIip6RBOJXJZGphn3CPlTUlzLz8vVNOkYYpYGyDLM7RT65fXhN2rRghc7YsUK7yd4lNEvvvArt4VjpWEKW3jUNH3jniqg0xIZ8mkAKiXy9NpmTuZFXx-gsURxIMuRFT_wi6qqwuTFwfRXzd-qffy41wqQp0eITwo0GZe4uupmlk0hl8xpvhYDkC8Uu1fvOYHoQhSV8NYEGn7eeKpnH3uTb-lZiQcTio_z62m6ePsxRPCPuqtU6"
-    time_range = TimeRange.SHORT_TERM
-    collection_date = date.today()
-
+    config: RunConfig = parse_event(event)
+    
     asyncio.run(
         main(
-            access_token=access_token,
-            time_range=time_range,
-            collection_date=collection_date,
+            access_token=config.access_token,
+            time_range=config.time_range,
+            collection_date=config.collection_date,
         )
     )
-
-
-handler("", "")
