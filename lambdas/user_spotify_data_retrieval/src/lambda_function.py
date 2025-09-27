@@ -1,10 +1,10 @@
-from datetime import date
+import datetime
 import httpx
 import asyncio
 import json
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, Field, BeforeValidator
-from typing import Dict, Any, Annotated
+import sqlalchemy.orm
+import pydantic
+import typing
 
 from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
 from src.services.emotional_profiles.model_service import ModelService
@@ -24,25 +24,27 @@ settings = Settings()
 lyrics_semaphore = asyncio.Semaphore(settings.lyrics_max_concurrent_scrapes)
 
 
-class RunConfig(BaseModel):
+class RunConfig(pydantic.BaseModel):
     """Configuration for running the data collection pipeline"""
-    access_token: str = Field(..., min_length=1)
-    time_range: Annotated[TimeRange, BeforeValidator(lambda v: TimeRange(v))] = Field(default=TimeRange.SHORT_TERM)
-    collection_date: Annotated[date, BeforeValidator(lambda v: date.fromisoformat(v))] = Field(default_factory=date.today)
+    access_token: str = pydantic.Field(..., min_length=1)
+    time_range: typing.Annotated[TimeRange, pydantic.BeforeValidator(lambda v: TimeRange(v))]
+    collection_date: typing.Annotated[datetime.date, pydantic.BeforeValidator(lambda v: datetime.date.fromisoformat(v))] = pydantic.Field(default_factory=datetime.date.today)
 
 
-def parse_event(event: Dict[str, Any]) -> RunConfig:
-    if "Records" in event and len(event["Records"]) > 0:
-        message_body = event["Records"][0]["body"]
+class ParseEventException(Exception): ...
+
+
+def parse_event(event: typing.Dict[str, typing.Any]) -> RunConfig:
+    try:
+        config_data = event
+
+        if "Records" in event and len(event["Records"]) > 0:
+            message_body = event["Records"][0]["body"]        
+            config_data = json.loads(message_body)
         
-        try:
-            body_data = json.loads(message_body)
-            return RunConfig.model_validate(body_data)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON in SQS message body: {e}")
-    else:
-        # Fallback for direct Lambda invocation (non-SQS)
-        return RunConfig.model_validate(event)
+        return RunConfig.model_validate(config_data)
+    except (json.JSONDecodeError, pydantic.ValidationError) as e:
+        raise ParseEventException(f"Failed to parse event: {str(e)}") from e
 
 
 async def run_top_artists_and_genres_pipelines(
@@ -91,11 +93,11 @@ async def run_top_tracks_and_emotions_pipelines(
 
 async def run_data_collection_pipeline(
     client: httpx.AsyncClient,
-    db_session: Session,
+    db_session: sqlalchemy.orm.Session,
     access_token: str,
     settings: Settings,
     time_range: TimeRange,
-    collection_date: date,
+    collection_date: datetime.date,
 ) -> None:
     spotify_service = SpotifyService(client=client, base_url=settings.spotify_base_url)
     lyrics_scraper = LyricsScraper(
@@ -160,7 +162,7 @@ async def run_data_collection_pipeline(
     print("Completed pipeline runs")
 
 
-async def main(access_token: str, time_range: TimeRange, collection_date: date) -> None:
+async def main(access_token: str, time_range: TimeRange, collection_date: datetime.date) -> None:
     async with httpx.AsyncClient() as client:
         with get_db_session(settings.db_connection_string) as db_session:
             await run_data_collection_pipeline(
@@ -174,12 +176,16 @@ async def main(access_token: str, time_range: TimeRange, collection_date: date) 
 
 
 def handler(event, context) -> None:
-    config: RunConfig = parse_event(event)
-    
-    asyncio.run(
-        main(
-            access_token=config.access_token,
-            time_range=config.time_range,
-            collection_date=config.collection_date,
+    try:
+        config: RunConfig = parse_event(event)
+        
+        asyncio.run(
+            main(
+                access_token=config.access_token,
+                time_range=config.time_range,
+                collection_date=config.collection_date,
+            )
         )
-    )
+    except Exception as e:
+        print(f"Lambda execution failed: {str(e)}")
+        raise
