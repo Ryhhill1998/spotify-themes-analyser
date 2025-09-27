@@ -16,7 +16,9 @@ class DataCollectionService:
         self.lyrics_semaphore = asyncio.Semaphore(
             settings.lyrics_max_concurrent_scrapes
         )
-        self.orchestrator = DataCollectionOrchestrator(settings, self.lyrics_semaphore)
+        self.orchestrator = DataCollectionOrchestrator(
+            settings=self.settings, lyrics_semaphore=self.lyrics_semaphore
+        )
 
     async def collect_user_data(
         self,
