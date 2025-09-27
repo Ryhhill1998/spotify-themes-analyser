@@ -17,7 +17,10 @@ from src.repositories.top_items.top_artists_repository import (
     TopArtistsRepositoryException,
 )
 from src.services.spotify_service import SpotifyService
-from src.pipelines.top_artists_pipeline import TopArtistsPipeline
+from src.pipelines.top_artists_pipeline import (
+    TopArtistsPipeline,
+    TopArtistsPipelineException,
+)
 
 TOP_ARTISTS_DATA = {
     "items": [
@@ -866,7 +869,7 @@ async def test_top_artists_pipeline_run_raises_exception_if_top_artist_exists(
     )
     db_session.commit()
 
-    with pytest.raises(TopArtistsRepositoryException):
+    with pytest.raises(TopArtistsPipelineException):
         await top_artists_pipeline.run(
             access_token=access_token,
             user_id=user_id,

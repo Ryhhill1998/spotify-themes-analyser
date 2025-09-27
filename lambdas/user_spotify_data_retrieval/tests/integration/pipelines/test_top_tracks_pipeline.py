@@ -18,7 +18,10 @@ from src.repositories.top_items.top_tracks_repository import (
     TopTracksRepositoryException,
 )
 from src.services.spotify_service import SpotifyService
-from src.pipelines.top_tracks_pipeline import TopTracksPipeline
+from src.pipelines.top_tracks_pipeline import (
+    TopTracksPipeline,
+    TopTracksPipelineException,
+)
 
 TOP_TRACKS_DATA = {
     "items": [
@@ -1611,7 +1614,7 @@ async def test_top_tracks_pipeline_run_raises_exception_if_top_track_exists(
     )
     db_session.commit()
 
-    with pytest.raises(TopTracksRepositoryException):
+    with pytest.raises(TopTracksPipelineException):
         await top_tracks_pipeline.run(
             access_token=access_token,
             user_id=user_id,
