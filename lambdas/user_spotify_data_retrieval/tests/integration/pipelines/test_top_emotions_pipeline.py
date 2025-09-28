@@ -6,11 +6,14 @@ import pytest
 import pytest_asyncio
 from sqlalchemy.orm import Session
 
+from src.services.emotional_profiles.model_service import (
+    EmotionalProfileCalculator,
+)
 from src.models.domain import (
+    TopEmotion,
     Track,
     TrackArtist,
     TrackLyrics,
-    TrackEmotionalProfile,
     EmotionalProfile,
 )
 from src.models.enums import TimeRange, PositionChange
@@ -71,46 +74,49 @@ TEST_LYRICS = [
 ]
 
 TEST_EMOTIONAL_PROFILES = [
-    TrackEmotionalProfile(
-        track_id="track1",
-        emotional_profile=EmotionalProfile(
-            joy=0.8,
-            sadness=0.1,
-            anger=0.0,
-            fear=0.0,
-            love=0.7,
-            hope=0.6,
-            nostalgia=0.2,
-            loneliness=0.1,
-            confidence=0.5,
-            despair=0.0,
-            excitement=0.4,
-            mystery=0.1,
-            defiance=0.2,
-            gratitude=0.3,
-            spirituality=0.1,
-        ),
+    EmotionalProfile(
+        joy=0.3,
+        sadness=0.05,
+        anger=0.0,
+        fear=0.0,
+        love=0.25,
+        hope=0.2,
+        nostalgia=0.1,
+        loneliness=0.05,
+        confidence=0.15,
+        despair=0.0,
+        excitement=0.1,
+        mystery=0.05,
+        defiance=0.05,
+        gratitude=0.1,
+        spirituality=0.05,
     ),
-    TrackEmotionalProfile(
-        track_id="track2",
-        emotional_profile=EmotionalProfile(
-            joy=0.1,
-            sadness=0.9,
-            anger=0.2,
-            fear=0.1,
-            love=0.3,
-            hope=0.1,
-            nostalgia=0.8,
-            loneliness=0.7,
-            confidence=0.2,
-            despair=0.6,
-            excitement=0.0,
-            mystery=0.3,
-            defiance=0.1,
-            gratitude=0.1,
-            spirituality=0.2,
-        ),
+    EmotionalProfile(
+        joy=0.025,
+        sadness=0.45,
+        anger=0.1,
+        fear=0.05,
+        love=0.15,
+        hope=0.05,
+        nostalgia=0.35,
+        loneliness=0.3,
+        confidence=0.1,
+        despair=0.25,
+        excitement=0.0,
+        mystery=0.15,
+        defiance=0.05,
+        gratitude=0.05,
+        spirituality=0.1,
     ),
+]
+
+# Expected top emotions based on averaging the two test emotional profiles
+EXPECTED_TOP_EMOTIONS = [
+    {"emotion_id": "sadness", "percentage": 0.25},
+    {"emotion_id": "nostalgia", "percentage": 0.22},
+    {"emotion_id": "love", "percentage": 0.20},
+    {"emotion_id": "loneliness", "percentage": 0.17},
+    {"emotion_id": "joy", "percentage": 0.16},
 ]
 
 
@@ -182,53 +188,26 @@ async def lyrics_service(
 
 
 @pytest.fixture
-def emotional_profiles_service(db_session: Session) -> EmotionalProfilesService:
+def emotional_profile_calculator() -> EmotionalProfileCalculator:
+    class Calculator(EmotionalProfileCalculator):
+        async def get_emotional_profile(self, lyrics: str) -> EmotionalProfile:
+            if "happy" in lyrics:
+                return TEST_EMOTIONAL_PROFILES[0]
+            else:
+                return TEST_EMOTIONAL_PROFILES[1]
+
+    return Calculator()
+
+
+@pytest.fixture
+def emotional_profiles_service(
+    db_session: Session, emotional_profile_calculator: EmotionalProfileCalculator
+) -> EmotionalProfilesService:
     emotional_profile_repository = TrackEmotionalProfilesRepository(db_session)
 
-    # Create a mock model service that returns predictable results
-    class MockModelService:
-        async def get_emotional_profile(self, lyrics: str) -> EmotionalProfile:
-            if "happy" in lyrics.lower():
-                return EmotionalProfile(
-                    joy=0.8,
-                    sadness=0.1,
-                    anger=0.0,
-                    fear=0.0,
-                    love=0.7,
-                    hope=0.6,
-                    nostalgia=0.2,
-                    loneliness=0.1,
-                    confidence=0.5,
-                    despair=0.0,
-                    excitement=0.4,
-                    mystery=0.1,
-                    defiance=0.2,
-                    gratitude=0.3,
-                    spirituality=0.1,
-                )
-            else:  # sad lyrics
-                return EmotionalProfile(
-                    joy=0.1,
-                    sadness=0.9,
-                    anger=0.2,
-                    fear=0.1,
-                    love=0.3,
-                    hope=0.1,
-                    nostalgia=0.8,
-                    loneliness=0.7,
-                    confidence=0.2,
-                    despair=0.6,
-                    excitement=0.0,
-                    mystery=0.3,
-                    defiance=0.1,
-                    gratitude=0.1,
-                    spirituality=0.2,
-                )
-
-    mock_model_service = MockModelService()
     return EmotionalProfilesService(
         emotional_profile_repository=emotional_profile_repository,
-        model_service=mock_model_service,
+        emotional_profile_calculator=emotional_profile_calculator,
     )
 
 
@@ -248,7 +227,7 @@ def top_emotions_pipeline(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_top_emotions_pipeline_run_stores_top_emotions_in_db(
+async def test_top_emotions_pipeline_run_adds_top_emotions_to_db(
     top_emotions_pipeline: TopEmotionsPipeline,
     existing_profile: ProfileDB,
     db_session: Session,
@@ -265,57 +244,34 @@ async def test_top_emotions_pipeline_run_stores_top_emotions_in_db(
         collection_date=collection_date,
     )
 
-    top_emotions_in_db = db_session.query(TopEmotionDB).all()
-    assert len(top_emotions_in_db) > 0
-    assert all(emotion.user_id == user_id for emotion in top_emotions_in_db)
-    assert all(emotion.time_range == time_range for emotion in top_emotions_in_db)
-    assert all(
-        emotion.collection_date == collection_date for emotion in top_emotions_in_db
-    )
+    top_emotions_in_db = [
+        TopEmotion(
+            user_id=emotion.user_id,
+            emotion_id=emotion.emotion_id,
+            collection_date=emotion.collection_date,
+            time_range=emotion.time_range,
+            position=emotion.position,
+            percentage=emotion.percentage,
+        )
+        for emotion in db_session.query(TopEmotionDB).all()
+    ]
+    expected_top_emotions = [
+        TopEmotion(
+            user_id=user_id,
+            emotion_id=emotion["emotion_id"],
+            collection_date=collection_date,
+            time_range=time_range,
+            position=index + 1,
+            percentage=emotion["percentage"],
+        )
+        for index, emotion in enumerate(EXPECTED_TOP_EMOTIONS)
+    ]
+    assert top_emotions_in_db == expected_top_emotions
 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_top_emotions_pipeline_run_aggregates_emotions_correctly(
-    top_emotions_pipeline: TopEmotionsPipeline,
-    existing_profile: ProfileDB,
-    db_session: Session,
-    db_tracks: list[TrackDB],
-) -> None:
-    user_id = existing_profile.id
-    time_range = TimeRange.SHORT_TERM
-    collection_date = datetime.date(2024, 1, 15)
-
-    await top_emotions_pipeline.run(
-        tracks=TEST_TRACKS,
-        user_id=user_id,
-        time_range=time_range,
-        collection_date=collection_date,
-    )
-
-    # Verify that emotions are properly aggregated and normalized
-    top_emotions_in_db = db_session.query(TopEmotionDB).all()
-
-    # Should have multiple emotions
-    assert len(top_emotions_in_db) > 0
-
-    # All percentages should be between 0 and 1 (normalized)
-    for emotion in top_emotions_in_db:
-        assert 0 <= emotion.percentage <= 1
-
-    # Should have emotions from both tracks (joy should be high due to happy song)
-    emotion_ids = [emotion.emotion_id for emotion in top_emotions_in_db]
-    assert "joy" in emotion_ids
-    assert "sadness" in emotion_ids
-
-    # Verify that percentages sum to approximately 1.0 (normalized)
-    total_percentage = sum(emotion.percentage for emotion in top_emotions_in_db)
-    assert abs(total_percentage - 1.0) < 0.02  # Allow for small rounding errors
-
-
-@pytest.mark.integration
-@pytest.mark.asyncio
-async def test_top_emotions_pipeline_run_calculates_position_changes(
+async def test_top_emotions_pipeline_run_adds_top_emotions_to_db_with_expected_position_changes(
     top_emotions_pipeline: TopEmotionsPipeline,
     existing_profile: ProfileDB,
     db_session: Session,
@@ -326,9 +282,7 @@ async def test_top_emotions_pipeline_run_calculates_position_changes(
     collection_date = datetime.date(2024, 1, 15)
     previous_collection_date = collection_date - datetime.timedelta(days=7)
 
-    # Add previous top emotions with different positions
-    # The pipeline returns top 5 emotions by default, so positions can be 1-5
-    # Based on actual test results: sadness is at position 1, joy is at position 4
+    # Create previous emotional profiles in DB to simulate existing data
     previous_emotions = [
         TopEmotionDB(
             user_id=user_id,
@@ -359,29 +313,44 @@ async def test_top_emotions_pipeline_run_calculates_position_changes(
         collection_date=collection_date,
     )
 
-    # Check that position changes were calculated correctly
-    top_emotions_in_db = (
-        db_session.query(TopEmotionDB)
+    # Build expected results with position changes
+    expected_top_emotions = [
+        TopEmotion(
+            user_id=user_id,
+            emotion_id=emotion["emotion_id"],
+            collection_date=collection_date,
+            time_range=time_range,
+            position=index + 1,
+            percentage=emotion["percentage"],
+            position_change=None,
+        )
+        for index, emotion in enumerate(EXPECTED_TOP_EMOTIONS)
+    ]
+
+    # Apply position changes based on expected results
+    for emotion in expected_top_emotions:
+        if emotion.emotion_id == "sadness":
+            emotion.position_change = PositionChange.UP  # 3 -> 1
+        elif emotion.emotion_id == "joy":
+            emotion.position_change = PositionChange.DOWN  # 2 -> 4
+        else:
+            emotion.position_change = PositionChange.NEW
+
+    # Get actual results from DB
+    top_emotions_in_db = [
+        TopEmotion(
+            user_id=emotion.user_id,
+            emotion_id=emotion.emotion_id,
+            collection_date=emotion.collection_date,
+            time_range=emotion.time_range,
+            position=emotion.position,
+            percentage=emotion.percentage,
+            position_change=emotion.position_change,
+        )
+        for emotion in db_session.query(TopEmotionDB)
         .filter(TopEmotionDB.collection_date == collection_date)
         .order_by(TopEmotionDB.position)
         .all()
-    )
+    ]
 
-    # Find joy and sadness emotions
-    joy_emotion = next((e for e in top_emotions_in_db if e.emotion_id == "joy"), None)
-    sadness_emotion = next(
-        (e for e in top_emotions_in_db if e.emotion_id == "sadness"), None
-    )
-
-    assert joy_emotion is not None
-    assert sadness_emotion is not None
-
-    # Based on the actual test results: sadness is at position 1, joy is at position 4
-    assert sadness_emotion.position == 1
-    assert joy_emotion.position == 4
-
-    # Sadness moved UP (from position 3 to position 1: 3 -> 1)
-    assert sadness_emotion.position_change == PositionChange.UP
-
-    # Joy moved DOWN (from position 2 to position 4: 2 -> 4)
-    assert joy_emotion.position_change == PositionChange.DOWN
+    assert top_emotions_in_db == expected_top_emotions

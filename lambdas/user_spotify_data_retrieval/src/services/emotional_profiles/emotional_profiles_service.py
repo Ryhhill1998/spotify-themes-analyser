@@ -1,7 +1,9 @@
 import asyncio
 from loguru import logger
 from src.models.domain import TrackEmotionalProfile, TrackEmotionalProfileRequest
-from src.services.emotional_profiles.model_service import ModelService
+from src.services.emotional_profiles.model_service import (
+    EmotionalProfileCalculator,
+)
 from src.repositories.track_emotional_profiles_repository import (
     TrackEmotionalProfilesRepository,
 )
@@ -16,16 +18,18 @@ class EmotionalProfilesService:
     def __init__(
         self,
         emotional_profile_repository: TrackEmotionalProfilesRepository,
-        model_service: ModelService,
+        emotional_profile_calculator: EmotionalProfileCalculator,
     ):
         self.emotional_profile_repository = emotional_profile_repository
-        self.model_service = model_service
+        self.emotional_profile_calculator = emotional_profile_calculator
 
     async def _calculate_emotional_profile(
         self, request: TrackEmotionalProfileRequest
     ) -> TrackEmotionalProfile:
-        emotional_profile = await self.model_service.get_emotional_profile(
-            request.lyrics
+        emotional_profile = (
+            await self.emotional_profile_calculator.get_emotional_profile(
+                request.lyrics
+            )
         )
         return TrackEmotionalProfile(
             track_id=request.track_id, emotional_profile=emotional_profile

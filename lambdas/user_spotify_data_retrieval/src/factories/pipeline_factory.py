@@ -73,7 +73,7 @@ class PipelineFactory:
             emotional_profile_repository=TrackEmotionalProfilesRepository(
                 self.db_session
             ),
-            model_service=self.model_service,
+            emotional_profile_calculator=self.model_service,
         )
         return TopEmotionsPipeline(
             lyrics_service=lyrics_service,

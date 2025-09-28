@@ -3,6 +3,7 @@ import datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field
+import pydantic
 
 from src.models.shared import Image, TrackArtist
 from src.models.enums import PositionChange, TimeRange
@@ -61,7 +62,7 @@ class TopItemBase(abc.ABC, BaseModel):
 
     @property
     @abc.abstractmethod
-    def item_id(self) -> str:...
+    def item_id(self) -> str: ...
 
 
 # -----------------------------
@@ -108,7 +109,7 @@ class TopEmotion(TopItemBase):
     @property
     def item_id(self) -> str:
         return self.emotion_id
-    
+
 
 # -----------------------------
 # Track Lyrics
