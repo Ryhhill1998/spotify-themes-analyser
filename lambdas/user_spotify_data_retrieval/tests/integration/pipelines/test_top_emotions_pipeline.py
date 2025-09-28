@@ -21,6 +21,8 @@ from src.models.db import (
     ProfileDB,
     TopEmotionDB,
     TrackDB,
+    TrackLyricsDB,
+    TrackEmotionalProfileDB,
 )
 from src.repositories.track_lyrics_repository import TrackLyricsRepository
 from src.repositories.track_emotional_profiles_repository import (
@@ -353,4 +355,194 @@ async def test_top_emotions_pipeline_run_adds_top_emotions_to_db_with_expected_p
         .all()
     ]
 
+    assert top_emotions_in_db == expected_top_emotions
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_top_emotions_pipeline_run_stores_lyrics_in_database(
+    top_emotions_pipeline: TopEmotionsPipeline,
+    existing_profile: ProfileDB,
+    db_session: Session,
+    db_tracks: list[TrackDB],
+) -> None:
+    """Test that lyrics are properly stored in the TrackLyricsDB table during pipeline execution."""
+    user_id = existing_profile.id
+    time_range = TimeRange.SHORT_TERM
+    collection_date = datetime.date(2024, 1, 15)
+
+    # Verify no lyrics exist in DB before pipeline run
+    lyrics_before = db_session.query(TrackLyricsDB).all()
+    assert len(lyrics_before) == 0
+
+    await top_emotions_pipeline.run(
+        tracks=TEST_TRACKS,
+        user_id=user_id,
+        time_range=time_range,
+        collection_date=collection_date,
+    )
+
+    # Verify lyrics were stored in the database
+    lyrics_after = db_session.query(TrackLyricsDB).all()
+    assert len(lyrics_after) == 2
+
+    # Verify the correct lyrics were stored
+    lyrics_by_track_id = {lyric.track_id: lyric.lyrics for lyric in lyrics_after}
+
+    assert "track1" in lyrics_by_track_id
+    assert "track2" in lyrics_by_track_id
+    assert (
+        lyrics_by_track_id["track1"]
+        == "This is a happy song with joyful lyrics and positive vibes!"
+    )
+    assert (
+        lyrics_by_track_id["track2"]
+        == "This is a sad song with melancholy lyrics and tears."
+    )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_top_emotions_pipeline_run_stores_emotional_profiles_in_database(
+    top_emotions_pipeline: TopEmotionsPipeline,
+    existing_profile: ProfileDB,
+    db_session: Session,
+    db_tracks: list[TrackDB],
+) -> None:
+    """Test that emotional profiles are properly stored in the TrackEmotionalProfileDB table during pipeline execution."""
+    user_id = existing_profile.id
+    time_range = TimeRange.SHORT_TERM
+    collection_date = datetime.date(2024, 1, 15)
+
+    # Verify no emotional profiles exist in DB before pipeline run
+    profiles_before = db_session.query(TrackEmotionalProfileDB).all()
+    assert len(profiles_before) == 0
+
+    await top_emotions_pipeline.run(
+        tracks=TEST_TRACKS,
+        user_id=user_id,
+        time_range=time_range,
+        collection_date=collection_date,
+    )
+
+    # Verify emotional profiles were stored in the database
+    profiles_after = db_session.query(TrackEmotionalProfileDB).all()
+    assert len(profiles_after) == 2
+
+    # Verify the correct emotional profiles were stored
+    profiles_by_track_id = {profile.track_id: profile for profile in profiles_after}
+
+    assert "track1" in profiles_by_track_id
+    assert "track2" in profiles_by_track_id
+
+    # Check track1 (happy song) emotional profile
+    track1_profile = profiles_by_track_id["track1"]
+    assert track1_profile.joy == 0.3
+    assert track1_profile.sadness == 0.05
+    assert track1_profile.anger == 0.0
+    assert track1_profile.fear == 0.0
+    assert track1_profile.love == 0.25
+    assert track1_profile.hope == 0.2
+    assert track1_profile.nostalgia == 0.1
+    assert track1_profile.loneliness == 0.05
+    assert track1_profile.confidence == 0.15
+    assert track1_profile.despair == 0.0
+    assert track1_profile.excitement == 0.1
+    assert track1_profile.mystery == 0.05
+    assert track1_profile.defiance == 0.05
+    assert track1_profile.gratitude == 0.1
+    assert track1_profile.spirituality == 0.05
+
+    # Check track2 (sad song) emotional profile
+    track2_profile = profiles_by_track_id["track2"]
+    assert track2_profile.joy == 0.025
+    assert track2_profile.sadness == 0.45
+    assert track2_profile.anger == 0.1
+    assert track2_profile.fear == 0.05
+    assert track2_profile.love == 0.15
+    assert track2_profile.hope == 0.05
+    assert track2_profile.nostalgia == 0.35
+    assert track2_profile.loneliness == 0.3
+    assert track2_profile.confidence == 0.1
+    assert track2_profile.despair == 0.25
+    assert track2_profile.excitement == 0.0
+    assert track2_profile.mystery == 0.15
+    assert track2_profile.defiance == 0.05
+    assert track2_profile.gratitude == 0.05
+    assert track2_profile.spirituality == 0.1
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_top_emotions_pipeline_run_complete_integration_flow(
+    top_emotions_pipeline: TopEmotionsPipeline,
+    existing_profile: ProfileDB,
+    db_session: Session,
+    db_tracks: list[TrackDB],
+) -> None:
+    """Test the complete pipeline flow including all database operations."""
+    user_id = existing_profile.id
+    time_range = TimeRange.SHORT_TERM
+    collection_date = datetime.date(2024, 1, 15)
+
+    # Verify no data exists in any of the relevant tables before pipeline run
+    lyrics_before = db_session.query(TrackLyricsDB).count()
+    profiles_before = db_session.query(TrackEmotionalProfileDB).count()
+    top_emotions_before = db_session.query(TopEmotionDB).count()
+
+    assert lyrics_before == 0
+    assert profiles_before == 0
+    assert top_emotions_before == 0
+
+    await top_emotions_pipeline.run(
+        tracks=TEST_TRACKS,
+        user_id=user_id,
+        time_range=time_range,
+        collection_date=collection_date,
+    )
+
+    # Verify all data was stored in the database
+    lyrics_after = db_session.query(TrackLyricsDB).count()
+    profiles_after = db_session.query(TrackEmotionalProfileDB).count()
+    top_emotions_after = db_session.query(TopEmotionDB).count()
+
+    assert lyrics_after == 2
+    assert profiles_after == 2
+    assert top_emotions_after == 5  # Top 5 emotions
+
+    # Verify the complete data flow by checking that all track IDs are consistent
+    lyrics_track_ids = {
+        lyric.track_id for lyric in db_session.query(TrackLyricsDB).all()
+    }
+    profile_track_ids = {
+        profile.track_id for profile in db_session.query(TrackEmotionalProfileDB).all()
+    }
+    expected_track_ids = {"track1", "track2"}
+
+    assert lyrics_track_ids == expected_track_ids
+    assert profile_track_ids == expected_track_ids
+
+    # Verify that the top emotions were calculated correctly from the stored emotional profiles
+    top_emotions_in_db = [
+        TopEmotion(
+            user_id=emotion.user_id,
+            emotion_id=emotion.emotion_id,
+            collection_date=emotion.collection_date,
+            time_range=emotion.time_range,
+            position=emotion.position,
+            percentage=emotion.percentage,
+        )
+        for emotion in db_session.query(TopEmotionDB).all()
+    ]
+    expected_top_emotions = [
+        TopEmotion(
+            user_id=user_id,
+            emotion_id=emotion["emotion_id"],
+            collection_date=collection_date,
+            time_range=time_range,
+            position=index + 1,
+            percentage=emotion["percentage"],
+        )
+        for index, emotion in enumerate(EXPECTED_TOP_EMOTIONS)
+    ]
     assert top_emotions_in_db == expected_top_emotions
