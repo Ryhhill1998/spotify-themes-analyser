@@ -10,17 +10,33 @@ from src.pipelines.top_emotions_pipeline import TopEmotionsPipeline
 
 def test_single_emotional_profile():
     """Test aggregation with a single emotional profile"""
-    emotional_profile = EmotionalProfile(happy=0.3, sad=0.4, angry=0.2, excited=0.1)
+    emotional_profile = EmotionalProfile(
+        joy=0.3,
+        sadness=0.4,
+        anger=0.2,
+        excitement=0.1,
+        fear=0.0,
+        love=0.0,
+        hope=0.0,
+        nostalgia=0.0,
+        loneliness=0.0,
+        confidence=0.0,
+        despair=0.0,
+        mystery=0.0,
+        defiance=0.0,
+        gratitude=0.0,
+        spirituality=0.0,
+    )
     profile_response = TrackEmotionalProfile(
         track_id="track1", emotional_profile=emotional_profile
     )
 
     result = TopEmotionsPipeline._aggregate_emotions([profile_response])
 
-    assert result["happy"] == 0.3
-    assert result["sad"] == 0.4
-    assert result["angry"] == 0.2
-    assert result["excited"] == 0.1
+    assert result["joy"] == 0.3
+    assert result["sadness"] == 0.4
+    assert result["anger"] == 0.2
+    assert result["excitement"] == 0.1
 
 
 def test_multiple_emotional_profiles_same_emotions():
@@ -28,24 +44,72 @@ def test_multiple_emotional_profiles_same_emotions():
     profiles = [
         TrackEmotionalProfile(
             track_id="track1",
-            emotional_profile=EmotionalProfile(happy=0.2, sad=0.3, angry=0.5),
+            emotional_profile=EmotionalProfile(
+                joy=0.2,
+                sadness=0.3,
+                anger=0.5,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
             track_id="track2",
-            emotional_profile=EmotionalProfile(happy=0.4, sad=0.1, angry=0.5),
+            emotional_profile=EmotionalProfile(
+                joy=0.4,
+                sadness=0.1,
+                anger=0.5,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
             track_id="track3",
-            emotional_profile=EmotionalProfile(happy=0.0, sad=0.2, angry=0.8),
+            emotional_profile=EmotionalProfile(
+                joy=0.0,
+                sadness=0.2,
+                anger=0.8,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
     ]
 
     result = TopEmotionsPipeline._aggregate_emotions(profiles)
 
-    # Averages: happy=(0.2+0.4+0.0)/3=0.2, sad=(0.3+0.1+0.2)/3=0.2, angry=(0.5+0.5+0.8)/3=0.6
-    assert result["happy"] == pytest.approx(0.2, rel=1e-10)
-    assert result["sad"] == pytest.approx(0.2, rel=1e-10)
-    assert result["angry"] == pytest.approx(0.6, rel=1e-10)
+    # Averages: joy=(0.2+0.4+0.0)/3=0.2, sadness=(0.3+0.1+0.2)/3=0.2, anger=(0.5+0.5+0.8)/3=0.6
+    assert result["joy"] == pytest.approx(0.2, rel=1e-10)
+    assert result["sadness"] == pytest.approx(0.2, rel=1e-10)
+    assert result["anger"] == pytest.approx(0.6, rel=1e-10)
 
 
 def test_different_emotions_across_profiles():
@@ -53,29 +117,78 @@ def test_different_emotions_across_profiles():
     profiles = [
         TrackEmotionalProfile(
             track_id="track1",
-            emotional_profile=EmotionalProfile(happy=0.5, sad=0.3, excited=0.2),
+            emotional_profile=EmotionalProfile(
+                joy=0.5,
+                sadness=0.3,
+                excitement=0.2,
+                anger=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
-            track_id="track2", emotional_profile=EmotionalProfile(angry=0.4, calm=0.6)
+            track_id="track2",
+            emotional_profile=EmotionalProfile(
+                anger=0.4,
+                confidence=0.6,
+                joy=0.0,
+                sadness=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
             track_id="track3",
-            emotional_profile=EmotionalProfile(happy=0.1, excited=0.9),
+            emotional_profile=EmotionalProfile(
+                joy=0.1,
+                excitement=0.9,
+                sadness=0.0,
+                anger=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
     ]
 
     result = TopEmotionsPipeline._aggregate_emotions(profiles)
 
-    # happy: (0.5 + 0.1) / 2 = 0.3
-    # sad: 0.3 / 1 = 0.3
-    # excited: (0.2 + 0.9) / 2 = 0.55
-    # angry: 0.4 / 1 = 0.4
-    # calm: 0.6 / 1 = 0.6
-    assert result["happy"] == pytest.approx(0.3, rel=1e-10)
-    assert result["sad"] == pytest.approx(0.3, rel=1e-10)
-    assert result["excited"] == pytest.approx(0.55, rel=1e-10)
-    assert result["angry"] == pytest.approx(0.4, rel=1e-10)
-    assert result["calm"] == pytest.approx(0.6, rel=1e-10)
+    # joy: (0.5 + 0.1) / 2 = 0.3
+    # sadness: 0.3 / 1 = 0.3
+    # excitement: (0.2 + 0.9) / 2 = 0.55
+    # anger: 0.4 / 1 = 0.4
+    # confidence: 0.6 / 1 = 0.6
+    assert result["joy"] == pytest.approx(0.3, rel=1e-10)
+    assert result["sadness"] == pytest.approx(0.3, rel=1e-10)
+    assert result["excitement"] == pytest.approx(0.55, rel=1e-10)
+    assert result["anger"] == pytest.approx(0.4, rel=1e-10)
+    assert result["confidence"] == pytest.approx(0.6, rel=1e-10)
 
 
 def test_empty_profiles_list():
@@ -88,17 +201,51 @@ def test_single_emotion_across_profiles():
     """Test aggregation when all profiles have only one emotion"""
     profiles = [
         TrackEmotionalProfile(
-            track_id="track1", emotional_profile=EmotionalProfile(happy=0.8)
+            track_id="track1",
+            emotional_profile=EmotionalProfile(
+                joy=0.8,
+                sadness=0.0,
+                anger=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
-            track_id="track2", emotional_profile=EmotionalProfile(happy=0.2)
+            track_id="track2",
+            emotional_profile=EmotionalProfile(
+                joy=0.2,
+                sadness=0.0,
+                anger=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
     ]
 
     result = TopEmotionsPipeline._aggregate_emotions(profiles)
 
     assert len(result) == 1
-    assert result["happy"] == pytest.approx(0.5, rel=1e-10)
+    assert result["joy"] == pytest.approx(0.5, rel=1e-10)
 
 
 def test_zero_values_included():
@@ -106,33 +253,65 @@ def test_zero_values_included():
     profiles = [
         TrackEmotionalProfile(
             track_id="track1",
-            emotional_profile=EmotionalProfile(happy=0.0, sad=0.5, angry=0.5),
+            emotional_profile=EmotionalProfile(
+                joy=0.0,
+                sadness=0.5,
+                anger=0.5,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
             track_id="track2",
-            emotional_profile=EmotionalProfile(happy=0.0, sad=0.3, angry=0.7),
+            emotional_profile=EmotionalProfile(
+                joy=0.0,
+                sadness=0.3,
+                anger=0.7,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
     ]
 
     result = TopEmotionsPipeline._aggregate_emotions(profiles)
 
-    assert result["happy"] == 0.0
-    assert result["sad"] == pytest.approx(0.4, rel=1e-10)
-    assert result["angry"] == pytest.approx(0.6, rel=1e-10)
+    assert result["joy"] == 0.0
+    assert result["sadness"] == pytest.approx(0.4, rel=1e-10)
+    assert result["anger"] == pytest.approx(0.6, rel=1e-10)
 
 
 def test_basic_ranking_and_normalization():
     """Test basic ranking and normalization functionality"""
-    average_emotions = {"happy": 0.3, "sad": 0.5, "angry": 0.2}
+    average_emotions = {"joy": 0.3, "sadness": 0.5, "anger": 0.2}
 
     result = TopEmotionsPipeline._rank_and_normalise_emotions(average_emotions, n=3)
 
-    # Should be ranked by value: sad > happy > angry
-    # Normalized: sad=0.5/1.0=0.5, happy=0.3/1.0=0.3, angry=0.2/1.0=0.2
+    # Should be ranked by value: sadness > joy > anger
+    # Normalized: sadness=0.5/1.0=0.5, joy=0.3/1.0=0.3, anger=0.2/1.0=0.2
     assert len(result) == 3
-    assert result["sad"] == 0.5
-    assert result["happy"] == 0.3
-    assert result["angry"] == 0.2
+    assert result["sadness"] == 0.5
+    assert result["joy"] == 0.3
+    assert result["anger"] == 0.2
 
 
 def test_n_parameter_limits_results():
@@ -181,12 +360,12 @@ def test_tied_emotions():
 
 def test_single_emotion():
     """Test with single emotion"""
-    average_emotions = {"happy": 0.8}
+    average_emotions = {"joy": 0.8}
 
     result = TopEmotionsPipeline._rank_and_normalise_emotions(average_emotions, n=5)
 
     assert len(result) == 1
-    assert result["happy"] == 1.0  # Should be normalized to 1.0
+    assert result["joy"] == 1.0  # Should be normalized to 1.0
 
 
 def test_empty_emotions_dict():
@@ -228,14 +407,63 @@ def test_complete_emotion_processing_pipeline():
     emotional_profiles = [
         TrackEmotionalProfile(
             track_id="track1",
-            emotional_profile=EmotionalProfile(happy=0.3, sad=0.4, angry=0.3),
+            emotional_profile=EmotionalProfile(
+                joy=0.3,
+                sadness=0.4,
+                anger=0.3,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
             track_id="track2",
-            emotional_profile=EmotionalProfile(happy=0.5, sad=0.2, excited=0.3),
+            emotional_profile=EmotionalProfile(
+                joy=0.5,
+                sadness=0.2,
+                excitement=0.3,
+                anger=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
         TrackEmotionalProfile(
-            track_id="track3", emotional_profile=EmotionalProfile(sad=0.6, angry=0.4)
+            track_id="track3",
+            emotional_profile=EmotionalProfile(
+                sadness=0.6,
+                anger=0.4,
+                joy=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         ),
     ]
 
@@ -262,7 +490,24 @@ def test_default_n_parameter():
     """Test that default n=5 is used when not specified"""
     emotional_profiles = [
         TrackEmotionalProfile(
-            track_id="track1", emotional_profile=EmotionalProfile(happy=0.5, sad=0.5)
+            track_id="track1",
+            emotional_profile=EmotionalProfile(
+                joy=0.5,
+                sadness=0.5,
+                anger=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         )
     ]
 
@@ -293,7 +538,24 @@ def test_single_emotional_profile():
     """Test with single emotional profile"""
     emotional_profiles = [
         TrackEmotionalProfile(
-            track_id="track1", emotional_profile=EmotionalProfile(happy=0.6, sad=0.4)
+            track_id="track1",
+            emotional_profile=EmotionalProfile(
+                joy=0.6,
+                sadness=0.4,
+                anger=0.0,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
+            ),
         )
     ]
 
@@ -305,10 +567,10 @@ def test_single_emotional_profile():
     )
 
     assert len(result) == 2
-    assert result[0].emotion_id == "happy"
+    assert result[0].emotion_id == "joy"
     assert result[0].percentage == 0.6
     assert result[0].position == 1
-    assert result[1].emotion_id == "sad"
+    assert result[1].emotion_id == "sadness"
     assert result[1].percentage == 0.4
     assert result[1].position == 2
 
@@ -319,7 +581,21 @@ def test_position_assignment():
         TrackEmotionalProfile(
             track_id="track1",
             emotional_profile=EmotionalProfile(
-                emotion1=0.1, emotion2=0.2, emotion3=0.3
+                joy=0.1,
+                sadness=0.2,
+                anger=0.3,
+                fear=0.0,
+                love=0.0,
+                hope=0.0,
+                nostalgia=0.0,
+                loneliness=0.0,
+                confidence=0.0,
+                despair=0.0,
+                excitement=0.0,
+                mystery=0.0,
+                defiance=0.0,
+                gratitude=0.0,
+                spirituality=0.0,
             ),
         )
     ]

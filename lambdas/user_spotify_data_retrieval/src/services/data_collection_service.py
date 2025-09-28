@@ -26,7 +26,6 @@ class DataCollectionService:
         time_range: TimeRange,
         collection_date: datetime.date,
     ) -> None:
-        """Collect user data using the orchestrator"""
         async with httpx.AsyncClient() as client:
             with get_db_session(self.settings.db_connection_string) as db_session:
                 await self.orchestrator.run_data_collection_pipeline(

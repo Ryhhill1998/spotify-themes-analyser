@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 
 from src.repositories.artists_repository import ArtistsRepository
 from src.models.shared import Image, TrackArtist
-from src.models.domain import Track, TopTrack
+from src.models.domain import Track, TopTrack, Artist
 from src.models.enums import PositionChange, TimeRange
-from src.models.db import TrackDB, ProfileDB, TopTrackDB
+from src.models.db import TrackDB, ProfileDB, TopTrackDB, ArtistDB
 from src.repositories.tracks_repository import TracksRepository
 from src.repositories.top_items.top_tracks_repository import (
     TopTracksRepository,
@@ -1308,6 +1308,184 @@ EXPECTED_TRACKS = [
     ),
 ]
 
+EXPECTED_ARTISTS = [
+    Artist(
+        id="2n2RSaZqBuUUukhbLlpnE6",
+        name="Sleep Token",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab6761610000e5ebd00c2ff422829437e6b5f1e0",
+            ),
+            Image(
+                height=320,
+                width=320,
+                url="https://i.scdn.co/image/ab67616100005174d00c2ff422829437e6b5f1e0",
+            ),
+            Image(
+                height=160,
+                width=160,
+                url="https://i.scdn.co/image/ab6761610000f178d00c2ff422829437e6b5f1e0",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/artist/2n2RSaZqBuUUukhbLlpnE6",
+        genres=["progressive metal", "metalcore"],
+        followers=2710561,
+        popularity=82,
+    ),
+    Artist(
+        id="6Ad91Jof8Niiw0lGLLi3NW",
+        name="YUNGBLUD",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab6761610000e5eb7c9287712c4355e54c94e0d0",
+            ),
+            Image(
+                height=320,
+                width=320,
+                url="https://i.scdn.co/image/ab676161000051747c9287712c4355e54c94e0d0",
+            ),
+            Image(
+                height=160,
+                width=160,
+                url="https://i.scdn.co/image/ab6761610000f1787c9287712c4355e54c94e0d0",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/artist/6Ad91Jof8Niiw0lGLLi3NW",
+        genres=[],
+        followers=3100156,
+        popularity=78,
+    ),
+    Artist(
+        id="4IWBUUAFIplrNtaOHcJPRM",
+        name="James Arthur",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab6761610000e5eb5a55e66595e80fb12dc5f5fa",
+            ),
+            Image(
+                height=320,
+                width=320,
+                url="https://i.scdn.co/image/ab676161000051745a55e66595e80fb12dc5f5fa",
+            ),
+            Image(
+                height=160,
+                width=160,
+                url="https://i.scdn.co/image/ab6761610000f1785a55e66595e80fb12dc5f5fa",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/artist/4IWBUUAFIplrNtaOHcJPRM",
+        genres=["soft pop"],
+        followers=20722129,
+        popularity=83,
+    ),
+    Artist(
+        id="6NnBBumbcMYsaPTHFhPtXD",
+        name="VOILÀ",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab6761610000e5eb2b8c0a420a952a14a2e23c9c",
+            ),
+            Image(
+                height=320,
+                width=320,
+                url="https://i.scdn.co/image/ab676161000051742b8c0a420a952a14a2e23c9c",
+            ),
+            Image(
+                height=160,
+                width=160,
+                url="https://i.scdn.co/image/ab6761610000f1782b8c0a420a952a14a2e23c9c",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/artist/6NnBBumbcMYsaPTHFhPtXD",
+        genres=[],
+        followers=331103,
+        popularity=70,
+    ),
+    Artist(
+        id="6XyY86QOPPrYVGvF9ch6wz",
+        name="Linkin Park",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab6761610000e5eb527d95dabbe8b8b527e8136f",
+            ),
+            Image(
+                height=320,
+                width=320,
+                url="https://i.scdn.co/image/ab67616100005174527d95dabbe8b8b527e8136f",
+            ),
+            Image(
+                height=160,
+                width=160,
+                url="https://i.scdn.co/image/ab6761610000f178527d95dabbe8b8b527e8136f",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/artist/6XyY86QOPPrYVGvF9ch6wz",
+        genres=["nu metal", "rap metal", "rock", "alternative metal"],
+        followers=31331065,
+        popularity=92,
+    ),
+    Artist(
+        id="3T55D3LMiygE9eSKFpiAye",
+        name="Badflower",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab6761610000e5ebd1634326a43dfa2aea839053",
+            ),
+            Image(
+                height=320,
+                width=320,
+                url="https://i.scdn.co/image/ab67616100005174d1634326a43dfa2aea839053",
+            ),
+            Image(
+                height=160,
+                width=160,
+                url="https://i.scdn.co/image/ab6761610000f178d1634326a43dfa2aea839053",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/artist/3T55D3LMiygE9eSKFpiAye",
+        genres=["post-grunge"],
+        followers=354863,
+        popularity=56,
+    ),
+    Artist(
+        id="4OTFxPi5CtWyj1NThDe6z5",
+        name="Weathers",
+        images=[
+            Image(
+                height=640,
+                width=640,
+                url="https://i.scdn.co/image/ab6761610000e5ebe650e4a00f56efec44be31a5",
+            ),
+            Image(
+                height=320,
+                width=320,
+                url="https://i.scdn.co/image/ab67616100005174e650e4a00f56efec44be31a5",
+            ),
+            Image(
+                height=160,
+                width=160,
+                url="https://i.scdn.co/image/ab6761610000f178e650e4a00f56efec44be31a5",
+            ),
+        ],
+        spotify_url="https://open.spotify.com/artist/4OTFxPi5CtWyj1NThDe6z5",
+        genres=[],
+        followers=314623,
+        popularity=54,
+    ),
+]
+
 
 @pytest_asyncio.fixture
 async def spotify_service(httpx_mock) -> AsyncGenerator[SpotifyService, None]:
@@ -1621,3 +1799,70 @@ async def test_top_tracks_pipeline_run_raises_exception_if_top_track_exists(
             time_range=time_range,
             collection_date=collection_date,
         )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_top_tracks_pipeline_run_adds_artists_to_db(
+    db_session: Session,
+    top_tracks_pipeline: TopTracksPipeline,
+    existing_profile: ProfileDB,
+) -> None:
+    access_token = "access_token"
+    user_id = existing_profile.id
+    time_range = TimeRange.SHORT_TERM
+    collection_date = datetime.date.today()
+
+    await top_tracks_pipeline.run(
+        access_token=access_token,
+        user_id=user_id,
+        time_range=time_range,
+        collection_date=collection_date,
+    )
+
+    db_artists = db_session.query(ArtistDB).all()
+    db_artist_ids = {artist.id for artist in db_artists}
+    expected_artist_ids = {artist.id for artist in EXPECTED_ARTISTS}
+    assert db_artist_ids == expected_artist_ids
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_top_tracks_pipeline_run_updates_artist_if_already_exists(
+    db_session: Session,
+    top_tracks_pipeline: TopTracksPipeline,
+    existing_profile: ProfileDB,
+) -> None:
+    access_token = "access_token"
+    user_id = existing_profile.id
+    time_range = TimeRange.SHORT_TERM
+    collection_date = datetime.date.today()
+    existing_artist = EXPECTED_ARTISTS[0]
+    db_session.add(
+        ArtistDB(
+            id=existing_artist.id,
+            name=existing_artist.name + " Old",
+            images=[image.model_dump() for image in existing_artist.images],
+            spotify_url=existing_artist.spotify_url,
+            genres=existing_artist.genres,
+            followers=existing_artist.followers,
+            popularity=existing_artist.popularity,
+        )
+    )
+    db_session.commit()
+
+    await top_tracks_pipeline.run(
+        access_token=access_token,
+        user_id=user_id,
+        time_range=time_range,
+        collection_date=collection_date,
+    )
+
+    db_artist = db_session.get(ArtistDB, existing_artist.id)
+    assert db_artist.id == existing_artist.id
+    assert db_artist.name == existing_artist.name
+    assert db_artist.images == [image.model_dump() for image in existing_artist.images]
+    assert db_artist.spotify_url == existing_artist.spotify_url
+    assert db_artist.genres == existing_artist.genres
+    assert db_artist.followers == existing_artist.followers
+    assert db_artist.popularity == existing_artist.popularity
