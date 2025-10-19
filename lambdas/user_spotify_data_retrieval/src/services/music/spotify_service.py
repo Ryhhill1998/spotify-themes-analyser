@@ -1,0 +1,160 @@
+import asyncio
+from itertools import batched
+import httpx
+from loguru import logger
+import pydantic
+
+from src.models.enums import TimeRange
+from src.models.spotify import SpotifyProfile, SpotifyArtist, SpotifyTrack
+from src.models.domain import Profile, Artist, Track
+
+
+class SpotifyServiceException(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
+
+
+class SpotifyService:
+    BATCH_SIZE = 50
+
+    def __init__(self, client: httpx.AsyncClient, base_url: str):
+        self.client = client
+        self.base_url = base_url
+
+    @staticmethod
+    def _get_bearer_auth_headers(access_token: str) -> dict[str, str]:
+        return {"Authorization": f"Bearer {access_token}"}
+
+    async def _get_data_from_api(
+        self, url: str, headers: dict[str, str], params: dict | None = None
+    ) -> dict:
+        try:
+            response = await self.client.get(url=url, headers=headers, params=params)
+            response.raise_for_status()
+            return response.json()
+        except (httpx.HTTPStatusError, httpx.RequestError) as e:
+            logger.error(f"API request failed for URL {url}: {e}")
+            raise SpotifyServiceException(f"Failed to fetch data from {url}.") from e
+
+    def _spotify_profile_to_profile(self, spotify_profile: SpotifyProfile) -> Profile:
+        return Profile(
+            id=spotify_profile.id,
+            display_name=spotify_profile.display_name,
+            email=spotify_profile.email,
+            spotify_url=spotify_profile.external_urls.spotify,
+            images=spotify_profile.images,
+            followers=spotify_profile.followers.total,
+        )
+
+    def _validate_and_transform_profile_data(self, profile_data: dict) -> Profile:
+        try:
+            spotify_profile = SpotifyProfile.model_validate(profile_data)
+            return self._spotify_profile_to_profile(spotify_profile)
+        except pydantic.ValidationError as e:
+            logger.error(f"Data validation error for user profile: {e}")
+            raise SpotifyServiceException(
+                "Invalid profile data received from API."
+            ) from e
+
+    async def get_user_profile(self, access_token: str) -> Profile:
+        url = f"{self.base_url}/me"
+        headers = self._get_bearer_auth_headers(access_token)
+        data = await self._get_data_from_api(url=url, headers=headers)
+        return self._validate_and_transform_profile_data(data)
+
+    def _spotify_artist_to_artist(self, spotify_artist: SpotifyArtist) -> Artist:
+        return Artist(
+            id=spotify_artist.id,
+            name=spotify_artist.name,
+            images=spotify_artist.images,
+            spotify_url=spotify_artist.external_urls.spotify,
+            genres=spotify_artist.genres,
+            followers=spotify_artist.followers.total,
+            popularity=spotify_artist.popularity,
+        )
+
+    def _validate_and_transform_artists_data(self, artists_data: list[dict]) -> Profile:
+        try:
+            spotify_artists = [
+                SpotifyArtist.model_validate(item) for item in artists_data
+            ]
+            return [
+                self._spotify_artist_to_artist(artist) for artist in spotify_artists
+            ]
+        except pydantic.ValidationError as e:
+            logger.error(f"Data validation error for artists: {e}")
+            raise SpotifyServiceException(
+                "Invalid artists data received from API."
+            ) from e
+
+    async def get_user_top_artists(
+        self, access_token: str, time_range: TimeRange, limit: int = 50
+    ) -> list[Artist]:
+        url = f"{self.base_url}/me/top/artists"
+        headers = self._get_bearer_auth_headers(access_token)
+        params = {"time_range": time_range.value, "limit": limit}
+        data = await self._get_data_from_api(url=url, headers=headers, params=params)
+
+        items = data.get("items", [])
+        return self._validate_and_transform_artists_data(items)
+
+    def _spotify_track_to_track(self, spotify_track: SpotifyTrack) -> Track:
+        return Track(
+            id=spotify_track.id,
+            name=spotify_track.name,
+            images=spotify_track.album.images,
+            spotify_url=spotify_track.external_urls.spotify,
+            album_name=spotify_track.album.name,
+            release_date=spotify_track.album.release_date,
+            explicit=spotify_track.explicit,
+            duration_ms=spotify_track.duration_ms,
+            popularity=spotify_track.popularity,
+            artists=spotify_track.artists,
+        )
+
+    def _validate_and_transform_tracks_data(
+        self, tracks_data: list[dict]
+    ) -> list[Track]:
+        try:
+            spotify_tracks = [SpotifyTrack.model_validate(item) for item in tracks_data]
+            return [self._spotify_track_to_track(track) for track in spotify_tracks]
+        except pydantic.ValidationError as e:
+            logger.error(f"Data validation error for tracks: {e}")
+            raise SpotifyServiceException(
+                "Invalid tracks data received from API."
+            ) from e
+
+    async def get_user_top_tracks(
+        self, access_token: str, time_range: TimeRange, limit: int = 50
+    ) -> list[Track]:
+        url = f"{self.base_url}/me/top/tracks"
+        headers = self._get_bearer_auth_headers(access_token)
+        params = {"time_range": time_range.value, "limit": limit}
+        data = await self._get_data_from_api(url=url, headers=headers, params=params)
+
+        items = data.get("items", [])
+        return self._validate_and_transform_tracks_data(items)
+
+    async def _get_artists_by_ids(
+        self, access_token: str, artist_ids: list[str]
+    ) -> list[Artist]:
+        url = f"{self.base_url}/artists"
+        headers = self._get_bearer_auth_headers(access_token)
+        params = {"ids": ",".join(artist_ids)}
+        data = await self._get_data_from_api(url=url, headers=headers, params=params)
+
+        items = data.get("artists", [])
+        return self._validate_and_transform_artists_data(items)
+
+    async def get_artists_by_ids(
+        self, access_token: str, artist_ids: list[str]
+    ) -> list[Artist]:
+        batched_artist_ids = list(batched(artist_ids, SpotifyService.BATCH_SIZE))
+        tasks = [
+            self._get_artists_by_ids(access_token=access_token, artist_ids=batch)
+            for batch in batched_artist_ids
+        ]
+        results = await asyncio.gather(*tasks)
+        artists = [artist for batch in results for artist in batch]
+
+        return artists
